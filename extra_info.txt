@@ -1,0 +1,6 @@
+flask
+flask-login
+sqlalchemy
+cd mintkard
+
+https://youtu.be/dam0GPOAvVI?t=1151
