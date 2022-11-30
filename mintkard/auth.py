@@ -8,10 +8,10 @@ def login():
 
 
 @auth.route('/register')
-def login():
-    return "<p>login</p>"
+def register():
+    return "<p>register</p>"
 
 
 @auth.route('/logout')
-def login():
-    return "<p>login</p>"
+def logout():
+    return "<p>logout</p>"

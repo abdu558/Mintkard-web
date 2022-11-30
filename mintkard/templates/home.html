@@ -1,0 +1,15 @@
+{% extends 'template.html' %}
+
+{% block title %}
+  <h1>{% block title %}Home{% endblock %}</h1>
+{% endblock %}
+
+{% block body %}
+  <form method="post">
+    <label for="username">Username</label>
+    <input name="username" id="username" required>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" required>
+    <input type="submit" value="Register">
+  </form>
+{% endblock %}
