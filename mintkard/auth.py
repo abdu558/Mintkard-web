@@ -1,5 +1,17 @@
 from flask import Blueprint
 
-auth = views = Blueprint('views', __name__)
+auth = Blueprint('auth', __name__)
 
-@auth.route("hello")
+@auth.route('/login')
+def login():
+    return "<p>login</p>"
+
+
+@auth.route('/register')
+def login():
+    return "<p>login</p>"
+
+
+@auth.route('/logout')
+def login():
+    return "<p>login</p>"
