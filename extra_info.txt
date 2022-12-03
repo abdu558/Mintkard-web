@@ -3,7 +3,7 @@ flask-login
 sqlalchemy
 cd mintkard
 
-https://youtu.be/dam0GPOAvVI?t=1151
+https://youtu.be/dam0GPOAvVI?t=3159
 https://flask.palletsprojects.com/en/2.2.x/tutorial/templates/
 
 Flask Blueprints encapsulate functionality, such as views, templates, and other resources. 
