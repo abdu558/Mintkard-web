@@ -1,15 +1,25 @@
-{% extends 'template.html' %}
+{% extends 'layout.html' %}
 
-{% block title %}
-  <h1>{% block title %}Home{% endblock %}</h1>
-{% endblock %}
+
+  <title>{% block title %}Home{% endblock %}</title>
+
 
 {% block body %}
+{% if boolean == True %}
+True
+{% endif %}
+{% else %}
+{% endif %}
+
+
   <form method="post">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <input type="submit" value="Register">
+    <h3 align="center">Register</h3>
+    <div class=""form-group">
+      <label for="email">Email</label>
+      <input name="email" id="email" required>
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" required>
+      <input type="submit" value="Login">
+    </div>
   </form>
 {% endblock %}

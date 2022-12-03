@@ -5,3 +5,5 @@ cd mintkard
 
 https://youtu.be/dam0GPOAvVI?t=1151
 https://flask.palletsprojects.com/en/2.2.x/tutorial/templates/
+
+Flask Blueprints encapsulate functionality, such as views, templates, and other resources. 

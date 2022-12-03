@@ -1,17 +1,17 @@
 from flask import Blueprint, render_template
 
-auth = Blueprint('auth', __name__)
+decks = Blueprint('decks', __name__)
 
-@auth.route('/login')
-def login():
+@decks.route('/')
+def home():
     return render_template("home.html")
 
 
-@auth.route('/register')
-def register():
+@decks.route('/Browse')
+def browse():
     return render_template("home.html")
 
 
-@auth.route('/logout')
-def logout():
+@decks.route('/Study')
+def Study():
     return render_template("home.html")

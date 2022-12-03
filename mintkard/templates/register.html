@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+
+  <title>{% block title %}Home{% endblock %}</title>
+
+
+{% block body %}
+<!--You can access these items in the backend using the name=""-->
+<form method="post">
+  <h3 align="center">Register</h3>
+  <div class=""form-group">
+    <label for="username">Username</label>
+    <input name="username" id="username" placeholder="Enter Username" required>
+    <label for="email">Email</label>
+    <input name="email" id="email" placeholder="Enter email"required>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" placeholder="Enter password"required>
+    <label for="password2">Confirm Password</label>
+    <input type="password" name="password2" id="password2" placeholder="Enter password "required>
+    <input type="submit" value="Register">
+  </div>
+  <button type="submit" class=" btn btn-primary">Submit</button>
+</form>
+{% endblock %}

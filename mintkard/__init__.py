@@ -6,9 +6,11 @@ def create_app():
 
     from .views import views
     from .auth import auth
+    from .decks import decks
     
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/auth/')
+    app.register_blueprint(decks, url_prefix='/decks/')
 
 
     return app
