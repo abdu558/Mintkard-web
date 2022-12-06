@@ -7,3 +7,8 @@ https://youtu.be/dam0GPOAvVI?t=3159
 https://flask.palletsprojects.com/en/2.2.x/tutorial/templates/
 
 Flask Blueprints encapsulate functionality, such as views, templates, and other resources. 
+    
+    <link rel="stylesheet" href="assets/css/Cabin.css">
+    <link rel="stylesheet" href="assets/css/JetBrains%20Mono.css">
+    <link rel="stylesheet" href="assets/css/Lora.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
