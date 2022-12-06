@@ -7,11 +7,11 @@ def home():
     return render_template("home.html")
 
 
-@decks.route('/Browse')
+@decks.route('/browse')
 def browse():
     return render_template("home.html")
 
 
-@decks.route('/Study')
+@decks.route('/study')
 def Study():
     return render_template("home.html")
