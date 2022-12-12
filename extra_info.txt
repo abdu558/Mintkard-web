@@ -12,3 +12,6 @@ Flask Blueprints encapsulate functionality, such as views, templates, and other 
     <link rel="stylesheet" href="assets/css/JetBrains%20Mono.css">
     <link rel="stylesheet" href="assets/css/Lora.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/#queries-in-views
