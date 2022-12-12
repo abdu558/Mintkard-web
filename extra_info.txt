@@ -18,3 +18,5 @@ https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/#queries-in-views
 
 
 finished home page stuff could edit more????
+IDK IF I SHOULD ADD ACTION="/LOGIN"
+CHANGE HOME AND REMOVE SOME WEIRD STUFF AND JAVASCRIPT STUFF
