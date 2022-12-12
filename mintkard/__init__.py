@@ -7,10 +7,13 @@ def create_app():
     from .views import views
     from .auth import auth
     from .decks import decks
-    
+
+    #This registers the blueprint allowing routes to put into seperate files
     app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(auth, url_prefix='/auth/')
-    app.register_blueprint(decks, url_prefix='/decks/')
+    #This will add /auth before all routes in the decks file
+    app.register_blueprint(auth, url_prefix='/auth')
+    #This will add /decks before all routes in the decks file
+    app.register_blueprint(decks, url_prefix='/decks')
 
 
     return app
