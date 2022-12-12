@@ -1,0 +1,1 @@
+from . import db #This will import from current package
