@@ -15,3 +15,6 @@ Flask Blueprints encapsulate functionality, such as views, templates, and other 
 
 
 https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/#queries-in-views
+
+
+finished home page stuff could edit more????
