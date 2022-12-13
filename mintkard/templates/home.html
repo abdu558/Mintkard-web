@@ -12,19 +12,20 @@
     <title>Home</title>
 </head>
 
-<body id="page-top" data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="77">
+<body>
     <nav id="mainNav" class="navbar navbar-light navbar-expand-md fixed-top">
-        <div class="container"><a class="navbar-brand" href="#">Mintkard</a><button class="navbar-toggler navbar-toggler-right" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
+        <div class="container"><a class="navbar-brand" href="#">Mintkard</a>
+            <button class="navbar-toggler navbar-toggler-right" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
             <div id="navbarResponsive" class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item nav-link"><a class="nav-link active" href="#about" style="font-family: Cabin, sans-serif;">GET STARTED</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link" href="#download">LOGIN</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link" href="#contact">ABOUT</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link active" href="{{ url_for('auth.register') }}" style="font-family: Cabin, sans-serif;">GET STARTED</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link" href="{{ url_for('auth.login') }}">LOGIN</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link" href="#about">ABOUT</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-    <!--http://94.23.152.86/web/wallpapers/bright-pink-sunset-in-the-mountains-hd-wallpaper/1920x1080.jpg-->
+    <!--old image = http://94.23.152.86/web/wallpapers/bright-pink-sunset-in-the-mountains-hd-wallpaper/1920x1080.jpg-->
     <header class="masthead" style="background: url('https://i.postimg.cc/cCCLbRTN/ezgif-2-c3e2d1e5ab.webp');background-repeat:no-repeat;background-size:100%;font-family: 'JetBrains Mono', monospace;">
         <div class="intro-body">
             <div class="container">
@@ -37,6 +38,7 @@
             </div>
         </div>
     </header>
+
     <section id="about" class="text-center content-section">
         <div class="container">
             <div class="row">

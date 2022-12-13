@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template,request
+from flask import Blueprint, render_template,request,url_for
 #Boilerplate code that registers auth file with init file
 auth = Blueprint('auth', __name__)
 
