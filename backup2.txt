@@ -57,25 +57,7 @@ def login():
 
 @auth.route('/register',methods=['GET','POST'])
 def register():
-    if request.method == 'POST':#add an else statemnet to this
-        #Checks if all fields are filled out
-        if request.form.get('username') and request.form.get('email') and request.form.get('password1') and request.form.get('password2'):#DOES THIS WORK TO CHECK IF SOMETHING IS IN OR DOES IT WORK FOR ONLY TRUE VALUES?
-            #Checks if the email,username and passwords are valid, if not they would be redirected to the register page with an error
-            if check_email(request.form.get('email')) and check_username(request.form.get('username')) and check_password(request.form.get('password1'),request.form.get('password2')):
-                username = request.form.get('username')
-                email = request.form.get('email')
-                password = request.form.get('password1')
-                confirm_password = request.form.get('password2')
-                #Check if the email is already in the database
-                #Check if the username is already in the database
-                #If both are not in the database, add them to the database
-                #If either are in the database, return an error#
-                flash('Account successfully created')
-                return redirect(url_for('decks.decks'))
-            else:
-                return render_template("register.html",error=error) #GET ERROR FROM THE CHECK FUNCTIONS
-        return render_template("register.html",error="Please fill out all fields")    
-        
+    if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password1')
