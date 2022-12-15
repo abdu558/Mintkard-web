@@ -1,3 +1,5 @@
+AUTH FILE
+
 from flask import Blueprint, render_template,request,url_for,redirect,flash
 #flask setup code that registers auth file with init file/app
 auth = Blueprint('auth', __name__)
@@ -52,17 +54,16 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password1')
         confirm_password = request.form.get('password2')
+    #Perform some validation on the length of the username and password and email and check if they match
+    #If they do not match, return an error
+    #If they do match, add them to the database
+    #If the email is already in the database, return an error
+    #If the username is already in the database, return an error
 
-    
     #Check if all fields are filled out
     if username and email and password and confirm_password:
-        #Check if the email,username and passwords are valid, if not they would be redirected to the register page with an error
+        #Will redirect if not validated
         if check_email(email) and checek_username(username) and check_password(password,confirm_password):
-            #Check if the email is already in the database
-            #Check if the username is already in the database
-            #If both are not in the database, add them to the database
-            #If either are in the database, return an error
-            return redirect(url_for('auth.login'))
             
 
 
