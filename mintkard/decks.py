@@ -3,12 +3,12 @@ from flask import Blueprint, render_template
 decks = Blueprint('decks', __name__)
 
 @decks.route('/decks')
-def decks():
+def Decks():
     return render_template("decks.html")
 
 
 @decks.route('/browse')
-def browse():
+def Browse():
     return render_template("browse.html")
 
 
