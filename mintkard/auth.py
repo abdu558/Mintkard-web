@@ -34,7 +34,7 @@ def check_username(username):
     if error:
         return False, error
     else:
-        return True,''
+        return True
 
 def check_password(password,confirm_password):
     error = False
@@ -52,7 +52,7 @@ def check_password(password,confirm_password):
     if error:
         return False, error
     else:
-        return True, ''
+        return True
 
 
 #methods is get by default, adding post will allow the submission of login info without it showing up in link
