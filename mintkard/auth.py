@@ -2,9 +2,15 @@ from flask import Blueprint, render_template,request,url_for,redirect,flash
 #flask setup code that registers auth file with init file/app
 auth = Blueprint('auth', __name__)
 
+
+#
+
 def check_email(email):
-    #Check if the email is valid
-    #They are if statemnts as they are all independent of each other
+    '''
+    Check if the email is valid
+    They are if statemnts as they are all independent of each other
+    if true return '' instead of None as it will be easier to check for errors in the error variable
+    '''
     error = False
     if len(email) < 6 :
         error = "Email must be at least 5 characters"
@@ -19,10 +25,14 @@ def check_email(email):
     if error:
         return False, error
     else:
-        return True, None
+        return True, ''
 
 def check_username(username):
-    #Username validation, to check length and if it contains spaces
+    '''
+    Username validation, to check length and if it contains spaces
+        if true return '' instead of None as it will be easier to check for errors in the error variable
+
+    '''
     error = False
     if len(username) < 4 :
         error = "Username must be at least 4 characters"
@@ -34,9 +44,14 @@ def check_username(username):
     if error:
         return False, error
     else:
-        return True
+        return True, ''
 
 def check_password(password,confirm_password):
+    '''
+    Password validation, to check length and if it contains spaces
+    if true return '' instead of None as it will be easier to check for errors in the error variable
+
+    '''
     error = False
     #Check if the password is valid
     if len(password) < 5 :
@@ -52,12 +67,17 @@ def check_password(password,confirm_password):
     if error:
         return False, error
     else:
-        return True
+        return True, ''
 
 
 #methods is get by default, adding post will allow the submission of login info without it showing up in link
 @auth.route('/login',methods=['GET','POST'])
 def Login():
+    '''
+    This function will get the data from the template login.html and would get the data by the name in the html form, it will check if the fields are filled out
+    uses the request module to give the data that was send as part of a form
+    This will check data that is recieved via a POST request only as that's how the login data is entered with
+    '''
     # #uses the request module to give the data that was send as part of a form
     # #This will check data that is recieved via a POST request only as that's how the login data is entered with
     if request.method == 'POST':
@@ -81,16 +101,37 @@ def Login():
 
 @auth.route('/register',methods=['GET','POST'])
 def Register():
+    '''
+    This function will get the data from the template register.html and would get the data by the name in the html form, it will check if the fields are filled out
+    It will also will check if the email,username and passwords are valid, if not they would be redirected to the register page with an error
+    If they are valid, it will check if the email and username are already in the database, if they are, it will return an error
+    If they are not in the database, it will add them to the database and redirect to the decks page
+
+    
+    '''
     if request.method == 'POST':#add an else statemnet to this
+
+        #ASSIGN THE username and email and password to variables in a try and except and the except would be a flash message, remove the return redirect
+        # try:
+        #     username = request.form.get('username')
+        #     email = request.form.get('email')
+        #     password = request.form.get('password1')
+        #     confirm_password = request.form.get('password2')
+        # except:
+        #     flash('Please fill out all fields',category='error')
+        #     return redirect(url_for('auth.register'))
+
         #Checks if all fields are filled out
         if request.form.get('username') and request.form.get('email') and request.form.get('password1') and request.form.get('password2'):#DOES THIS WORK TO CHECK IF SOMETHING IS IN OR DOES IT WORK FOR ONLY TRUE VALUES?
+            username = request.form.get('username')
+            email = request.form.get('email')
+            password = request.form.get('password1')
+            confirm_password = request.form.get('password2')
             #Checks if the email,username and passwords are valid, if not they would be redirected to the register page with an error
-            if check_email(request.form.get('email')) and check_username(request.form.get('username')) and check_password(request.form.get('password1'),request.form.get('password2')):
-                username = request.form.get('username')
-                email = request.form.get('email')
-                password = request.form.get('password1')
-                confirm_password = request.form.get('password2')
-
+            print(check_email(email))
+            print(check_username(username))
+            print(check_password(password,confirm_password))
+            if check_email(email)[0] and check_username(username)[0] and check_password(password,confirm_password)[0]:
                 #Check if the email is already in the database
                 #Check if the username is already in the database
                 #If both are not in the database, add them to the database
@@ -107,8 +148,15 @@ def Register():
                 flash('Account successfully created')
                 return redirect(url_for('decks.Decks'))
             else:
-                error = check_email(request.form.get('email'))[1] + check_username(request.form.get('username'))[1] + check_password(request.form.get('password1'),request.form.get('password2'))[1]
-                return render_template("register.html",error=error) #GET ERROR FROM THE CHECK FUNCTIONS
+                try:
+                    error = check_email(email)[1] + check_username(username)[1] + check_password(password,confirm_password)[1]
+                    flash(error,category='error')
+                    return render_template("register.html",error=error)
+                except:
+                    flash('ERROR PLEASE TRY AGAIN',category='error')
+
+                return render_template("register.html")
+
         flash('Please fill out all fields',category='error')
         
     return render_template("register.html")
