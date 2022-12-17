@@ -149,6 +149,8 @@ def Register():
                 return redirect(url_for('decks.Decks'))
             else:
                 try:
+                    #If the mutltiple functions return error message seperate them with a comma, if they are empty do not add a comma
+                    
                     error = check_email(email)[1] + check_username(username)[1] + check_password(password,confirm_password)[1]
                     flash(error,category='error')
                     return render_template("register.html",error=error)
