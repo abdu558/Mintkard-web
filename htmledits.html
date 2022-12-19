@@ -85,3 +85,82 @@
         </form>           
     </div>
 </nav>
+
+
+
+{% extends 'layout.html' %}
+
+
+  <title>{% block title %}Login{% endblock %}</title>
+
+{% block body %}
+
+  <form method="POST">
+    <h1>Login</h1>
+    <br>
+    <div class="form-group form-signin w-100 m-auto">
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+        <label for="floatingInput">Email address</label>
+      </div>
+      <div class="form-floating">
+        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+        <label for="floatingPassword">Password</label>
+      </div>
+      <br>
+      <button class="btn btn-primary" type="submit" >Login</button>
+
+      <br>
+
+      <div class="mb-3">
+        <label for="email" for="floatingPassword">Email</label>
+        <input name="email" id="email" placeholder="Email" class="form-label" required>
+      </div>
+
+      <!--div class="w-100 d-none d-md-block"></div-->
+      <div class="mb-3">
+        <label for="password" for="floatingPassword">Password</label>
+        <input type="password" name="password" id="password" placeholder="password" class="form-label" required>
+      </div>
+
+      <div class="mb-3">
+        <button class="btn btn-primary" type="submit" >Login</button>
+      </div>
+      <!--Write a login form where the label is under the text input for the email and password and the button-->
+      <div class="mb-3">
+        <a href="/register">Register</a>
+      </div>
+
+    </div>
+    <div class="mb-3">
+      <label for="formGroupExampleInput" class="form-label">Example label</label>
+      <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input placeholder">
+    </div>
+    <div class="mb-3">
+      <label for="formGroupExampleInput2" class="form-label">Another label</label>
+      <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Another input placeholder">
+    </div>
+  </form>
+
+  <main class="form-signin w-100 m-auto">
+    <form>
+      <img class="mb-4" src="/static/logo.png">
+      <div class="form-floating">
+        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+        <label for="floatingInput">Email address</label>
+      </div>
+      <div class="form-floating">
+        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+        <label for="floatingPassword">Password</label>
+      </div>
+  
+      <div class="checkbox mb-3">
+        <label>
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+      </div>
+      <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+      <p class="mt-5 mb-3 text-muted"></p>
+    </form>
+  </main>
+{% endblock %}

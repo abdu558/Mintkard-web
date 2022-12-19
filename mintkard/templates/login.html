@@ -5,17 +5,24 @@
 
 {% block body %}
 
-  <form method="POST">
-    <h1>Login</h1>
-    <div class="form-group">
+<form method="POST">
+  <h1>Login</h1>
+  <br>
+  <div class="form-group form-signin w-50">
+    <p>Don't have an account? <a href="/auth/register">Register</a></p>
+
+    <div class="form-floating mb-3"> 
+      <input name="email" id="email" placeholder="Email" type="email" class="form-control" required>
       <label for="email">Email</label>
-      <input name="email" id="email" placeholder="Email" class="form-label" required>
-
-      <label for="password">Password</label>
-      <input type="password" name="password" id="password" placeholder="password" class="form-label" required>
-
-      <button class="btn btn-primary" type="submit" >Login</button>
     </div>
-  </form>
 
+    <div class="form-floating mb-3">
+      <input name="password" id="password" placeholder="password" type="password" class="form-control" required>
+      <label for="password">Password</label>
+    </div>
+
+    <p class="text-muted">"Spaced repetition is to the mind what exercise is to the body"</p>
+    <button class="btn btn-primary" type="submit">Login</button>
+  </div>
+</form>
 {% endblock %}

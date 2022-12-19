@@ -72,7 +72,7 @@ def check_password(password,confirm_password):
 
 #methods is get by default, adding post will allow the submission of login info without it showing up in link
 @auth.route('/login',methods=['GET','POST'])
-def Login():
+def login():
     '''
     This function will get the data from the template login.html and would get the data by the name in the html form, it will check if the fields are filled out
     uses the request module to give the data that was send as part of a form

@@ -77,3 +77,23 @@ def check_password(password,confirm_password):
         #If there is an error, return the error and the page will reload with the error
         return render_template('register.html',error=email_error[1] or username_error[1] or password_error[1])
     
+
+<form method="post">
+  <h1>Register</h1>
+  <div class=""form-group">
+    <label for="username">Username</label>
+    <input name="username" id="username" placeholder="Enter Username" class="form-label"required>
+    
+    <label for="email">Email</label>
+    <input name="email" id="email" placeholder="Enter email" class="form-label" required>
+    
+    <label for="password">Password</label>
+    <input type="password" name="password1" id="password1" placeholder="Enter password" class="form-label" required>
+    
+    <label for="password2">Confirm Password</label>
+    <input type="password" name="password2" id="password2" placeholder="Enter password" class="form-label" required>
+    
+    <button class="btn btn-primary" type="submit" ">Register</button>
+
+  </div>
+</form>

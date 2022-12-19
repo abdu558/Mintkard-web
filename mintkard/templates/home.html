@@ -3,10 +3,10 @@
 <html lang="en">
 
 <head>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin">
-		<link rel="stylesheet" href="static/styles.min.css">
-		<link rel="stylesheet" href="static/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin">
+    <link rel="stylesheet" href="static/styles.min.css">
+    <link rel="stylesheet" href="static/bootstrap.min.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
@@ -15,24 +15,40 @@
 <body>
     <nav id="mainNav" class="navbar navbar-light navbar-expand-md fixed-top">
         <div class="container"><a class="navbar-brand" href="#">Mintkard</a>
-            <button class="navbar-toggler navbar-toggler-right" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
+            <button class="navbar-toggler navbar-toggler-right" data-bs-toggle="collapse"
+                data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false"
+                aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
             <div id="navbarResponsive" class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item nav-link"><a class="nav-link active" href="/auth/register" style="font-family: Cabin, sans-serif;">GET STARTED</a></li>
-                    <li class="nav-item nav-link"><a class="nav-link" href="{{ url_for('auth.Login') }}">LOGIN</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link active" href="/auth/register"
+                            style="font-family: Cabin, sans-serif;">GET STARTED</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link" href="auth/login">LOGIN</a></li>
                     <li class="nav-item nav-link"><a class="nav-link" href="#about">ABOUT</a></li>
                 </ul>
             </div>
         </div>
     </nav>
     <!--old image = http://94.23.152.86/web/wallpapers/bright-pink-sunset-in-the-mountains-hd-wallpaper/1920x1080.jpg-->
-    <header class="masthead" style="background: url('https://i.postimg.cc/cCCLbRTN/ezgif-2-c3e2d1e5ab.webp');background-repeat:no-repeat;background-size:100%;font-family: 'JetBrains Mono', monospace;">
+    <style>
+        .old:detletlater {
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 100%;
+            overflow: hiddden;
+            background-position: center top;
+            background-attachment: fixed;
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+    <header class="masthead"
+        style="background: url('https://i.postimg.cc/cCCLbRTN/ezgif-2-c3e2d1e5ab.webp');background-repeat:no-repeat;background-size:cover;font-family: 'JetBrains Mono', monospace;height: 100%">
         <div class="intro-body">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8 mx-auto">
                         <h1 class="brand-heading" style="font-family: Cabin, sans-serif;">Reach your peak potential</h1>
-                        <p class="intro-text">Using algorithms to help you achieve your academic and linguistic goals</p><button class="btn btn-primary" type="button">start now</button>
+                        <p class="intro-text">Using algorithms to help you achieve your academic and linguistic goals
+                        </p><button class="btn btn-primary" type="button">start now</button>
                     </div>
                 </div>
             </div>
@@ -44,9 +60,20 @@
             <div class="row">
                 <div class="col-lg-8 mx-auto">
                     <h2>About MINTKARD</h2>
-                    <p>MINTKARD is a active learning spaced-repition platform, which mean it tests your knowledge just about when you will normally forget it. If you test knowledge too early then that&#39;s useless revision, if it&#39;s too late then you would forget the content and have to re-understand it. Mintkard uses it&#39;s an algorithim to determine that time gap on when to review it next. </p>
-                    <p>A big feature in Mintkard, is the gamification aspect, to make its users love spending time revising and achieve their goals.</p>
-                    <p>A set a day keeps failure away</p>
+                    <p>MINTKARD is a active learning spaced-repition platform, which mean it tests your knowledge just
+                        about when you will normally forget it. If you test knowledge too early then that&#39;s useless
+                        revision, if it&#39;s too late then you would forget the content and have to re-understand it.
+                        Mintkard uses it&#39;s an algorithim to determine that time gap on when to review it next. </p>
+                    <p>A big feature in Mintkard, is the gamification aspect, to make its users love spending time
+                        revising and achieve their goals.</p>
+                    <p>"Spaced repetition is to the mind what exercise is to the body. It systematically trains and
+                        strengthens the connections between neurons, gradually building durable and efficient pathways
+                        for retrieving and using information. By spacing out study sessions and gradually increasing the
+                        intervals between them, you can embed new knowledge more deeply and retrieve it more easily over
+                        time."</p>
+                    <p>The use of spaced repetition as a method for achieving proficiency in any discipline cannot be
+                        understated. </p>
+                    <p>A set a day will keep failure away</p>
                 </div>
             </div>
         </div>
@@ -59,4 +86,5 @@
     </section>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </html>
