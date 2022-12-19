@@ -1,4 +1,8 @@
 from flask import Blueprint, render_template,request,url_for,redirect,flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from .models import User #Import the User class from the models file
+#CHECK IF ABOVE ONE IS CORRECT
+
 #flask setup code that registers auth file with init file/app
 auth = Blueprint('auth', __name__)
 
@@ -88,6 +92,7 @@ def login():
             #If they are in the database, log them in
             #If they are not in the database, return an error to create an account
             if email=='bob@gmail.com' and password=='bob':
+            if email == User.query.filter_by(email=email).first().email and check_password_hash(User.query.filter_by(email=email).first().password,password)[0]:#Why 0
                 flash('You were successfully logged in')
                 return redirect(url_for('decks.Decks'))
             else:
@@ -144,7 +149,9 @@ def Register():
                     return redirect(url_for('auth.register'))
 
                 #ADD TO DATABASE
-
+                new_user = User(username=username,email=email,password=generate_password_hash(password,method='sha256'))
+                db.session.add(new_user)
+                db.session.commit()
                 flash('Account successfully created')
                 return redirect(url_for('decks.Decks'))
             else:

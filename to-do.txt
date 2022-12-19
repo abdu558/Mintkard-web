@@ -40,3 +40,25 @@ ADD BOOSTRAP LAYOUT TO MAKE IT UNDER EACH OTHER
 FIX LOGO TO SHOW IT ALL
 
 MAKE SEARCH ONLY SHOW UP WHEN ITS IN LOGIN PAGE
+
+
+ADD SORTING ALGORITHIM FOR CARDS IN JAVASCRIPT??
+
+ADD A LINK FOR EACH SUBDECK where i's /study/deckname
+
+
+add a an accordion component, which allows you to toggle the display of subdecks when the user clicks on the main deck. to support multi deck
+
+https://getbootstrap.com/docs/5.0/components/card/
+
+Use https://www.digitalocean.com/community/tutorials/how-to-use-flask-sqlalchemy-to-interact-with-databases-in-a-flask-application
+to create db but first finish off the database deisgn
+from app import db, Student
+db.create_all()
+
+however, this can be done
+db.drop_all()
+db.create_all()
+
+
+check if id is created itself

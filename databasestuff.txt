@@ -1,0 +1,23 @@
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+class Deck(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('deck.id'))
+    children = db.relationship('Deck', backref='parent', lazy=True, cascade="all, delete-orphan")
+    cards = db.relationship('Card', backref='deck', lazy=True, cascade="all, delete-orphan")
+
+class Card(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    front = db.Column(db.String, nullable=False)
+    back = db.Column(db.String, nullable=False)
+    deck_id = db.Column(db.Integer, db.ForeignKey('deck.id'), nullable=False)
+
+
+This model includes two classes: Deck and Card. The Deck class represents a deck of flashcards, and it has a name field to store the name of the deck and a parent_id field to store the ID of the parent deck, if it exists. The Deck class also has a children relationship that allows for nested sub-decks and a cards relationship that stores the cards belonging to the deck.
+
+The Card class represents an individual flashcard and has a front field for the front of the card (the question) and a back field for the back of the card (the answer). It also has a deck_id field that stores the ID of the deck to which the card belongs.
+
+This model allows for decks to be nested within other decks to create a hierarchy of sub-decks, and it also allows for cards to be associated with a specific deck.

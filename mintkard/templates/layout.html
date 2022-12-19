@@ -58,17 +58,21 @@
     </nav>
 
 
+
     {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <div class=flashes>
+    <div class="container mt-3">
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">
+        <!--If there are more than 2 errors/flashes than it would not display them, it would only display the first 2 flashes-->
+        {% if loop.index > 2 %}
+            {% break %}
+        {% endif %}
+        <div class="alert alert-{{ category }}" role="alert">
             {{ message }}
         </div>
         {% endfor %}
     </div>
-    {% endif %}
     {% endwith %}
+
 
     <div class="container mt-5">
     {% block body %}{% endblock %}

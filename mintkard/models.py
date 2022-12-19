@@ -38,3 +38,5 @@ class User(db.Model,UserMixin):
     decks = db.relationship('Deck')#stores all the decks that the owner owns, in the parents class
 
     #ADD TIMEin utc from vid and check if they alll match desihnAND RE-EVULATE RELATIONSHIPS
+    # def __repr__(self):
+    #     return '<User %r>' % self.username
