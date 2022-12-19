@@ -3,7 +3,7 @@ from flask import Blueprint, render_template,request,url_for,redirect,flash
 auth = Blueprint('auth', __name__)
 
 
-#
+
 
 def check_email(email):
     '''
@@ -17,7 +17,7 @@ def check_email(email):
     elif "@" not in email:
         error = "Email must be valid"
     elif "." not in email:
-       error= "Email must have a ."
+        error= "Email must have a ."
     elif " " in email:
         error = "Email must not contain spaces"
 
@@ -149,8 +149,7 @@ def Register():
                 return redirect(url_for('decks.Decks'))
             else:
                 try:
-                    #If the mutltiple functions return error message seperate them with a comma, if they are empty do not add a comma
-                    
+                    #If the mutltiple functions return error message seperate them with a comma, if they are empty do not add a comma 
                     error = check_email(email)[1] + check_username(username)[1] + check_password(password,confirm_password)[1]
                     flash(error,category='error')
                     return render_template("register.html",error=error)
