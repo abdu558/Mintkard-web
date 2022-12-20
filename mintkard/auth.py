@@ -91,7 +91,9 @@ def login():
             password = request.form.get('password')
             #If they are in the database, log them in
             #If they are not in the database, return an error to create an account
-            if email=='bob@gmail.com' and password=='bob':
+
+            #if email=='bob@gmail.com' and password=='bob':
+
             if email == User.query.filter_by(email=email).first().email and check_password_hash(User.query.filter_by(email=email).first().password,password)[0]:#Why 0
                 flash('You were successfully logged in')
                 return redirect(url_for('decks.Decks'))

@@ -58,20 +58,19 @@
     </nav>
 
 
-
+    <!--jinja_env = Environment(extensions=['jinja2.ext.loopcontrols'])-->
     {% with messages = get_flashed_messages(with_categories=true) %}
     <div class="container mt-3">
         {% for category, message in messages %}
         <!--If there are more than 2 errors/flashes than it would not display them, it would only display the first 2 flashes-->
-        {% if loop.index > 2 %}
-            {% break %}
-        {% endif %}
         <div class="alert alert-{{ category }}" role="alert">
             {{ message }}
         </div>
         {% endfor %}
     </div>
     {% endwith %}
+    <!---Make a for loop that breaks after the second loop-->
+    
 
 
     <div class="container mt-5">
