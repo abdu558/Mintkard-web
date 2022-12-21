@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from os import path
+from flask_login import LoginManager
 
 db = SQLAlchemy()
 
@@ -20,5 +22,10 @@ def create_app():
     #This will add /decks before all routes in the decks file
     app.register_blueprint(decks, url_prefix='/decks')
 
+    from .models import User, Deck, Card
 
+    if not path.exists('mintkard/data.db'):
+        print('database has been created')
+        with app.app_context():
+            db.create_all()
     return app

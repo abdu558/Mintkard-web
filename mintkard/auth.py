@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template,request,url_for,redirect,flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User #Import the User class from the models file
+from .models import User
+from flask_login import login_user,login_required,logout_user,current_user
+from . import db #Import the User class from the models file
 #CHECK IF ABOVE ONE IS CORRECT
 
 #flask setup code that registers auth file with init file/app
@@ -16,7 +18,7 @@ def check_email(email):
     if true return '' instead of None as it will be easier to check for errors in the error variable
     '''
     error = False
-    if len(email) < 6 :
+    if len(email) < 6:
         error = "Email must be at least 5 characters"
     elif "@" not in email:
         error = "Email must be valid"
@@ -96,6 +98,7 @@ def login():
 
             if email == User.query.filter_by(email=email).first().email and check_password_hash(User.query.filter_by(email=email).first().password,password)[0]:#Why 0
                 flash('You were successfully logged in')
+
                 return redirect(url_for('decks.Decks'))
             else:
                 flash('Email or password is incorrect',category='error')
@@ -150,10 +153,11 @@ def Register():
                     flash('Username already in use',category='error')
                     return redirect(url_for('auth.register'))
 
-                #ADD TO DATABASE
+                #ADD TO DATABASE and come up with an id
                 new_user = User(username=username,email=email,password=generate_password_hash(password,method='sha256'))
                 db.session.add(new_user)
                 db.session.commit()
+                login_user(new_user,remember=True)#Changes remember me to the option of ticked
                 flash('Account successfully created')
                 return redirect(url_for('decks.Decks'))
             else:

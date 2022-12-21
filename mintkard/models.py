@@ -4,25 +4,41 @@ from datetime import datetime #Allows the storing of the time of each card's cre
 from sqlalchemy.sql import func#can be delted if you dont use time from it
 #one to many uses foreign keys only
 #db.model is a SQLALCHEMY MODEL
-class Deck(db.Model):
+# class Deck(db.Model,UserMixin):
+#     id = db.Column(db.Integer, primary_key=True)
+#     Name = db.Column(db.String(300))
+#     date = db.Column(db.DateTime(timezone=True),default=func.now())#func gets current date and time and stores it as a default value
+#     #Store the foregin key in the child object for the parent, Classname(lower case).primarykey column name
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+#     children_deck = db.relationship('Deck')
+#     cards = db.relationship('Card')
+
+class Deck(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String('300'))
-    date = db.Column(db.DateTime(timezone=True),default=func.now())#func gets current date and time and stores it as a default value
-    #Store the foregin key in the child object for the parent, Classname(lower case).primarykey column name
+    Name = db.Column(db.String(300))
+    date = db.Column(db.DateTime(timezone=True),default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('deck.id'))
+    children_deck = db.relationship('Deck',
+                                    backref=db.backref('parent', remote_side=[id]),
+                                    primaryjoin='Deck.parent_id == Deck.id')
     cards = db.relationship('Card')
+
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)#Primary key
-    Question = db.Column(db.String('1000'))
-    Answer = db.Column(db.String('1000'))
+    Question = db.Column(db.String(1000))
+    Answer = db.Column(db.String(1000))
+    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     #[PUT INSIDE ANSWER?!?!]image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     date = db.Column(db.DateTime(timezone=True),default=func.now())#func gets current date and time and stores it as a default value
     #date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     #Store the foregin key in the child object for the parent, Classname(lower case).primarykey column name
     deck_id = db.Column(db.Integer, db.ForeignKey('deck.id'))
     #content = db.Column(db.Text, nullable=False)
-
+    #user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # def __repr__(self):
+    #     return f"User('{self.username}', '{self.email}', '{self.image_file}')"
     # def __repr__(self):
     #     return f"Post('{self.title}', '{self.date_posted}')"
 
