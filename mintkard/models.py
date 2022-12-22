@@ -15,13 +15,13 @@ from sqlalchemy.sql import func#can be delted if you dont use time from it
 
 class Deck(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(300))
-    date = db.Column(db.DateTime(timezone=True),default=func.now())
+    Name = db.Column(db.String(300),nullable=False)
+    date = db.Column(db.DateTime(timezone=True),default=func.now())#
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    parent_id = db.Column(db.Integer, db.ForeignKey('deck.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('deck.id'))#This is the foreign key for the parent deck
     children_deck = db.relationship('Deck',
                                     backref=db.backref('parent', remote_side=[id]),
-                                    primaryjoin='Deck.parent_id == Deck.id')
+                                    primaryjoin='Deck.parent_id == Deck.id')#This is the relationship for the child deck, the backref is the parent deck, the primaryjoin is the foreign key for the child deck
     cards = db.relationship('Card')
 
 

@@ -110,7 +110,7 @@ def login():
 
 
 @auth.route('/register',methods=['GET','POST'])
-def Register():
+def register():
     '''
     This function will get the data from the template register.html and would get the data by the name in the html form, it will check if the fields are filled out
     It will also will check if the email,username and passwords are valid, if not they would be redirected to the register page with an error
@@ -157,7 +157,7 @@ def Register():
                 new_user = User(username=username,email=email,password=generate_password_hash(password,method='sha256'))
                 db.session.add(new_user)
                 db.session.commit()
-                login_user(new_user,remember=True)#Changes remember me to the option of ticked
+                #login_user(new_user,remember=True)#Changes remember me to the option of ticked
                 flash('Account successfully created')
                 return redirect(url_for('decks.Decks'))
             else:

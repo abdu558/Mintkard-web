@@ -1,14 +1,10 @@
-from flask import Blueprint, render_template
+from flask import  Flask, Blueprint, render_template
 
 views = Blueprint('views', __name__)
 
 #This is the home page, where / and /home will both lead to the home page
 @views.route('/')
 @views.route('/home')
-def Home():
+def home():
     return render_template("home.html")
-
-@views.route('/josh')
-def josh():
-    return render_template("josh.html")
 
