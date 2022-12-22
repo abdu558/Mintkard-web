@@ -10,6 +10,14 @@ def create_app():
     app.config['SECRET_KEY'] = '/B?E(G+KbPeShVmYq3t6w9z$C&F)J@Mc'
     app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
     db.init_app(app)
+
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(id):
+        return User.get(id)
     
     from .views import views
     from .auth import auth
@@ -21,6 +29,8 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/auth')
     #This will add /decks before all routes in the decks file
     app.register_blueprint(decks, url_prefix='/decks')
+
+    
 
     from .models import User, Deck, Card
 

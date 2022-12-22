@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template
+from . import db
+
 
 decks = Blueprint('decks', __name__)
 
