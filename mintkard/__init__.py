@@ -34,8 +34,11 @@ def create_app():
 
     from .models import User, Deck, Card
 
-    if not path.exists('mintkard/data.db'):
+    app.app_context().push()
+    print(User.query.all())
+    if not path.exists('/instances/data.db'):
         print('database has been created')
         with app.app_context():
             db.create_all()
+            print('database has been created')
     return app

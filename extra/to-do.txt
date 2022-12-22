@@ -80,3 +80,5 @@ make the search button only appear in the decks page add html tags
 
 
 https://rlrocha.medium.com/validation-mask-through-regex-with-python-4b03993ad1ab
+
+flask shell

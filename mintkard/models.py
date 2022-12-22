@@ -24,6 +24,8 @@ class Deck(db.Model,UserMixin):
                                     primaryjoin='Deck.parent_id == Deck.id')#This is the relationship for the child deck, the backref is the parent deck, the primaryjoin is the foreign key for the child deck
     cards = db.relationship('Card')
 
+    def __repr__(self):
+        return f"Deck('{self.name}','{self.children_deck}')"
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)#Primary key
