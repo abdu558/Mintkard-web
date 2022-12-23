@@ -58,3 +58,5 @@ class User(db.Model,UserMixin):
     #ADD TIMEin utc from vid and check if they alll match desihnAND RE-EVULATE RELATIONSHIPS
     # def __repr__(self):
     #     return '<User %r>' % self.username
+    def __repr__(self):
+        return f"User('{self.id}', '{self.username}','{self.email}','{self.password}')"

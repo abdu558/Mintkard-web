@@ -18,9 +18,9 @@ def check_email(email):
     if true return '' instead of None as it will be easier to check for errors in the error variable
     '''
     error = False
-    if len(email) < 6:
-        error = "Email must be at least 5 characters"
-    elif "@" not in email:
+    # if len(email) < 6:
+    #     error = "Email must be at least 5 characters"
+    if "@" not in email:
         error = "Email must be valid"
     elif "." not in email:
         error= "Email must have a ."
@@ -101,10 +101,10 @@ def login():
 
                 return redirect(url_for('decks.Decks'))
             else:
-                flash('Email or password is incorrect',category='error')
+                flash('Email or password is incorrect',category='danger')
 
         else:
-            flash('Please fill out all fields',category='error')
+            flash('Please fill out all fields',category='danger')
 
     return render_template("login.html")
 
@@ -128,7 +128,7 @@ def register():
         #     password = request.form.get('password1')
         #     confirm_password = request.form.get('password2')
         # except:
-        #     flash('Please fill out all fields',category='error')
+        #     flash('Please fill out all fields',category='danger')
         #     return redirect(url_for('auth.register'))
 
         #Checks if all fields are filled out
@@ -147,31 +147,31 @@ def register():
                 #If both are not in the database, add them to the database
                 #If either are in the database, return an error
                 if email == 'bob@gmail.com':
-                    flash('Email already in use',category='error')
+                    flash('Email already in use',category='danger')
                     return redirect(url_for('auth.register'))
                 if username == 'bob':
-                    flash('Username already in use',category='error')
+                    flash('Username already in use',category='danger')
                     return redirect(url_for('auth.register'))
 
                 #ADD TO DATABASE and come up with an id
                 new_user = User(username=username,email=email,password=generate_password_hash(password,method='sha256'))
                 db.session.add(new_user)
                 db.session.commit()
-                #login_user(new_user,remember=True)#Changes remember me to the option of ticked
-                flash('Account successfully created')
+                login_user(new_user,remember=True)#Changes remember me to the option of ticked
+                flash('Account successfully created',category='success')
                 return redirect(url_for('decks.Decks'))
             else:
                 try:
                     #If the mutltiple functions return error message seperate them with a comma, if they are empty do not add a comma 
                     error = check_email(email)[1] + check_username(username)[1] + check_password(password,confirm_password)[1]
-                    flash(error,category='error')
+                    flash(error,category='danger')
                     return render_template("register.html",error=error)
                 except:
-                    flash('ERROR PLEASE TRY AGAIN',category='error')
+                    flash('ERROR PLEASE TRY AGAIN',category='danger')
 
                 return render_template("register.html")
 
-        flash('Please fill out all fields',category='error')
+        flash('Please fill out all fields',category='danger')
         
     return render_template("register.html")
 

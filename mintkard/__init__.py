@@ -14,10 +14,6 @@ def create_app():
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
-
-    @login_manager.user_loader
-    def load_user(id):
-        return User.get(id)
     
     from .views import views
     from .auth import auth
@@ -34,11 +30,14 @@ def create_app():
 
     from .models import User, Deck, Card
 
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(id)
+    
     app.app_context().push()
     print(User.query.all())
-    if not path.exists('/instances/data.db'):
-        print('database has been created')
-        with app.app_context():
-            db.create_all()
-            print('database has been created')
+    # if not path.exists('/data.db'):
+    #     with app.app_context():
+    #         db.create_all()
+    #         print('database has been created')
     return app

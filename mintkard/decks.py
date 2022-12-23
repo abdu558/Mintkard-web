@@ -14,8 +14,8 @@ def Browse():
     return render_template("browse.html")
 
 
-@decks.route('/study')
-def Study():
+@decks.route('/study/<int:id>')
+def Study(id):
     return render_template("study.html")
 
 # @app.route("/user/<int:id>")
