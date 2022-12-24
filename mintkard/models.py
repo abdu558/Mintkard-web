@@ -32,11 +32,10 @@ class Card(db.Model):
     Question = db.Column(db.String(1000))
     Answer = db.Column(db.String(1000))
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
-    #[PUT INSIDE ANSWER?!?!]image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     date = db.Column(db.DateTime(timezone=True),default=func.now())#func gets current date and time and stores it as a default value
     #date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     #Store the foregin key in the child object for the parent, Classname(lower case).primarykey column name
-    deck_id = db.Column(db.Integer, db.ForeignKey('deck.id'))
+    deck_id = db.Column(db.Integer, db.ForeignKey('deck.id'))#One to many relationship with decks
     #content = db.Column(db.Text, nullable=False)
     #user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     # def __repr__(self):

@@ -98,7 +98,7 @@ def login():
 
             if email == User.query.filter_by(email=email).first().email and check_password_hash(User.query.filter_by(email=email).first().password,password)[0]:#Why 0
                 flash('You were successfully logged in')
-
+                login_user(user)
                 return redirect(url_for('decks.Decks'))
             else:
                 flash('Email or password is incorrect',category='danger')

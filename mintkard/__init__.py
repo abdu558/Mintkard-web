@@ -11,9 +11,11 @@ def create_app():
     app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
     db.init_app(app)
 
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
-    login_manager.init_app(app)
+    #Set up for the loginmanager for flask
+    login_manager = LoginManager()    
+    login_manager.login_view = 'auth.login' #Where does flask redirect the user if they are not logged in
+    login_manager.login_message = "Don't miss out on the chance to succeed academically! Our spaced repetition flashcard app is proven to help you learn and retain information effectively. Simply login to access this page and get started on your journey to academic success."
+    login_manager.init_app(app)#telling login manager which app its using
     
     from .views import views
     from .auth import auth
@@ -30,6 +32,10 @@ def create_app():
 
     from .models import User, Deck, Card
 
+
+    login_manager.init_app(app)#telling login manager which app its using
+
+    #tells loginmanager how the user is loaded by looking at the primary key, looks for the primary key by default so no need to specify what id equals
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(id)
