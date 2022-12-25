@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/static/logo.ico">
     <title>Home</title>
 </head>
 
@@ -20,9 +21,15 @@
                 aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
             <div id="navbarResponsive" class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item nav-link"><a class="nav-link active" href="/decks/decks"
+                        style="font-family: Cabin, sans-serif;">DECKS</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link" href="decks/browse">Browse</a></li>
+                    {% else %}
                     <li class="nav-item nav-link"><a class="nav-link active" href="/auth/register"
-                            style="font-family: Cabin, sans-serif;">GET STARTED</a></li>
+                        style="font-family: Cabin, sans-serif;">GET STARTED</a></li>
                     <li class="nav-item nav-link"><a class="nav-link" href="auth/login">LOGIN</a></li>
+                    {% endif %}
                     <li class="nav-item nav-link"><a class="nav-link" href="#about">ABOUT</a></li>
                 </ul>
             </div>

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template,request,url_for,redirect,flash
+from flask import Blueprint, render_template,request,url_for,redirect,flash #Delete markup later its used to send html code with flask 
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
 from flask_login import login_user,login_required,logout_user,current_user
@@ -75,6 +75,22 @@ def check_password(password,confirm_password):
     else:
         return True, ''
 
+def check_email_exists(email):
+    '''
+    Checks if the email is already in the database
+    Returns true if an email match is found, else it would return false
+    '''
+
+    if User.query.filter_by(email=email).first():
+        return True;return False
+
+def check_username_exists(username):
+    '''
+    Checks if the username is already in the database
+    Returns true if a username match is found, else it would return false
+    '''
+    if User.query.filter_by(username=username).first():
+        return True;return False
 
 #methods is get by default, adding post will allow the submission of login info without it showing up in link
 @auth.route('/login',methods=['GET','POST'])
@@ -95,13 +111,32 @@ def login():
             #If they are not in the database, return an error to create an account
 
             #if email=='bob@gmail.com' and password=='bob':
-
-            if email == User.query.filter_by(email=email).first().email and check_password_hash(User.query.filter_by(email=email).first().password,password)[0]:#Why 0
-                flash('You were successfully logged in')
-                login_user(user)
-                return redirect(url_for('decks.Decks'))
+            if not check_email_exists(email):
+                flash('Email is not registered, Register instead?',category = 'danger')
+                return redirect(url_for('auth.register'))
+            
+            if email == User.query.filter_by(email=email).first().email and check_password_hash(User.query.filter_by(email=email).first().password,password):#Why 0
+                print('------')
+                print(User.query.filter_by(email=email).first().password,password)
+                print(User.query.filter_by(email=email))
+                print(User.query.filter_by(email=email).first())
+                print('-------')
+                #print(check_password_hash(User.query.filter_by(email=email).first().password,password)[0])
             else:
                 flash('Email or password is incorrect',category='danger')
+                return redirect(url_for('auth.register'))
+
+
+            try:
+                user = User.query.filter_by(email=email).first()
+                login_user(email)
+            except Exception as e:
+                flash('Error logging in user: {}'.format(e),category='danger')
+                return redirect(url_for('auth.login'))
+
+            flash('You were successfully logged in')
+            return redirect(url_for('decks.decks_route'))
+
 
         else:
             flash('Please fill out all fields',category='danger')
@@ -146,26 +181,31 @@ def register():
                 #Check if the username is already in the database
                 #If both are not in the database, add them to the database
                 #If either are in the database, return an error
-                if email == 'bob@gmail.com':
-                    flash('Email already in use',category='danger')
-                    return redirect(url_for('auth.register'))
-                if username == 'bob':
-                    flash('Username already in use',category='danger')
+
+                if check_email_exists(email):
+                    flash('Email already exists, Login instead?',category = 'danger')
                     return redirect(url_for('auth.register'))
 
+                if check_username_exists(username):
+                    flash('Username already exists, choose another',category='danger')
+                    return redirect(url_for('auth.register'))
+                
                 #ADD TO DATABASE and come up with an id
-                new_user = User(username=username,email=email,password=generate_password_hash(password,method='sha256'))
-                db.session.add(new_user)
-                db.session.commit()
+                try:
+                    new_user = User(username=username,email=email,password=generate_password_hash(password,method='sha256'))
+                    db.session.add(new_user)
+                    db.session.commit()
+                except:
+                    flash('Error in creating the account, please try again')
                 login_user(new_user,remember=True)#Changes remember me to the option of ticked
                 flash('Account successfully created',category='success')
-                return redirect(url_for('decks.Decks'))
+                return redirect(url_for('decks.decks_route'))
             else:
                 try:
                     #If the mutltiple functions return error message seperate them with a comma, if they are empty do not add a comma 
                     error = check_email(email)[1] + check_username(username)[1] + check_password(password,confirm_password)[1]
                     flash(error,category='danger')
-                    return render_template("register.html",error=error)
+                    return render_template("register.html")
                 except:
                     flash('ERROR PLEASE TRY AGAIN',category='danger')
 
@@ -173,9 +213,16 @@ def register():
 
         flash('Please fill out all fields',category='danger')
         
+    #Returns the template to users who visit /register link
     return render_template("register.html")
 
-
+#Add a button to do this
+@login_required
 @auth.route('/logout')
-def Logout():
-    return render_template("logout.html")
+def logout():
+    '''
+    This will log out a user
+    '''
+    logout_user()
+    flash('Successfully logged out')
+    return redirect(url_for('auth.login'))

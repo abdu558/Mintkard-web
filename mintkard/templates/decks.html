@@ -5,5 +5,34 @@
 
 
 {% block body %}
-
+<div class="container mt-5">
+  <div class="row">
+    {% for i in range(5) %}
+    <div class="col-sm-4">
+      <div class="card" style="margin-bottom: 2rem">
+        <img src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" class="card-img-top" alt="Deck 1">
+        <div class="card-body">
+          <h5 class="card-title">Deck 1</h5>
+          <p class="card-text">Description of Deck 1</p>
+          <a href="#" class="btn btn-primary">Start</a>
+          <a href="#" class="btn btn-secondary">Edit</a>
+          <a href="#" class="btn btn-danger">Delete</a>
+        </div>
+        <div class="btn-group dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            Subdecks
+          </button>
+          <ul class="dropdown-menu" style="width:100%">
+            <li><a class="dropdown-item" href="#">Subdeck 1</a></li>
+            <li><a class="dropdown-item" href="#">Subdeck 2</a></li>
+            <li><a class="dropdown-item" href="#">Subdeck 3</a></li>
+          </ul>
+        </div>        
+      </div>
+    </div>
+    {% endfor%}
+  </div>
+  <!--margin bottom is to add space to the bottom of the screen and stop the button being stuck on the bottom-->
+  <button style = "margin-bottom: 2rem" type="button" class="btn btn-success mt-3 btn-lg">Add New Deck</button>
+</div>
 {% endblock %}

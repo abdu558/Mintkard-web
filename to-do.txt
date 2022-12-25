@@ -84,3 +84,9 @@ https://rlrocha.medium.com/validation-mask-through-regex-with-python-4b03993ad1a
 flask shell
 
 Name can be changed to apollo
+
+ADD USER'S NAME TO NAV BAR IN THE LEFT
+
+add login required to entire decks page and find out how to add to whole page/blueprint
+
+<!--the {{}} is a variable whereas {% %} is a command e,g. for loops etc, its jinja2 which is what flask's rendering uses-->

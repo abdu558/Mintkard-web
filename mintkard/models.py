@@ -13,10 +13,18 @@ from sqlalchemy.sql import func#can be delted if you dont use time from it
 #     children_deck = db.relationship('Deck')
 #     cards = db.relationship('Card')
 
-class Deck(db.Model,UserMixin):
+'''
+This is the database, it's sqlalchemy
+in future add classes and look at aqa and add all the OOP concepts e.g. encapsulation etc
+WHY DOES ARD NOT HAVE USERMIXIN??? AND WHY DOES DECK HAVE IT
+CHECK IF IMAGE STORING THIS WAY IS THE BEST WAY
+CHECK IF IS_AUTHENTICATED FUNCTION AND GET_ID FUNCTION IS REQUIRED TO HAVE DESPIRE USERMIXIN BEING INHERITED????
+'''
+class Deck(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     Name = db.Column(db.String(300),nullable=False)
-    date = db.Column(db.DateTime(timezone=True),default=func.now())#
+    date = db.Column(db.DateTime(timezone=True),default=func.now())
+    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     parent_id = db.Column(db.Integer, db.ForeignKey('deck.id'))#This is the foreign key for the parent deck
     children_deck = db.relationship('Deck',
@@ -43,6 +51,7 @@ class Card(db.Model):
     # def __repr__(self):
     #     return f"Post('{self.title}', '{self.date_posted}')"
 
+
 class User(db.Model,UserMixin):
     """
     Class for the User in the database that is the primary table, that has a child class of deck and is a foreign key in decks class
@@ -53,6 +62,7 @@ class User(db.Model,UserMixin):
     email = db.Column(db.String(75),unique=True)
     password = db.Column(db.String(150))
     decks = db.relationship('Deck')#stores all the decks that the owner owns, in the parents class
+
 
     #ADD TIMEin utc from vid and check if they alll match desihnAND RE-EVULATE RELATIONSHIPS
     # def __repr__(self):
