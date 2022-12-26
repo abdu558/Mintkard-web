@@ -6,12 +6,26 @@
 
 {% block body %}
 <h1 >Edit</h1>
+
 <div class="container-fluid">
-  <!--width and height of the card-->
-  <div class="card mx-auto" style="width: 90%; height: 80vh;">
+  <!--width and height of the card height was 80vh-->
+  <div class="card mx-auto" style="width: 90%; height: 100%;">
     <div class="card-body mx-4">
-      <h5 class="card-title"></h5><input type="text" style="width: 100%;" id="card-title" value="Card Title"></h5>
-      <p class="card-text"><textarea style="width: 100%;"id="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</textarea></p>
+      <h5 class="card-title"></h5><input type="text" style="width: 100%;"id="card-title" value="Card Title"></h5>
+      <p class="card-text"><textarea style="width: 100%" id="card-text">
+        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
+        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
+        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
+        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
+        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
+        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
+        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
+        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
+      Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
+      Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
+      Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
+      Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
+      </textarea></p>
       
     </div>
     <!--p is padding and 2 is the size of the padding-->
@@ -23,5 +37,10 @@
   </div>
   <a href="#" class="btn btn-primary m-3">Update</a>
 </div>
+<script>
+  window.onload = function() {
+    document.getElementById('card-text').rows = document.getElementById('card-text').scrollHeight / 30;
+  }
+</script>
 
 {% endblock %}
