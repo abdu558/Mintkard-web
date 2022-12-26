@@ -46,24 +46,36 @@ overflow-y:auto; /* if the flashcard is more than the maximum height this elemen
     </div>
   
   <!-- Flashcard cards -->
-<!--m-2 add a margin element to each flashcard in all 4 sides -->
-<div class="row m-2" id="flashcard-cards">
-  {% for i in range(5) %}
-  <!--On small screen, there will be 6 cards and on medium screen there will be 4-->
-  <div class="col-sm-6 col-md-4" style = "margin-bottom: 10px;">
+<!-- m-3 is margin for all sides of the flaschcard -->
+<div class="row m-3" id="flashcard-cards">
+  <div class="col-sm-6 col-md-4">
     <div class="card" id="revision-card">
-      <div class="card-footer d-flex justify-content-between">
-        <button class="btn btn-secondary" id="edit">Edit</button>
-        <button class="btn btn-danger" id="delete">Delete</button>
-      </div>
       <div class="card-body">
         <h5 class="card-title">Flashcard 1</h5>
         <p class="card-text">Question: What is the capital of France?</p>
         <p class="card-text">Answer: A Javascript Developer & Linux enthusiast with 4 years of industrial experience and proven know-how to combine creative and usability viewpoints resulting in world-class web applications. I have experience working with Vue, React & Node.js & currently working on article writing and video creation.</p>
       </div>
+      <div class="card-footer d-flex justify-content-between">
+        <button class="btn btn-secondary" id="edit">Edit</button>
+        <button class="btn btn-danger" id="delete">Delete</button>
+      </div>
     </div>
   </div>
-  {% endfor%}
+  <div class="col-sm-6 col-md-4">
+    <div class="card" id="revision-card">
+      <div class="card-body">
+        <h5 class="card-title">Flashcard 2</h5>
+        <p class="card-text">Question: What is the capital of Japan?</p>
+        <p class="card-text">Answer: Tokyo</p>
+      </div>
+      <div class="card-footer d-flex justify-content-between">
+        <button class="btn btn-secondary" id = "delete">Edit</button>
+        <button class="btn btn-danger" id ="delete">Delete</button>
+      </div>
+    </div>
+  </div>
+  <!-- Additional flashcard cards -->
+  <!-- Add as many cards as needed -->
 </div>
 
 {% endblock %}

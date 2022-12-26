@@ -21,3 +21,6 @@ This model includes two classes: Deck and Card. The Deck class represents a deck
 The Card class represents an individual flashcard and has a front field for the front of the card (the question) and a back field for the back of the card (the answer). It also has a deck_id field that stores the ID of the deck to which the card belongs.
 
 This model allows for decks to be nested within other decks to create a hierarchy of sub-decks, and it also allows for cards to be associated with a specific deck.
+
+
+style="min-width:400px;width:40vw;height: 80vh;"

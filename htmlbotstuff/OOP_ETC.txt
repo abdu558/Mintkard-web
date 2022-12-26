@@ -1,0 +1,95 @@
+from datetime import datetime, timedelta
+from typing import List, Tuple
+
+class IFlashcard:
+    def __init__(self, question: str, answer: str):
+        self.question = question
+        self.answer = answer
+        self.last_reviewed = datetime.now()
+
+    def review(self) -> bool:
+        pass  # Implement review logic here
+
+class Flashcard(IFlashcard):
+    def __init__(self, question: str, answer: str):
+        super().__init__(question, answer)
+
+class MultipleChoiceFlashcard(IFlashcard):
+    def __init__(self, question: str, answer: str, choices: List[str]):
+        super().__init__(question, answer)
+        self.choices = choices
+
+class Deck:
+    def __init__(self, name: str, flashcards: List[IFlashcard]):
+        self.name = name
+        self.flashcards = flashcards
+
+class User:
+    def __init__(self, username: str, password: str, decks: List[Deck]):
+        self.username = username
+        self.password = password
+        self.decks = decks
+
+def review_flashcards(flashcards: List[IFlashcard]) -> List[Tuple[IFlashcard, bool]]:
+    reviewed_flashcards = []
+    for flashcard in flashcards:
+        result = flashcard.review()
+        reviewed_flashcards.append((flashcard, result))
+    return reviewed_flashcards
+
+def review_due(flashcard: IFlashcard) -> bool:
+    review_interval = timedelta(days=1)  # Review flashcards every day
+    return flashcard.last_reviewed + review_interval <= datetime.now()
+
+def review_deck(deck: Deck) -> List[Tuple[IFlashcard, bool]]:
+    flashcards_to_review = [flashcard for flashcard in deck.flashcards if review_due(flashcard)]
+    return review_flashcards(flashcards_to_review)
+
+def review_user(user: User) -> List[Tuple[IFlashcard, bool]]:
+    reviewed_flashcards = []
+    for deck in user.decks:
+        reviewed_flashcards.extend(review_deck(deck))
+    return reviewed_flashcards
+
+# Example usage:
+
+mc_flashcard = MultipleChoiceFlashcard("What is the capital of France?", "Paris", ["Paris", "London", "Madrid"])
+flashcards = [mc_flashcard, Flashcard("What is the capital of Japan?", "Tokyo")]
+deck = Deck("Country Capitals", flashcards)
+user = User("user1", "password", [deck])
+review_results = review_user(user)
+
+
+n this example, we define an IFlashcard interface with a question, answer, and last_reviewed attribute, and a review method that is used to test the user's knowledge of the flashcard. We then define two classes, Flashcard and MultipleChoiceFlashcard, that implement the IFlashcard interface and provide specific implementations of the review method for different types of flashcards.
+
+We also define a Deck class that represents a collection of flashcards, and a User class that represents a user of the app with a list of decks. Finally, we define several functions that use the classes and interfaces to review flashcards for a specific user or deck, or for a list of flashcards in general.
+
+Overall, this code demonstrates how you can use OOP concepts such as interfaces, inheritance, and polymorphism to design a flexible and modular spaced-repetition flashcard app using Flask.
+
+------------------------------------------------------------------------------------------------------
+
+DFS traversal implmentation:
+=
+
+Graph traversal refers to the process of visiting all the nodes in a graph, following the edges between them. There are several different ways to traverse a graph, depending on the specific requirements of your application. Some common traversal algorithms include breadth-first search (BFS) and depth-first search (DFS).
+
+In a BFS traversal, the graph is traversed level by level, starting from the root node. The algorithm visits all the nodes at the current level before moving on to the next level. This can be useful for finding the shortest path between two nodes or for performing a topological sort.
+
+In a DFS traversal, the graph is traversed recursively, following a path as far as possible before backtracking. This can be useful for finding all the paths between two nodes or for performing a topological sort in reverse.
+
+To implement a graph traversal in a Flask app, you can use a graph data structure such as an adjacency list or adjacency matrix to represent the graph, and then use a traversal algorithm to visit the nodes in the desired order. For example, you might use a recursive function to implement a DFS traversal, or a queue to implement a BFS traversal.
+
+Here is an example of a recursive DFS traversal implemented in Python:
+
+def dfs(graph, node, visited):
+  visited.add(node)
+  for neighbor in graph[node]:
+    if neighbor not in visited:
+      dfs(graph, neighbor, visited)
+
+
+This function takes a graph represented as an adjacency list, a starting node, and a set of visited nodes. It marks the starting node as visited and then recursively visits all of its neighbors that have not yet been visited.
+
+You can use a similar approach to implement a BFS traversal using a queue to keep track of the nodes that still need to be visited.
+
+-----------------------------------------------------------------------------------------

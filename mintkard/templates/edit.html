@@ -5,22 +5,22 @@
 
 
 {% block body %}
-
-
-
-<h1 >Title of deck</h1>
+<h1 >Edit</h1>
 <div class="container-fluid">
-  <div class="card mx-auto" style="min-width:400px;width:40vw;height: 80vh;">
-    <div class="card-body">
-      <h5 class="card-title">Card Title</h5>
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      <a href="#" class="btn btn-primary">Go somewhere</a>
+  <!--width and height of the card-->
+  <div class="card mx-auto" style="width: 90%; height: 80vh;">
+    <div class="card-body mx-4">
+      <h5 class="card-title"></h5><input type="text" style="width: 100%;" id="card-title" value="Card Title"></h5>
+      <p class="card-text"><textarea style="width: 100%;"id="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</textarea></p>
+      
     </div>
-    <img class="card-img-bottom" src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" alt="Card image cap" style="max-height: 200px;object-fit: contain">
-    <!--IMAGE IS GOING DOWN TOO FAR AND MAYBE CHANGE THE RANGE TO JUST 4 BUTTONS-->
+    <img class="card-img-bottom p-2" src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" alt="Card image cap" style="max-height: 200px;object-fit: contain">
+    <!--ADD BUTTON TO UPLOAD NEW IMAGE-->
     <div class="card-footer text-muted">
-      <input type="range" class="custom-range" id="car_rating"min="1" max="4" step="1">
+      <input type="file" id="card-image" accept="image/*">
     </div>
   </div>
+  <a href="#" class="btn btn-primary m-3">Update</a>
 </div>
+
 {% endblock %}
