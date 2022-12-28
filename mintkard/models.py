@@ -33,7 +33,7 @@ class Deck(db.Model):
     cards = db.relationship('Card')
 
     def __repr__(self):
-        return f"Deck('{self.name}','{self.children_deck}')"
+        return f"Deck('{self.name}','{self.children_deck}','{self.parent_id}')"
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)#Primary key

@@ -1,9 +1,51 @@
 {% extends 'layout.html' %}
 
 
-  <title>{% block title %}Browse{% endblock %}</title>
+  <title>{% block title %}Create card{% endblock %}</title>
 
 
 {% block body %}
+
+<h1 >Create Card</h1>
+<form method="POST">
+
+<div class="container-fluid">
+  <!--width and height of the card height was 80vh-->
+  <div class="card mx-auto" style="width: 90%; height: 110%;">
+    <!--mx-4 is margin left and right with the amount 4-->
+    <div class="card-body mx-4">
+      <div class="form-group">
+        <label for="deck-filter">Deck:</label>
+        <select class="form-control" id="deck-filter">
+          <option>All</option>
+          <option>Deck 1</option>
+          <option>Deck 2</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="subdeck-filter">Subdeck:</label>
+        <select class="form-control" id="subdeck-filter">
+          <option>All</option>
+          <option>Subdeck 1</option>
+          <option>Subdeck 2</option>
+        </select>
+      </div>
+      <h5 class="card-title my-3"></h5><input type="text" style="width: 100%;"id="card-title" value="Card Title"></h5>
+      <br>
+      <p class="card-text my-2"><textarea style="width: 100%" id="card-text">
+        This is example text, where text/answer is put in and above the question is put and the deck where this will be is put on
+      </textarea></p>
+      
+    </div>
+    <!--p is padding and 2 is the size of the padding-->
+    <img class="card-img-bottom p-2" src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" alt="Card image cap" style="max-height: 200px;object-fit: contain">
+    <!--ADD BUTTON TO UPLOAD NEW IMAGE-->
+    <div class="card-footer text-muted">
+      <input type="file" id="card-image" accept="image/*">
+    </div>
+  </div>
+  <a href="#" class="btn btn-primary m-3" type="submit">Add new card</a>
+</div>
+</form>
 
 {% endblock %}
