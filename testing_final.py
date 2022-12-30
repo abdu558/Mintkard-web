@@ -143,8 +143,17 @@ app.app_context().push()
 #db.session.add(student1)
 #db.session.commit()
 #deck1 = Deck(name='Geography',)
+# result = db.session.execute("SELECT * FROM User")
+# for row in result:
+#     print(row)
 
-print(student1)
+deck = Deck(name='chemistry2',user_id=1)
+db.session.add(deck)
+db.session.commit()
+print(deck)
+FlashcardManager(user_id)
+
+#print(student1)
 
     
 
