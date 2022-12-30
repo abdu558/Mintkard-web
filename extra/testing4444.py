@@ -57,22 +57,23 @@ class Card:
             return False 
             
 
-class Flashcard(Card):
-    def __init__(self,question,answer,quality:int):
-        super().__init__(question,answer,quality)
-        self.quality = quality
+# class Flashcard(Card):
+#     def __init__(self,question,answer,quality:int):
+#         super().__init__(question,answer,quality)
+        
 
 #Check if this even works, the gaps thing is a bit fiddily on how gaps will be passed when created
 class Fill_the_gaps(Card):
-    def __init__(self,question,answer,gaps,quality:int):
+    def __init__(self,answer,question,quality:int,easiness_factor,interval,is_new:bool,last_study,gaps):
         '''
         This will be another type of flashcard, a flashcard where answer is shown when reviewed, apart from some missing gaps indicated by the user
         '''
         #overrides the class inherited from, only put in items inherited
-        super().__init__(question,answer,quality)
+        super().__init__(answer,question,quality,easiness_factor,interval,is_neww,last_study)
+        self.gaps = gaps
 
 class Multi_choice(Card):
-    def __init__(self,question,answer,quality,choice:List):
+    def __init__(self,answer,question,quality:int,easiness_factor,interval,is_new:bool,last_study,choice:List):
         super().__init__(question,answer,quality)
 
 class Deck:

@@ -3,15 +3,36 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
 from flask_login import login_user,login_required,logout_user,current_user
 from . import db #Import the User class from the models file
+import re
 #CHECK IF ABOVE ONE IS CORRECT
 
 #flask setup code that registers auth file with init file/app
 auth = Blueprint('auth', __name__)
 
 
+def check_email_regex(email) -> bool:
+    '''r is raw string, this is using the re module to allow any valid character with a @ and a . in the string
+    ^ means start of string
+    [a-zA-Z0-9_.+-] means any alphabet or number and the 4 symbols which are allowed in an email
+    the + sumbol means that the length of the square brackets must be 1 character or longer, so empty spaces get rejected
+    the \ will let the period be trated as a period rather than special regex character
+    the +$ will mean it represents the endof the domain name of the email
+    
+    International emails will not work
+    '''
+    pattern = r"^[a-zA-Z0-9-`{|}_~'*+/=?!#$%&^'\u0080-\uFFFF]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    match = bool(re.fullmatch(pattern,email))
+    return match
 
+def check_password_regex(password) -> bool:
+    pattern = r'[A-Za-z0-9_.+-]'
+    return bool(re.fullmatch(pattern,password))
 
-def check_email(email):
+def check_username_regex(username) -> bool:
+    pattern = r'[A-Za-z0-9_.+-]'
+    return bool(re.fullmatch(username,pattern))
+
+def check_email(email) ->  bool:
     '''
     Check if the email is valid
     They are if statemnts as they are all independent of each other
