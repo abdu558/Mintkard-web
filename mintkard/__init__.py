@@ -11,7 +11,7 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     app.app_context().push()
-
+    
     app.config['SECRET_KEY'] = '/B?E(G+KbPeShVmYq3t6w9z6rshts$C&F)J@Mc'
     app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
     db.init_app(app)
