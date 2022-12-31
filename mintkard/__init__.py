@@ -4,11 +4,14 @@ from os import path
 from flask_login import LoginManager
 #from .models import FlashcardManager
 
-db = SQLAlchemy()
+#from .models import User, Deck, Card
 
+db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
+    app.app_context().push()
+
     app.config['SECRET_KEY'] = '/B?E(G+KbPeShVmYq3t6w9z6rshts$C&F)J@Mc'
     app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
     db.init_app(app)
@@ -62,3 +65,5 @@ def create_app():
     #         db.create_all()
     #         print('database has been created')
     return app
+
+

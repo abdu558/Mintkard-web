@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template,request,url_for,redirect,flash,current_app
+from flask import Blueprint, render_template,request,url_for,redirect,flash,current_app#,push_app_context
 from . import db
-from .models import User,Deck,Card
+from .models import User,Deck,Card#,db
 from flask_login import current_user,login_required
 from datetime import datetime, timedelta 
 from typing import List,Tuple
@@ -8,7 +8,10 @@ from typing import List,Tuple
 decks = Blueprint('decks', __name__)
 
 class FlashcardManager:
-    def __init__(self, user_id: int):
+    def __init__(self, user_id: int,app):
+        print('FlashcardManager __init__ called')
+        self.app = app
+        current_app.app_context().push()
         self.user = User.query.get(user_id)
 
 
@@ -76,6 +79,14 @@ class FlashcardManager:
             flashcards_to_review.extend(self.review_deck(subdeck.id))
         print('flashcards to review is ',flashcards_to_review)
         return self.review_flashcards(flashcards_to_review)
+
+
+current_app.app_context().push()
+
+manager = FlashcardManager(1, current_app)
+
+
+#decks = Blueprint('decks', __name__)
 
 # with current_app.test_request_context():
 #     # create the instance of the package within the blueprint

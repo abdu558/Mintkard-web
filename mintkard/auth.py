@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template,request,url_for,redirect,flash #Delete markup later its used to send html code with flask 
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
+from .models import User#,db
 from flask_login import login_user,login_required,logout_user,current_user
 from . import db #Import the User class from the models file
 import re

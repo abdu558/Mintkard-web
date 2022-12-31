@@ -6,7 +6,7 @@ from typing import List,Tuple
 from flask import Flask,current_app
 from flask_login import UserMixin
 
-
+#db = SQLAlchemy()
 
 '''
 This is the database, it's sqlalchemy
@@ -115,77 +115,77 @@ class User(db.Model,UserMixin):
 
 
 
-class FlashcardManager:
-    def __init__(self, user_id: int,app):
-        self.app = app
-        with self.app.app_context():
-            self.user = User.query.get(user_id)
+# class FlashcardManager:
+#     def __init__(self, user_id: int,app):
+#         self.app = app
+#         with self.app.app_context():
+#             self.user = User.query.get(user_id)
 
 
-    '''returns a list of decks that the user owns'''
-    def get_all_decks(self) -> List[Deck]:
-        for deck in self.user.decks:
-            print(deck)
-        return
+#     '''returns a list of decks that the user owns'''
+#     def get_all_decks(self) -> List[Deck]:
+#         for deck in self.user.decks:
+#             print(deck)
+#         return
 
-    '''returns a list of subdecks that the user owns'''
-    def get_all_subdecks(self,user:User) -> List[Deck]:
-        subdecks = []
-        for deck in user.decks:
-            subdecks.append(deck.children_deck)
-        return subdecks
+#     '''returns a list of subdecks that the user owns'''
+#     def get_all_subdecks(self,user:User) -> List[Deck]:
+#         subdecks = []
+#         for deck in user.decks:
+#             subdecks.append(deck.children_deck)
+#         return subdecks
 
-    '''returns a list of cards that the user owns'''
-    def get_all_cards(self,user:User) -> List[Card]:
-        cards = []
-        for deck in user.decks:
-            cards.append(deck.cards)
-        return cards
+#     '''returns a list of cards that the user owns'''
+#     def get_all_cards(self,user:User) -> List[Card]:
+#         cards = []
+#         for deck in user.decks:
+#             cards.append(deck.cards)
+#         return cards
 
 
-    '''
-    The following three function review_flashcards, is_card_due and review_deck are used to review the flashcards and are used and work together 
-    alongside the update_stats in card class
-    '''
-    def review_flashcards(self, flashcards: List[Card]) -> List[Tuple[Card]]:
-        reviewed_flashcards = []
-        for flashcard in flashcards:
-            print(flashcard.question)
-            #send card to flask front end
-            flashcard.update_stats()
-            flashcard.last_reviewed = datetime.now()
-            db.session.commit()
-            reviewed_flashcards.append(flashcard)
-        return reviewed_flashcards
+#     '''
+#     The following three function review_flashcards, is_card_due and review_deck are used to review the flashcards and are used and work together 
+#     alongside the update_stats in card class
+#     '''
+#     def review_flashcards(self, flashcards: List[Card]) -> List[Tuple[Card]]:
+#         reviewed_flashcards = []
+#         for flashcard in flashcards:
+#             print(flashcard.question)
+#             #send card to flask front end
+#             flashcard.update_stats()
+#             flashcard.last_reviewed = datetime.now()
+#             db.session.commit()
+#             reviewed_flashcards.append(flashcard)
+#         return reviewed_flashcards
 
-    def is_card_due(self,flashcard:Card) -> bool:
-        if flashcard.is_new == True:
-            return True
-        try:
-            review_interval = timedelta(days=flashcard.interval)#converts int to time using datetime
-            return flashcard.last_reviewed + review_interval <= datetime.now()
-        except TypeError:
-            # Handle TypeError if it's not an integer
-            print("Error: Interval must be an integer")
-            return False
-        except ValueError:
-            # Handle ValueError if its a negative integer
-            print("Error: Interval must be a positive integer")
-            return False
+#     def is_card_due(self,flashcard:Card) -> bool:
+#         if flashcard.is_new == True:
+#             return True
+#         try:
+#             review_interval = timedelta(days=flashcard.interval)#converts int to time using datetime
+#             return flashcard.last_reviewed + review_interval <= datetime.now()
+#         except TypeError:
+#             # Handle TypeError if it's not an integer
+#             print("Error: Interval must be an integer")
+#             return False
+#         except ValueError:
+#             # Handle ValueError if its a negative integer
+#             print("Error: Interval must be a positive integer")
+#             return False
 
-    #This is the main thing that is called,
-    def review_deck(self, deck_id) -> List[Tuple[Card, bool]]:#deck_id: int = None,deck: Deck = None if deck_id is not None: then find the deck else use the deck
-        deck= Deck.query.get(deck_id)
-        flashcards_to_review = []
-        print('deck.id is',deck.id)
-        for flashcard in deck.cards:
-            print('flashcard is',flashcard.question)
-            if self.is_card_due(flashcard):
-                flashcards_to_review.append(flashcard)
-        for subdeck in deck.children_deck:
-            flashcards_to_review.extend(self.review_deck(subdeck.id))
-        print('flashcards to review is ',flashcards_to_review)
-        return self.review_flashcards(flashcards_to_review)
+#     #This is the main thing that is called,
+#     def review_deck(self, deck_id) -> List[Tuple[Card, bool]]:#deck_id: int = None,deck: Deck = None if deck_id is not None: then find the deck else use the deck
+#         deck= Deck.query.get(deck_id)
+#         flashcards_to_review = []
+#         print('deck.id is',deck.id)
+#         for flashcard in deck.cards:
+#             print('flashcard is',flashcard.question)
+#             if self.is_card_due(flashcard):
+#                 flashcards_to_review.append(flashcard)
+#         for subdeck in deck.children_deck:
+#             flashcards_to_review.extend(self.review_deck(subdeck.id))
+#         print('flashcards to review is ',flashcards_to_review)
+#         return self.review_flashcards(flashcards_to_review)
 
 
 
