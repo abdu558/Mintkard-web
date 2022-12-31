@@ -1,167 +1,95 @@
-from flask import Blueprint, render_template,request,url_for,redirect,flash
+from flask import Blueprint, render_template,request,url_for,redirect,flash,current_app
 from . import db
 from .models import User,Deck,Card
-from flask_login import current_user
-import datetime
+from flask_login import current_user,login_required
+from datetime import datetime, timedelta 
 from typing import List,Tuple
+
 decks = Blueprint('decks', __name__)
 
+class FlashcardManager:
+    def __init__(self, user_id: int):
+        self.user = User.query.get(user_id)
+
+
+    '''returns a list of decks that the user owns'''
+    def get_all_decks(self) -> List[Deck]:
+        for deck in self.user.decks:
+            print(deck)
+        return
+
+    '''returns a list of subdecks that the user owns'''
+    def get_all_subdecks(self,user:User) -> List[Deck]:
+        subdecks = []
+        for deck in user.decks:
+            subdecks.append(deck.children_deck)
+        return subdecks
+
+    '''returns a list of cards that the user owns'''
+    def get_all_cards(self,user:User) -> List[Card]:
+        cards = []
+        for deck in user.decks:
+            cards.append(deck.cards)
+        return cards
+
+
+    '''
+    The following three function review_flashcards, is_card_due and review_deck are used to review the flashcards and are used and work together 
+    alongside the update_stats in card class
+    '''
+    def review_flashcards(self, flashcards: List[Card]) -> List[Tuple[Card]]:
+        reviewed_flashcards = []
+        for flashcard in flashcards:
+            print(flashcard.question)
+            #send card to flask front end
+            flashcard.update_stats()
+            flashcard.last_reviewed = datetime.now()
+            db.session.commit()
+            reviewed_flashcards.append(flashcard)
+        return reviewed_flashcards
+
+    def is_card_due(self,flashcard:Card) -> bool:
+        if flashcard.is_new == True:
+            return True
+        try:
+            review_interval = timedelta(days=flashcard.interval)#converts int to time using datetime
+            return flashcard.last_reviewed + review_interval <= datetime.now()
+        except TypeError:
+            # Handle TypeError if it's not an integer
+            print("Error: Interval must be an integer")
+            return False
+        except ValueError:
+            # Handle ValueError if its a negative integer
+            print("Error: Interval must be a positive integer")
+            return False
+
+    #This is the main thing that is called,
+    def review_deck(self, deck_id) -> List[Tuple[Card, bool]]:#deck_id: int = None,deck: Deck = None if deck_id is not None: then find the deck else use the deck
+        deck= Deck.query.get(deck_id)
+        flashcards_to_review = []
+        print('deck.id is',deck.id)
+        for flashcard in deck.cards:
+            print('flashcard is',flashcard.question)
+            if self.is_card_due(flashcard):
+                flashcards_to_review.append(flashcard)
+        for subdeck in deck.children_deck:
+            flashcards_to_review.extend(self.review_deck(subdeck.id))
+        print('flashcards to review is ',flashcards_to_review)
+        return self.review_flashcards(flashcards_to_review)
+
+# with current_app.test_request_context():
+#     # create the instance of the package within the blueprint
+#     FManager = FlashcardManager(user_id)()
+#app_context().push()
+#manager = FlashcardManager(1)
+# with current_app.app_context():
+#     FManager = FlashcardManager(1)
+#manager.review_deck(1)
 
 '''
 TO-DO in edit pages maybe
 return redirect(url_for("login", next_page="/profile"))
 '''
-
-class Deck:
-    def __init__(self,name:str,flashcards:List,subdecks:List[Deck] = None):
-        self.name = name
-        self.flashcards = flashcards
-        if subdecks:
-            self.subdecks = subdecks
-        else:
-            self.subdecks = []
-    
-    def get_decks(self):
-        '''
-        Returns a list of all decks and subdecks within a deck
-        '''
-        all_Decks = [self] # starts with the main deck
-        for subdeck in self.subdecks:
-            #Recursion
-            all_decks.extend(subdeck.get_decks())
-        return all_decks
-
-
-class User:
-    def __init__(self,id,decks):
-        self.id = current_user.get_id() 
-        self.decks = decks
-
-class Card:
-    def __init__(self,answer,question,quality:int,easiness_factor,interval,is_new:bool,last_study):
-        self.question = question
-        self.answer=answer
-        self.quality=quality #a quality is a number from 1 to 4
-        self.easiness_factor = easiness_factor
-        self.interval = interval
-        self.is_new = is_new
-        self.last_study = datetime.now()
-        #remove the datime from the database?
-
-    def study(self):
-        '''
-        Calculate the new interval based on the easiness factor, quality and interval.
-        Reducing the minimum easiness factor below 1.3 would make it repeat a lot more often, unnecessarily.
-        if the quality is more than 3 but the easiness factor is more than the
-        the base limits we modify the easiness factor to make it stop it repeating too much or too little      
-        '''
-
-        #default variables are set if the cards are new
-        if self.is_new:
-            self.easiness_factor = 2.5
-            self.interval = 1
-            self.is_new=False
-            return self.easiness_factor, self.interval
-        elif self.quality <3:
-            self.easiness_factor = 2.5
-            self.interval = 1
-            return self.easiness_factor, self.interval
-        else:# If the easiness factor is outside the base limits, modify it to prevent it from repeating too much or too little 
-            if self.easiness_factor < 1.3:
-                self.easiness_factor = 1.3
-            elif self.easiness_factor > 2.5:
-                self.easines_factor =2.5
-            new_easiness_factor =  new_interval = 0
-            self.new_easiness_factor += self.easiness_factor + (0.1 - (5 - self.quality) * (0.08 + (5 - self.quality) * 0.02))
-            new_interval = self.interval * new_easiness_factor
-            self.easiness_factor = new_easiness_factor
-            self.interval = new_interval
-            self.last_reviewed = datetime.now()
-            return self.interval,self.easiness_factor
-        
-    def study_due(self) -> bool:
-        try:
-            review_interval = timedelta(days=self.interval)#converts int to time using datetime
-            return self.last_reviewed + review_interval <= datetime.now()
-        except TypeError:
-            # Handle TypeError if self.interval is not an integer
-            print("Error: Interval must be an integer")
-            return False
-        except ValueError:
-            # Handle ValueError if self.interval is a negative integer
-            print("Error: Interval must be a positive integer")
-            return False 
-            
-
-# class Flashcard(Card):
-#     def __init__(self,question,answer,quality:int):
-#         super().__init__(question,answer,quality)
-        
-
-#Check if this even works, the gaps thing is a bit fiddily on how gaps will be passed when created
-#Fill in the gaps and the choice will need to be rendered differnetly so fix this later,
-class Fill_the_gaps(Card):
-    def __init__(self,answer,question,quality:int,easiness_factor,interval,is_new:bool,last_study,gaps):
-        '''
-        This will be another type of flashcard, a flashcard where answer is shown when reviewed, apart from some missing gaps indicated by the user
-        '''
-        #overrides the class inherited from, only put in items inherited
-        super().__init__(answer,question,quality,easiness_factor,interval,is_neww,last_study)
-        self.gaps = gaps
-
-class Multi_choice(Card):
-    def __init__(self,answer,question,quality:int,easiness_factor,interval,is_new:bool,last_study,choice:List):
-        super().__init__(self,answer,question,quality,easiness_factor,interval,is_new,last_study)
-        self.choice = choice
-
-
-def study_flashcard(flashcards):
-    studied = []
-    #f as in flashcard, just to avoid errors/confusion with flashcard class
-    for f in flashcards:
-        result = self.study()
-        studied.append((flashcard,result))
-    return studied
-
-
-def study_deck(deck: Deck) -> List[Tuple[Card,int]]:
-    #if flashcard filters out the flashcard in the list, to only output flashcards that are due
-    card_due = [f for f in deck.flashcards if self.study(flashcard)]
-    card_due.extend(study_flashcard(Flashcards_to_Review)
-    for subdeck in deck.subdecks:
-        reviewed_flashcards.extend(review_deck(subdecks))
-
-    return study_flashcard(card_due)
-
-def user_decks(user) -> List[Tuple[Card,int]]:
-    flashcards_studied = []
-    for deck in user.decks:
-        reviewed_flashcard.extend(review_deck(Deck))
-    return flashcards_studied
-
-
-flashcard1 = Flashcard('Whats the capital of france?','Paris')
-deck = Deck('Country capitals',flashcard1)
-user=review_user(deck=deck)
-review_results = review_user(user)
-all_decks = top_level_deck.get_all_decks()
-
-deck1 = Deck("Deck 1", [])
-deck2 = Deck("Deck 2", [])
-subdeck1 = Deck("Subdeck 1", [], [deck2])
-subdeck2 = Deck("Subdeck 2", [])
-top_level_deck = Deck("Top Level Deck", [], [subdeck1, subdeck2])
-
-all_decks = top_level_deck.get_all_decks()
-for deck in all_decks:
-    print(deck.name)
-#EXMAPLE USAGE
-# mc_flashcard = multi_choice("What is the capital of France?", "Paris", ["Paris", "London", "Madrid"])
-# flashcards = [mc_flashcard, flashcard("What is the capital of Japan?", "Tokyo")]
-# deck = Deck("Country Capitals", flashcards)
-# user_data = SQL QUERY TO EXTRACT ALL DECKS WITH CARDS AND SUBDECKS
-# review_results = review_user(user_data)
-
 
 # def redirect_unauth():
 #     '''
@@ -173,16 +101,20 @@ for deck in all_decks:
 #     else:
 #         return None
 
-@login_required
 @decks.route('/')
 @decks.route('/home')
+@login_required
 def decks_route():
     '''
     This is the main homepage for the decks page, where all decks(set of cards) are shown and their subdecks
     They will have the option to study a deck, edit a deck, CHECK LATER HOW TO REDIRECT EDIT DECKS TO THE RIGHT DECK.
     The name is deck_route, because if its called decks it would cause an error as its the same name as the registered blueprint
     '''
-    return render_template("decks.html",curernt_user=current_user)#Remove this later
+    # with current_app.test_request_context():
+    # # create the instance of the package within the blueprint
+    #     FManager = FlashcardManager(1)
+    #     FManager.get_all_cards()
+    return render_template("decks.html")#,current_user=current_user)#Remove this later
 
 @login_required
 @decks.route('/browse')

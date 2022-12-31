@@ -1,4 +1,5 @@
 from flask import  Flask, Blueprint, render_template
+from flask_login import current_user
 
 views = Blueprint('views', __name__)
 
@@ -6,5 +7,5 @@ views = Blueprint('views', __name__)
 @views.route('/')
 @views.route('/home')
 def home():
-    return render_template("home.html")
+    return render_template("home.html",current_user=current_user)
 

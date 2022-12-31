@@ -16,3 +16,19 @@ result = conn.execute(query, subject_param)
 In this example, the subject parameter is passed as a BindParameter object when the query is executed. This allows you to safely pass user input as a parameter to the query, rather than concatenating it directly into the SQL string, which can be vulnerable to SQL injection attacks.
 
 You can also use parameterized SQL in other types of SQL statements, such as INSERT, UPDATE, and DELETE. Just be sure to use the appropriate bindparam() function for the type of parameter you are using (e.g., bindparam() for string parameters, bindparam() for integer parameters, etc.).
+
+
+FOR INHERITANCE:
+
+class Fill_the_gaps(Card):
+    def __init__(self,answer,question,quality:int,easiness_factor,interval,is_new:bool,last_study,gaps):
+        '''
+        This will be another type of flashcard, a flashcard where answer is shown when reviewed, apart from some missing gaps indicated by the user
+        '''
+        #overrides the class inherited from, only put in items inherited
+        super().__init__(answer,question,quality,easiness_factor,interval,is_neww,last_study)
+        self.gaps = gaps
+
+class Multi_choice(Card):
+    def __init__(self,answer,question,quality:int,easiness_factor,interval,is_new:bool,last_study,choice:List):
+        super().__init__(question,answer,quality)

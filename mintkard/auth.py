@@ -61,8 +61,8 @@ def check_username(username):
 
     '''
     error = False
-    if len(username) < 4 :
-        error = "Username must be at least 4 characters"
+    if len(username) < 2:
+        error = "Username must be at least 2 characters"
     elif " " in username:
         error = "Username must not contain spaces"
 
