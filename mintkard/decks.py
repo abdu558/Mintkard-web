@@ -46,7 +46,7 @@ class FlashcardManager:
             print(flashcard.question)
             #send card to flask front end
             flashcard.update_stats()
-            flashcard.last_reviewed = datetime.now()
+            flashcard.last_study = datetime.now()
             db.session.commit()
             reviewed_flashcards.append(flashcard)
         return reviewed_flashcards
@@ -56,7 +56,7 @@ class FlashcardManager:
             return True
         try:
             review_interval = timedelta(days=flashcard.interval)#converts int to time using datetime
-            return flashcard.last_reviewed + review_interval <= datetime.now()
+            return flashcard.last_study + review_interval <= datetime.now()
         except TypeError:
             # Handle TypeError if it's not an integer
             print("Error: Interval must be an integer")
@@ -67,8 +67,9 @@ class FlashcardManager:
             return False
 
     #This is the main thing that is called,
-    def review_deck(self, deck_id) -> List[Tuple[Card, bool]]:#deck_id: int = None,deck: Deck = None if deck_id is not None: then find the deck else use the deck
-        deck= Deck.query.get(deck_id)
+    def review_deck(self, deck_id_or_deck) -> List[Tuple[Card, bool]]:#deck_id: int = None,deck: Deck = None if deck_id is not None: then find the deck else use the deck
+        if isinstance(deck_id_or_deck, int):#Polymorphism
+            deck= Deck.query.get(deck_id_or_deck)
         flashcards_to_review = []
         print('deck.id is',deck.id)
         for flashcard in deck.cards:
@@ -83,8 +84,40 @@ class FlashcardManager:
 
 current_app.app_context().push()
 
-manager = FlashcardManager(1, current_app)
+fmanager = FlashcardManager(1, current_app)
+deck1 = Deck(name='Deck 1', user_id=1)
+deck2 = Deck(name='Deck 2', user_id=1)
+db.session.add(deck1)
+db.session.add(deck2)
+db.session.commit()
+subdeck1 = Deck(name='Subdeck 1', user_id=1, parent_id=deck1.id)
+subdeck2 = Deck(name='Subdeck 2', user_id=1, parent_id=deck1.id)
+db.session.add(subdeck1)
+db.session.add(subdeck2)
+db.session.commit()
 
+# Create the cards
+card1 = Card(question='Question 1', answer='Answer 1', deck_id=deck1.id)
+card2 = Card(question='Question 2', answer='Answer 2', deck_id=deck1.id)
+card3 = Card(question='Question 3', answer='Answer 3', deck_id=deck2.id)
+card4 = Card(question='Question 4', answer='Answer 4', deck_id=deck2.id)
+card5 = Card(question='Question 5', answer='Answer 5', deck_id=subdeck1.id)
+card6 = Card(question='Question 6', answer='Answer 6', deck_id=subdeck1.id)
+card7 = Card(question='Question 7', answer='Answer 7', deck_id=subdeck2.id)
+card8 = Card(question='Question 8', answer='Answer 8', deck_id=subdeck2.id)
+
+# Add the decks and cards to the database
+
+db.session.add(card1)
+db.session.add(card2)
+db.session.add(card3)
+db.session.add(card4)
+db.session.add(card5)
+db.session.add(card6)
+db.session.add(card7)
+db.session.add(card8)
+db.session.commit()
+fmanager.review_deck(1)
 
 #decks = Blueprint('decks', __name__)
 
@@ -121,6 +154,16 @@ def decks_route():
     They will have the option to study a deck, edit a deck, CHECK LATER HOW TO REDIRECT EDIT DECKS TO THE RIGHT DECK.
     The name is deck_route, because if its called decks it would cause an error as its the same name as the registered blueprint
     '''
+    if request.method =='POST':
+        if request.form.get('add_deck'):
+            new_deck = request.form.get('add_deck')
+            Deck = Deck(name= '')#find largest deck id and add 1)
+
+        if request.form.get('delete_deck'):
+            pass
+
+        if request.form.get('edit'):
+            redirect('')
     # with current_app.test_request_context():
     # # create the instance of the package within the blueprint
     #     FManager = FlashcardManager(1)
@@ -130,14 +173,27 @@ def decks_route():
 @login_required
 @decks.route('/browse')
 def browse():
+
     return render_template("browse.html")
 
 @login_required
-@decks.route('/create',methods=['POST','GET'])
-def create():
+@decks.route('/create/<int:id>',methods=['POST','GET'])
+def create(id):
     '''
     Allows the user to create a new card
     '''
+    if request.method == 'POST':
+        if request.form.get('question') and request.form.get('answer'):
+            question = request.form.get('question')
+            answer = request.form.get('answer')
+
+            #perform check here??!!?
+
+            #paramzlied sql query
+
+            card = Card(question = question,answer= answer,deck_id =id)
+            db.session.add(card)
+            db.session.commit()
     return render_template("create.html")
 
 @login_required
@@ -146,6 +202,12 @@ def study(id):
     '''
     Allows the user to study new cards
     '''
+    if request.method == 'POST':
+        if request.form.get('quality'):
+            question = request.form.get('quaity')
+
+    
+
     return render_template("study.html")
 
 @login_required
@@ -154,6 +216,10 @@ def edit(id):
     '''
     Allows the user to edit existing cards
     '''
+    if request.method == 'POST':
+        if request.method.get('question') and request.method.get('answer'):
+            Card = card.update(question=question,answer=answer)
+            #db.commit ???
     return render_template("edit.html")
 
 # @app.route("/user/<int:id>")
