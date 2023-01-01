@@ -211,7 +211,7 @@ def register():
                     flash('Username already exists, choose another',category='danger')
                     return redirect(url_for('auth.register'))
                 
-                #ADD TO DATABASE and come up with an id
+                #adds to the database
                 try:
                     new_user = User(username=username,email=email,password=generate_password_hash(password,method='sha256'))
                     db.session.add(new_user)
