@@ -144,7 +144,7 @@ def login():
                 flash('Error logging in user: {}'.format(e),category='danger')
                 return redirect(url_for('auth.login'))
 
-            flash('You were successfully logged in')
+            flash('You were successfully logged in',category='success')
             return redirect(url_for('decks.decks_route'))
 
 
