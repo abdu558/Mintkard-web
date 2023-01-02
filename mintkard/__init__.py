@@ -19,7 +19,7 @@ def create_app():
     #Set up for the loginmanager for flask
     login_manager = LoginManager()    
     login_manager.login_view = 'auth.login' #Where does flask redirect the user if they are not logged in
-    login_manager.login_message = "Simply login to access this page and get started on your journey to academic success ,don't miss out on the chance to succeed academically! "
+    login_manager.login_message = "Simply login to access this page and get started on your journey to academic success. Don't miss out on the chance to succeed academically! "
     login_manager.init_app(app)#telling login manager which app its using
     
     from .views import views
@@ -45,15 +45,10 @@ def create_app():
     def load_user(id):
         return User.query.get(id)
 
-    # global flashcard_manager
-    # FManager = FlashcardManager(1, app)
-
-    #with app.app_context():
-    #with app.app_context():
-        #manager = FlashcardManager(1)
     app.app_context().push()
-    #db.drop_all()
-    #db.create_all()
+
+    # db.drop_all()
+    # db.create_all()
     # student1 = User(username='bob',email='john@gmail.com',password='5555')    
     # db.session.add(student1)
     # db.session.commit()

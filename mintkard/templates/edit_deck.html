@@ -5,4 +5,62 @@
 
 
 {% block body %}
+<div class="container my-5">
+  <h1>Edit Deck</h1>
+  <form class="my-4">
+
+  <div class="d-grid gap-3">
+    <!-- Deck Image -->
+    <div class="form-group">
+      <label for="deckImage">Deck Image</label>
+      <input type="file" class="form-control-file" id="deckImage">
+    </div>
+    <!-- Deck Title -->
+    <div class="form-group">
+      <label for="deckTitle">Deck Title</label>
+      <input type="text" class="form-control" id="deckTitle" value ="{{deck.title}}">
+    </div>
+    <!-- Deck Description -->
+    <div class="form-group">
+      <label for="deckDescription">Deck Description</label>
+      <textarea class="form-control" id="deckDescription" value ="{{deck.description}}" rows="3"></textarea>
+    </div>
+  </div>
+
+    <!-- Subdecks -->
+    <h4> Add Subdeck</h4>
+    <!-- Subdeck 1 -->
+    <div>
+      <div class="form-group d-grid gap-3">
+        <label for="subdeck1Title">Subdeck 1 Title</label>
+        <input type="text" class="form-control" id="subdeck1Title" placeholder="Enter subdeck title">
+      </div>
+      <!-- Add/Delete Subdeck Buttons -->
+      <div class="btn-group mt-3">
+        <button type="button" class="btn btn-secondary" id="addSubdeckButton">Add Subdeck</button>
+      </div>
+    </div>
+
+    <div id="flashcard-deck"class="d-grid gap-3" >
+      <!-- Flashcard 1 -->
+      {% for subdeck in deck.children_deck %}
+      <div class="card mt-3">
+        <div class="card-body">
+          <h5 class="card-title">{{subdeck.title}}</h5>
+          <p class="card-text">Question: What is the capital of France?</p>
+          <p class="card-text">Answer: Paris</p>
+          <a href="#" class="btn btn-secondary mr-3">Edit</a>
+          <a href="#" class="btn btn-danger">Delete</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <!-- Submit/Cancel Buttons -->
+    <div class="btn-group mt-3">
+      <button type="button" class="btn btn-secondary" id="cancelEditDeckButton">Cancel</button>
+      <button type="submit" class="btn btn-primary" id="submitEditDeckButton">Submit</button>
+    </div>
+
+  </form>
+</div>
 {% endblock %}

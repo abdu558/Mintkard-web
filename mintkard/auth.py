@@ -10,7 +10,7 @@ import re
 auth = Blueprint('auth', __name__)
 
 
-def check_email_regex(email) -> bool:
+def check_email(email):
     '''r is raw string, this is using the re module to allow any valid character with a @ and a . in the string
     ^ means start of string
     [a-zA-Z0-9_.+-] means any alphabet or number and the 4 symbols which are allowed in an email
@@ -20,52 +20,37 @@ def check_email_regex(email) -> bool:
     
     International emails will not work
     '''
-    pattern = r"^[a-zA-Z0-9-`{|}_~'*+/=?!#$%&^'\u0080-\uFFFF]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    pattern = r"^[a-zA-Z0-9-`{}_~'*+/=?!#$%&^]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
     match = bool(re.fullmatch(pattern,email))
-    return match
-
-def check_password_regex(password) -> bool:
-    pattern = r'[A-Za-z0-9_.+-]'
-    return bool(re.fullmatch(pattern,password))
-
-def check_username_regex(username) -> bool:
-    pattern = r'[A-Za-z0-9_.+-]'
-    return bool(re.fullmatch(username,pattern))
-
-def check_email(email) ->  bool:
-    '''
-    Check if the email is valid
-    They are if statemnts as they are all independent of each other
-    if true return '' instead of None as it will be easier to check for errors in the error variable
-    '''
-    error = False
-    # if len(email) < 6:
-    #     error = "Email must be at least 5 characters"
-    if "@" not in email:
-        error = "Email must be valid"
-    elif "." not in email:
-        error= "Email must have a ."
-    elif " " in email:
-        error = "Email must not contain spaces"
-
-    #If there is an error, return the error, if not return None and True which would let the user continue/add to the database
-    if error:
-        return False, error
+    if match == True:
+        return match,''
     else:
-        return True, ''
+        return match,'Please a valid email'
+
+#INTEGRATE THIS 
+def valid_char(user_input):
+    '''
+    Returns True if it is using a valid set of characters
+    '''
+    # Check for invalid characters
+    if re.match(r"^[a-zA-Z0-9-\.@`{}_~'+/=?!#$%&^]+$", user_input):
+        return True
+    return False
+
 
 def check_username(username):
     '''
     Username validation, to check length and if it contains spaces
-        if true return '' instead of None as it will be easier to check for errors in the error variable
+    if true return '' instead of None as it will be easier to check for errors in the error variable
 
     '''
     error = False
-    if len(username) < 2:
-        error = "Username must be at least 2 characters"
+    if len(username) < 1:
+        error = "Username must be at least 1 characters"
     elif " " in username:
         error = "Username must not contain spaces"
-
+    elif not valid_char(username):
+        error = "Invalid characters used, please only use characters,numbers and -\.@`{}_~'+/=?!#$%&^"
 
     #If there is an error, return the error, if not return None and True which would let the user continue/add to the database
     if error:
@@ -81,15 +66,18 @@ def check_password(password,confirm_password):
     '''
     error = False
     #Check if the password is valid
-    if len(password) < 5 :
-        error = "Password must be at least 5 characters"
+    if len(password) < 4 :
+        error = "Password must be at least 4 characters"
     #Check if the password contains spaces
     elif " " in password:
         error = "Password must not contain spaces"
     #Check if the password matches the confirm password
     elif password != confirm_password:
         error = "Passwords do not match"
-    
+
+    elif not valid_char(password):
+        error = "Invalid characters used, please only use characters,numbers and -\.@`{}_~'+/=?!#$%&^"    
+
     #If there is an error, return the error, if not, return None and True which would let the user continue/add to the database or login
     if error:
         return False, error
@@ -112,6 +100,7 @@ def check_username_exists(username):
     '''
     if User.query.filter_by(username=username).first():
         return True;return False
+    
 
 #methods is get by default, adding post will allow the submission of login info without it showing up in link
 @auth.route('/login',methods=['GET','POST'])
@@ -145,12 +134,12 @@ def login():
                 #print(check_password_hash(User.query.filter_by(email=email).first().password,password)[0])
             else:
                 flash('Email or password is incorrect',category='danger')
-                return redirect(url_for('auth.register'))
+                return redirect(url_for('auth.login'))
 
 
             try:
                 user = User.query.filter_by(email=email).first()
-                login_user(email)
+                login_user(user)
             except Exception as e:
                 flash('Error logging in user: {}'.format(e),category='danger')
                 return redirect(url_for('auth.login'))

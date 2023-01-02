@@ -59,7 +59,7 @@ class FlashcardManager:
     def review_flashcards(self, flashcards: List[Card]) -> List[Tuple[Card]]:
         reviewed_flashcards = []
         for flashcard in flashcards:
-            print(flashcard.question)
+        #     print(flashcard.question)
             #send card to flask front end
             flashcard.update_stats()
             flashcard.last_study = datetime.now()
@@ -87,22 +87,24 @@ class FlashcardManager:
         if isinstance(deck_id_or_deck, int):#Polymorphism
             deck= Deck.query.get(deck_id_or_deck)
         flashcards_to_review = []
-        print('deck.id is',deck.id)
+        #print('deck.id is',deck.id)
         for flashcard in deck.cards:
-            print('flashcard is',flashcard.question)
+            #print('flashcard is',flashcard.question)
             if self.is_card_due(flashcard):
                 flashcards_to_review.append(flashcard)
         for subdeck in deck.children_deck:
             flashcards_to_review.extend(self.review_deck(subdeck.id))
-        print('flashcards to review is ',flashcards_to_review)
+        #print('flashcards to review is ',flashcards_to_review)
         return self.review_flashcards(flashcards_to_review)
 
 
 current_app.app_context().push()
-# db.session.execute('DELETE FROM Deck')
+# db.session.execute('DELETE * FROM Deck')
 # db.session.commit()
-print(current_user)
+#print(current_user)
 #fmanager = FlashcardManager(current_user.id, current_app)
+
+
 # deck1 = Deck(name='Deck 1', user_id=1)
 # deck2 = Deck(name='Deck 2', user_id=1)
 # db.session.add(deck1)
@@ -169,52 +171,50 @@ This is the main homepage for the decks page, where all decks(set of cards) are 
 They will have the option to study a deck, edit a deck, CHECK LATER HOW TO REDIRECT EDIT DECKS TO THE RIGHT DECK.
 The name is deck_route, because if its called decks it would cause an error as its the same name as the registered blueprint
 '''
-#root_decks = Deck.query.filter_by(parent_id=None).all()
-#print(root_decks)
+
+
+
+@decks.route('/home')
 @decks.route('/',methods=['GET','POST'])
-#@decks.route('/home')
 @login_required
 def decks_route():
-    # if request.form.get('add_deck'):#
-    #     Deck = Deck(name='Deck (Change name with edit button)',user_id=current_user.id)#find largest deck id and add 1)
-    #     db.session.add(Deck)
-    #     db.session.commit()
-    #     return redirect(url_for('results'))
-    print(request)
-    root_decks = Deck.query.filter_by(parent_id=None).all()
+    '''
+    by default, its get so if a post request is going to be recived in the route, it must be specified a post, and also a get to get the page request
+    there is no need to put methods in both routes, the methods will apply to both routes if specified in one.
+    having two routes means that if somenes visits any of the two then it will redirect to the same page
+    login_required means that the user must be logged in, if the use isnt then they are redirected to login page, where they can also select to register an account if they are new
+    the login page is specified as the redirect in the __init__ file where the route auth.login is configured.
 
-    if request.method == 'POST':
-        if request.form.get('add_deck'):
-            print('above is decks value')
-            print(request.form.get('add_deck'))
-            print('above is decks value')
-            new_deck = Deck(name='Deck (Change name with edit button)',user_id=1)#current_user.id)#find largest deck id and add 1)
-            db.session.add(new_deck)
-            db.session.commit()
+    root deck is a deck without a parent deck, just like a tree graph where a root can have children but cant have a parent
+    '''
+    print('helloo')
+    root_decks = Deck.query.filter_by(parent_id=None,user_id =current_user.id).all()
+    #if request.method == 'POST':
+    if request.form.get('add_deck'):
+        num_of_decks = len(root_decks)
+        num_of_decks = 'Deck' + str(num_of_decks)
+        new_deck = Deck(name='DECKS',user_id=current_user.id)
+        db.session.add(new_deck)
+        db.session.commit()
+        
+        root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
+        return render_template("decks.html",root_decks = root_decks)
+    if request.form.get('delete_deck'):
+        
+        try:
+            deck_id = request.form.get('delete_deck')
+        except:
+            flash('Deck with id {} not found'.format(deck_id), category='danger')
+        
+        deck_to_delete = Deck.query.get_or_404(deck_id)
+        db.session.delete(deck_to_delete)
+        db.session.commit()
 
-            return render_template("decks.html",root_decks = root_decks)
-    # if request.method =='POST':
+        root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
+        return render_template("decks.html",root_decks= root_decks)
+    #ADD THIS AND A FORM AND A BUTTON TO THE DELTE REQUEST.
 
-    #     if request.form.get('delete_deck'):
-    #         print('yppp')
-
-    #     if request.form.get('edit'):
-    #         print('hi')
-
-        #if request.form('')
-            # if request.form['add_Deck']
-            #     redirect('')
-        # with current_app.test_request_context():
-        # # create the instance of the package within the blueprint
-        #     FManager = FlashcardManager(1)
-        #     FManager.get_all_cards()
-    
-    return render_template("decks.html",root_decks = root_decks)#,current_user=current_user)#Remove this later
-
-@login_required
-@decks.route('/edit-deck/<int:id>')
-def edit_deck():
-    pass
+    return render_template("decks.html",root_decks= root_decks)#,current_user=current_user)#Remove this later
 
 @login_required
 @decks.route('/stats')
@@ -225,7 +225,7 @@ def stats():
 @login_required
 @decks.route('/browse')
 def browse():
-    all_cards = fmanager.get_all_cards(user)
+    #all_cards = fmanager.get_all_cards(user)
     return render_template("browse.html",all_cards)
 
 #ADD AN ID TO IT SO IF A USER PRESSES STUDY IT WOULD SEND A ID, HOW DO YOU AUTOMAITCALLY GENERATE AN ID
@@ -250,6 +250,16 @@ def create():
             db.session.commit()
     return render_template("create.html")
 
+#study entire deck, where there is a redirect to study each card
+@login_required
+@decks.route('/study-deck/<int:deck_id>')
+def study_deck(deck_id):
+
+    deck = Deck.query.get(deck_id)
+    #print('Revise deck')
+    return redirect(url_for('deck.decks_route'), permanent=True)
+
+#study one card
 @login_required
 @decks.route('/study/<int:id>',methods=['GET','POST'])
 def study(id):
@@ -264,6 +274,38 @@ def study(id):
 
     return render_template("study.html")
 
+#edit entire deck
+@login_required
+@decks.route('/edit-deck/<int:deck_id>')
+def edit_deck(deck_id):
+    current_deck = Deck.query.filter_by(parent_id=None,id=deck_id).first()#.all()
+    if request.method== 'POST':
+        title = request.form.get('question')
+        answer = request.form.get('answer')
+        flash('Deck has been updated',category='success')
+        return redirect(url_for('decks_route'),code=301)#301 is a permanent redirect
+
+    # put the infomraiton has a placeholder and check if there is a change, then check how to update deck info
+    return render_template("edit_deck.html",deck=current_deck)
+    # print(deck_id)
+    # deck_to_delete = Deck.query.get(deck_id)#query.get_or_404
+    # #if deck_to_delete:
+    # db.session.delete(deck_to_delete)
+    # db.session.commit()
+    # #else:
+    # #flash('Deck with id {} not found'.format(deck_id), category='danger')
+#deletes entire deck
+
+# @login_required
+# @decks.route('/delete-deck/<int:deck_id>')
+# def delete_deck(deck_id):
+#     print('WORKING?')
+#     deck_to_delete = Deck.query.get_or_404(deck_id)
+#     db.session.delete(deck_to_delete)
+#     db.session.commit()
+#     return redirect(url_for('decks.decks_route'), code=301)#301 is a permanent redirect
+
+#edits individual cards
 @login_required
 @decks.route('/edit/<int:id>',methods=['GET','POST'])
 def edit(id):
@@ -275,7 +317,3 @@ def edit(id):
             Card = card.update(question=question,answer=answer)
             #db.commit ???
     return render_template("edit.html")
-
-# @app.route("/user/<int:id>")
-# def user_detail(id):
-#MAKE EACH CARD HAVE A GET REQUEST WITH THE LINK CHANGING OF THE ID OF THGE CARD MAKING IT SHAREABELK???????????????????????!!!!!!!!

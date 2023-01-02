@@ -6,17 +6,22 @@
 
 {% block body %}
 <div class="container mt-5">
+
+<h1>All Decks</h1>
   <div class="row">
     {% for deck in root_decks %}
     <div class="col-sm-4">
       <div class="card" style="margin-bottom: 2rem">
         <img src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" class="card-img-top" alt="Deck 1">
         <div class="card-body">
-          <h5 class="card-title">{{deck.name}}</h5>
+          <h5 class="card-title">{{deck.id}} {{deck.name}}</h5>
           <p class="card-text">Description of Deck 1</p>
-          <a href="#" class="btn btn-primary" name="deck_button" value="start">Start</a>
-          <a href="#" class="btn btn-secondary" name="deck_button" value="edit">Edit</a>
-          <a href="#" class="btn btn-danger" name="deck_button" value="delete">Delete</a>
+          <a class="btn btn-primary " name="deck_button" value="start" href ='/decks/study-deck/{{deck.id}}'>Start</a>
+          <a class="btn btn-secondary" name="deck_button" value="edit" href = '/decks/edit-deck/{{deck.id}}' >Edit</a>
+
+          <form method="post" class="mt-2">
+            <button class="btn btn-danger" type="submit" name="delete_deck" value="{{deck.id}}" onclick="confirm('Press ok if you are sure you want to delete this deck, and all its cards and subdecks')";>Delete</button>         
+          </form>
         </div>
         <div class="btn-group dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -33,6 +38,6 @@
     {% endfor%}
   </div>
   <!--margin bottom is to add space to the bottom of the screen and stop the button being stuck on the bottom-->
-  <form method="post"><button type ="submit" style = "margin-bottom: 2rem" type="button" class="btn btn-success mt-3 btn-lg" id="a" value="a" name = "add_deck">Add New Deck</button></form>
+  <form method="post"><button type ="submit" style = "margin-bottom: 2rem" class="btn btn-success mt-3 btn-lg" id="add" value="add" name = "add_deck">Add New Deck</button></form>
 </div>
 {% endblock %}

@@ -1,0 +1,35 @@
+Number of decks:
+
+Copy code
+SELECT COUNT(*) as num_decks FROM Deck;
+Number of cards:
+
+Copy code
+SELECT COUNT(*) as num_cards FROM Card;
+Average number of cards per deck:
+
+Copy code
+SELECT AVG(num_cards) as avg_cards_per_deck FROM (
+    SELECT COUNT(*) as num_cards FROM Card WHERE deck_id = Deck.id
+);
+Date of last study:
+
+Copy code
+SELECT last_study FROM Card WHERE id = :card_id;
+Percentage of new cards:
+
+Copy code
+SELECT AVG(is_new) as pct_new_cards FROM Card;
+Average interval:
+
+Copy code
+SELECT AVG(interval) as avg_interval FROM Card;
+Average easiness factor:
+
+Copy code
+SELECT AVG(easiness_factor) as avg_easiness_factor FROM Card;
+Average quality:
+
+Copy code
+SELECT AVG(quality) as avg_quality FROM Card;
+These queries assume that you are using an SQL database and that you have tables named Deck and Card with the columns listed in the original question. You may need to modify the queries to match the specific structure of your database.
