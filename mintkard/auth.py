@@ -26,13 +26,12 @@ def check_email(email):
         return match,''
     else:
         return match,'Please a valid email'
-
-#INTEGRATE THIS 
+ 
 def valid_char(user_input):
     '''
     Returns True if it is using a valid set of characters
     '''
-    # Check for invalid characters
+    # Checks for invalid characters
     if re.match(r"^[a-zA-Z0-9-\.@`{}_~'+/=?!#$%&^]+$", user_input):
         return True
     return False

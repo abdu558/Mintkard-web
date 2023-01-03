@@ -18,7 +18,7 @@ overflow-y:auto; /* if the flashcard is more than the maximum height this elemen
   <!-- Search bar -->
   <div class="input-group mb-4" style="width:80%;margin: auto;">
     <input type="text"  class="col-auto form-control" placeholder="Search flashcards">
-    <button type="submit" class="col-auto btn btn-primary">🔍Search</button>
+    <button type="submit" class="col-auto btn btn-primary ">🔍Search</button>
 
   </div>
 
@@ -48,18 +48,19 @@ overflow-y:auto; /* if the flashcard is more than the maximum height this elemen
   <!-- Flashcard cards -->
 <!--m-2 add a margin element to each flashcard in all 4 sides -->
 <div class="row m-2" id="flashcard-cards">
-  {% for i in range(5) %}
+  {% for card in cards %}
   <!--On small screen, there will be 6 cards and on medium screen there will be 4-->
   <div class="col-sm-6 col-md-4" style = "margin-bottom: 10px;">
     <div class="card" id="revision-card">
-      <div class="card-footer d-flex justify-content-between">
-        <button class="btn btn-secondary" id="edit">Edit</button>
-        <button class="btn btn-danger" id="delete">Delete</button>
+      <div class="card-footer d-flex justify-content-between bg-secondary text-dark">
+        <a class="btn btn-primary" id="edit" href ="/decks/edit/{{card.id}}">Edit</a>
+        <a class="btn btn-outline-danger text-light"  id="delete">Delete</a>
       </div>
       <div class="card-body">
+        <!-- deck title-->
         <h5 class="card-title">Flashcard 1</h5>
-        <p class="card-text">Question: What is the capital of France?</p>
-        <p class="card-text">Answer: A Javascript Developer & Linux enthusiast with 4 years of industrial experience and proven know-how to combine creative and usability viewpoints resulting in world-class web applications. I have experience working with Vue, React & Node.js & currently working on article writing and video creation.</p>
+        <p class="card-text">Question:{{card.question}}</p>
+        <p class="card-text">Answer: {{card.answer}}</p>
       </div>
     </div>
   </div>

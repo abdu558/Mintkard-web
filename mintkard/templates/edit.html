@@ -29,19 +29,19 @@
           <option>Subdeck 2</option>
         </select>
       </div>
-      <h5 class="card-title my-3"></h5><input type="text" style="width: 100%;"id="card-title" value="Card Title"></h5>
-      
-      <p class="card-text my-2"><textarea style="width: 100%" id="card-text">
-        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
-        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
-        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
-        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
-        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
-        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
-        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?  
-        Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
-      Here I have a title which I put into a row so it will take specific height. It is working, but the problem is that my h1 is taking the whole row. I mean that I want the width of my text to be only as wide as the text is and not to be the same width with the parent row. Do you know any way how I can do this?
-      </textarea></p>
+      <h5 class="card-title my-3">
+        <label for="card-question">Card question</label>
+        <input type="text" style="width: 100%" id="card-question" value="{{card.question}}">
+      </h5>
+
+      <h5>
+      <label for="card-title">Card answer</label>
+        <p class="card-text my-2">
+        <textarea style="width: 100%" id="card-answer">
+        {{card.answer}}
+        </textarea>
+        </p>
+      </h5>
       
     </div>
     <!--p is padding and 2 is the size of the padding-->
@@ -53,6 +53,7 @@
   </div>
   <a href="#" class="btn btn-primary m-3" type="submit">Update</a>
 </div>
+</form>
 <script>
   /* This code will extend the height of text box to the approximate height of the text*/
   window.onload = function() {
