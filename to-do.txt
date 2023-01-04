@@ -1,29 +1,4 @@
 
-
-ADD MSSAGE FLASHING -add boostarap
-
-Check the models file and tide it up
-
-
-CHECK TIMESTAMP ATTRIBUTE, and how to add multiple dates for each review data
-
-CHECK IF SOMEONE REGISTERS IF THEY SIGN IN AUTOMATICALLY
-
-MAKE THE LENGTH OF THE VARIAVBLES ACCURATE, THE SAME AS THE WORD DOCUMENT DESIHN
-
-MAKE THE CARD IN THE MIDDLE AND VERTICAL LIKE A TIKTOK, WHERER EDIT WINDOW SHOWS UP IN THE LEFT AND OTHER MENU SHOWS RIGHT.
-
-
-FIX LOGO TO SHOW IT ALL
-
-MAKE SEARCH ONLY SHOW UP WHEN ITS IN LOGIN PAGE
-
-ADD SORTING ALGORITHIM FOR CARDS IN JAVASCRIPT??
-
-ADD A LINK FOR EACH SUBDECK where i's /study/deckname
-
-ADD A UNIQUE CARD ID TO EACH CARD ROUTE
-
 add a an accordion component, which allows you to toggle the display of subdecks when the user clicks on the main deck. to support multi deck
 
 https://getbootstrap.com/docs/5.0/components/card/
@@ -84,9 +59,5 @@ https://rlrocha.medium.com/validation-mask-through-regex-with-python-4b03993ad1a
 flask shell
 
 Name can be changed to apollo
-
-ADD USER'S NAME TO NAV BAR IN THE LEFT
-
-add login required to entire decks page and find out how to add to whole page/blueprint
 
 <!--the {{}} is a variable whereas {% %} is a command e,g. for loops etc, its jinja2 which is what flask's rendering uses-->

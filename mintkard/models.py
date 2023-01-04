@@ -1,6 +1,6 @@
 from . import db #This will import from current package
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timedelta #Allows the storing of the time of each card's creation
+from datetime import datetime #Allows the storing of the time of each card's creation
 from sqlalchemy.sql import func#can be delted if you dont use time from it
 from typing import List,Tuple
 from flask import Flask,current_app

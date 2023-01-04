@@ -5,28 +5,15 @@ from flask_login import current_user,login_required
 from datetime import datetime, timedelta 
 from typing import List,Tuple
 import requests
+
 decks = Blueprint('decks', __name__)
 
 class FlashcardManager:
     def __init__(self,user_id:int,app):
         self.app = app
-        #current_app.app_context().push()
         self.user = User.query.get(user_id)
 
 
-    # '''returns a list of decks that the user owns'''
-    # def get_all_decks(self) -> List[Deck]:
-    #     root_decks = []
-    #     for deck in self.user.decks:
-    #         root_decks.append(deck)
-    #     return
-
-    # '''returns a list of subdecks that the user owns'''
-    # def get_all_subdecks(self,user:User) -> List[Deck]:
-    #     subdecks = []
-    #     for deck in user.decks:
-    #         subdecks.append(deck.children_deck)
-    #     return subdecks
 
     '''returns a list of cards that the user owns'''
     def get_all_cards(self) -> List[Card]:
@@ -71,10 +58,55 @@ class FlashcardManager:
     The following three function review_flashcards, is_card_due and review_deck are used to review the flashcards and are used and work together 
     alongside the update_stats in card class
     '''
+    # def merge_sort(items):
+    #     if len(items) <= 1:
+    #         return items
+
+    #     middle_index = len(items) // 2
+    #     left_items = items[:middle_index]
+    #     right_items = items[middle_index:]
+
+    #     left_items = merge_sort(left_items)
+    #     right_items = merge_sort(right_items)
+
+    #     return merge(left_items, right_items)
+
+    # def merge(left_items, right_items):
+    #     sorted_items = []
+
+    #     left_index = 0
+    #     right_index = 0
+
+    #     while left_index < len(left_items) and right_index < len(right_items):
+    #         if left_items[left_index] <= right_items[right_index]:
+    #             sorted_items.append(left_items[left_index])
+    #             left_index += 1
+    #         else:
+    #             sorted_items.append(right_items[right_index])
+    #             right_index += 1
+
+    #     sorted_items.extend(left_items[left_index:])
+    #     sorted_items.extend(right_items[right_index:])
+
+    #     return sorted_items
+
     def review_flashcards(self, flashcards: List[Card]) -> List[Tuple[Card]]:
         reviewed_flashcards = []
+
+        # flashcards_to_sort = []
+        # flashcards.extend(flashcards_to_sort)
+        # for flashcard in flashcards:
+        #     if flashcard.is_new == True:
+        #         continue
+        #     else:
+        #         flashcards_to_sort.append(flashcard)
+        #         flashcards.remove(flashcard)
+        
+        #flashcards_to_sort = merge_sort(flashcards_to_sort)
+        #flashcards.extend(flashcards_to_sort) # puts both of them back
+
         for flashcard in flashcards:
-        #     print(flashcard.question)
+            print(flashcard.question)
             #send card to flask front end
             flashcard.update_stats()
             flashcard.last_study = datetime.now()
@@ -113,58 +145,6 @@ class FlashcardManager:
         return self.review_flashcards(flashcards_to_review)
 
 
-#current_app.app_context().push()
-# db.session.execute('DELETE * FROM Deck')
-# db.session.commit()
-#print(current_user)
-
-
-# deck1 = Deck(name='Deck 1', user_id=)
-# deck2 = Deck(name='Deck 2', user_id=1)
-# db.session.add(deck1)
-# db.session.add(deck2)
-# db.session.commit()
-# subdeck1 = Deck(name='Subdeck 1', user_id=1, parent_id=deck1.id)
-# subdeck2 = Deck(name='Subdeck 2', user_id=1, parent_id=deck1.id)
-# db.session.add(subdeck1)
-# db.session.add(subdeck2)
-# db.session.commit()
-
-# # Create the cards
-# card1 = Card(question='Question 1', answer='Answer 1', deck_id=deck1.id)
-# card2 = Card(question='Question 2', answer='Answer 2', deck_id=deck1.id)
-# card3 = Card(question='Question 3', answer='Answer 3', deck_id=deck2.id)
-# card4 = Card(question='Question 4', answer='Answer 4', deck_id=deck2.id)
-# card5 = Card(question='Question 5', answer='Answer 5', deck_id=subdeck1.id)
-# card6 = Card(question='Question 6', answer='Answer 6', deck_id=subdeck1.id)
-# card7 = Card(question='Question 7', answer='Answer 7', deck_id=subdeck2.id)
-# card8 = Card(question='Question 8', answer='Answer 8', deck_id=subdeck2.id)
-
-# # Add the decks and cards to the database
-
-# db.session.add(card1)
-# db.session.add(card2)
-# db.session.add(card3)
-# db.session.add(card4)
-# db.session.add(card5)
-# db.session.add(card6)
-# db.session.add(card7)
-# db.session.add(card8)
-# db.session.commit()
-
-#fmanager.review_deck(1)
-#root_decks = Deck.query.filter_by(parent_id=None).all()
-
-
-
-
-# print(isinstance(root_decks, list))
-# all_decks = fmanager.get_all_decks(root_decks)
-# for deck in all_decks:
-#     print(deck.name)
-#print(root_decks[0])
-
-
 '''
 TO-DO in edit pages maybe
 return redirect(url_for("login", next_page="/profile"))
@@ -185,6 +165,22 @@ return redirect(url_for("login", next_page="/profile"))
 def before_request():
     '''Globally initlise flashcard manager, will be accessed as g.fmanager in all routes in the decks blueprint'''
     g.fmanager = FlashcardManager(user_id=current_user.id, app=current_app)
+
+# deck_id_a=8
+# result = db.session.execute(f"SELECT user_id FROM deck WHERE id={deck_id_a}")
+# card_userid=result.fetchone()[0]
+# print(card_userid)
+def user_owned_card(card_id):
+    '''Returns true if the user does own the card, false if the user does not, preventing unauthorised access'''
+    result = db.session.execute("""
+        SELECT deck.user_id
+        FROM card card
+        INNER JOIN deck deck ON card.deck_id = deck.id
+        WHERE card.id = {}
+    """.format(card_id))
+    if result.fetchone()[0] == current_user.id:
+        return True
+    return False
 '''
 This is the main homepage for the decks page, where all decks(set of cards) are shown and their subdecks
 They will have the option to study a deck, edit a deck, CHECK LATER HOW TO REDIRECT EDIT DECKS TO THE RIGHT DECK.
@@ -213,7 +209,7 @@ def decks_route():
         num_of_decks = 'Deck' + str(num_of_decks)
         new_deck = Deck(name='DECKS',user_id=current_user.id)
         db.session.add(new_deck)
-        db.session.commit()
+        db.session.commit() 
         
         root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
         return render_template("decks.html",root_decks = root_decks)
@@ -297,6 +293,7 @@ def create():
             deck_id = request.form.get('deck_id')
             if request.form.get('subdeck_id'):
                 subdeck_id = request.form.get('subdeck_id')
+                #DO STUFF
 
 
 
@@ -314,10 +311,10 @@ def create():
 @decks.route('/study-deck/<int:deck_id>')
 def study_deck(deck_id):
 
-    deck = Deck.query.get(deck_id)
+    deck = Deck.query.get(id=deck_id,user_id = current_user.id)
     print('Revise deck')
 
-    return redirect(url_for('deck.decks_route'), permanent=True)
+    return redirect(url_for('decks.decks_route'), permanent=True)
 
 #study one card
 @login_required
@@ -326,8 +323,8 @@ def study(id):
     '''
     Allows the user to study new cards
     '''
-    deck = Deck.query.filter_by(id=deck_id).first()
-    cards = Card.query.filter_by(deck_id=deck_id).all()
+    deck = Deck.query.filter_by(id=deck_id,user_id =current_user.id).first()
+    cards = Card.query.filter_by(deck_id=deck_id,user_id =current_user.id).all()
     if request.method == 'POST':
         if request.form.get('quality'):
             question = request.form.get('quaity')
@@ -338,46 +335,63 @@ def study(id):
 
 #edit entire deck
 @login_required
-@decks.route('/edit-deck/<int:deck_id>')
+@decks.route('/edit-deck/<int:deck_id>',methods=['GET','POST'])
 def edit_deck(deck_id):
     '''
     RECURSION FOR SUBDECKS???
     '''
+
+    # new_subdeck= Deck(name='this is just a test', user_id=current_user.id, parent_id=18)
+    # db.session.add(new_subdeck)
+    # db.session.commit()
     try:
-        current_deck = Deck.query.filter_by(id=deck_id).first()#.all()    parent_id=None,
-    except:
-        flash('Card id cannot be found',category='danger')
+        current_deck = Deck.query.filter_by(id=deck_id,user_id =current_user.id).first()#.all()    parent_id=None,
+    except Exception as e:
+        flash('Error : {}'.format(e),category='danger')
+
+    if current_deck is None:    
+        flash('Deck id cannot be found',category='danger')
+        return redirect(url_for('decks.decks_route'),code=301)
         
+    #PREVENT SQL INJECTIONS HERE!!!
     if request.method== 'POST':
-        if request.form.get('title'): #description is optional
-            title = request.form.get('title')
+        print(request.form)
+        if request.form.get('name'): #not checking if description is sent as its is optional
+            name = request.form.get('name')
             description = request.form.get('description')
-            current_deck.title = title
+            current_deck.name = name
             current_deck.description = description
             db.session.commit()
             flash('Deck has been updated',category='success')
-            return redirect(url_for('decks_route'),code=301)#301 is a permanent redirect
+            return redirect(url_for('decks.edit_deck',deck_id=deck_id),code=301)#301 is a permanent redirect
 
         elif request.form.get('delete_subdeck'):
-            try:
-                deck_id = request.form.get('delete_deck')
-            except:
+            subdeck_id = request.form.get('delete_subdeck')
+
+            deck_to_delete = Deck.query.get(subdeck_id)
+
+            if deck_to_delete is None:
                 flash('Deck with id {} not found'.format(deck_id), category='danger')
-        
-            deck_to_delete = Deck.query.get_or_404(deck_id)
+                return redirect(url_for('decks.edit_deck', deck_id=deck_id), code=301)
+
             db.session.delete(deck_to_delete)
             db.session.commit()
+            flash('Subdeck has been deleted',category='success')
+            return  redirect(url_for('decks.edit_deck',deck_id=deck_id),code=301)#301 is a permanent redirect
 
-        elif request.form.get('edit_subdeck'):
-            try:
-                subdeck_id = request.form.get('edit_subdeck')
-                sub_deck = Deck.query.filter_by(id=subdeck_id).first()
-            except Exception as e:
-                flash('Error locating subdeck: {}'.format(e),category='danger')
-                #what happens if there is an excpetion? return to render_template deck=current_deck
+
+        elif request.form.get('add_subdeck'):
+            if request.form.get('name'):
+                new_subdeck= Deck(name=request.form['name'], user_id=current_user.id, parent_id=deck_id)
+                db.session.add(new_subdeck)
+                db.session.commit()
+                flash('Subdeck has been added successfully',category='success')
+                return redirect(url_for('decks.decks_route'),code=301)
+
+            else:
+                flash('Please add a valid subdeck title, title is required',category='danger')
 
             return render_template("edit_deck.html",deck = sub_deck)
-
     # put the infomraiton has a placeholder and check if there is a change, then check how to update deck info
     return render_template("edit_deck.html",deck=current_deck)
 
@@ -388,19 +402,113 @@ def edit(card_id):
     '''
     Allows the user to edit existing cards
     '''
-    current_card = Card.query.filter_by(id=card_id).first()
+    #checks if the card is owned by user, if its not then this editing wont be allowed
+    if not user_owned_card(card_id):
+        return redirect(url_for('decks.decks_route'),code=301)
+
+    # try:
+    #     current_card = Card.query.filter_by(id=card_id).first()
+    #     get_card_userid(card_id)
+    # except Exception as e:
+    #     flash('Error locating card: {}'.format(e),category='danger')
+
+    try:
+        current_card = Card.query.filter_by(id=card_id).first()
+    except Exception as e:
+        flash('Error : {}'.format(e),category='danger')
+
+    if current_card is None:    
+        flash('Card id cannot be found',category='danger')
     
-    #QUERY CARD OBJECT  AND PASS IT IN THEN UPDATE IT WITH CARD.QUESTION = QUEST.FORM['QUESITON]
+    # #QUERY CARD OBJECT  AND PASS IT IN THEN UPDATE IT WITH CARD.QUESTION = QUEST.FORM['QUESITON]
+    # print(request.form)
+    # print(request)
+
     if request.method == 'POST':
-        print(response.get_data().decode())
+        print('ENTERED 1')
+        print(request.form.get('card-question'))
+        print(request)
         if request.form.get('card-question') or request.form.get('card-answer'):
             current_card.question = request.form['card-question']
             current_card.answer = request.form['card-answer']
             db.session.commit()
             flash('Flashcard has been successfully updated',category='success')
-            
+            #REDIRECT BACK TO ITS PLACE
+            return redirect(url_for('decks.browse'),code=301)
 
-            #Card = card.update(question=question,answer=answer)
-            #db.commit ???
+            #return redirect(request.referrer)
     current_card = Card.query.filter_by(id=card_id).first()
     return render_template("edit.html",card=current_card)
+
+
+
+    #current_app.app_context().push()
+# db.session.execute('DELETE * FROM Deck')
+# db.session.commit()
+#print(current_user)
+
+
+# deck1 = Deck(name='Deck 1', user_id=)
+# deck2 = Deck(name='Deck 2', user_id=1)
+# db.session.add(deck1)
+# db.session.add(deck2)
+# db.session.commit()
+# subdeck1 = Deck(name='Subdeck 1', user_id=1, parent_id=deck1.id)
+# subdeck2 = Deck(name='Subdeck 2', user_id=1, parent_id=deck1.id)
+# db.session.add(subdeck1)
+# db.session.add(subdeck2)
+# db.session.commit()
+
+# # Create the cards
+# card1 = Card(question='Question 1', answer='Answer 1', deck_id=deck1.id)
+# card2 = Card(question='Question 2', answer='Answer 2', deck_id=deck1.id)
+# card3 = Card(question='Question 3', answer='Answer 3', deck_id=deck2.id)
+# card4 = Card(question='Question 4', answer='Answer 4', deck_id=deck2.id)
+# card5 = Card(question='Question 5', answer='Answer 5', deck_id=subdeck1.id)
+# card6 = Card(question='Question 6', answer='Answer 6', deck_id=subdeck1.id)
+# card7 = Card(question='Question 7', answer='Answer 7', deck_id=subdeck2.id)
+# card8 = Card(question='Question 8', answer='Answer 8', deck_id=subdeck2.id)
+
+# # Add the decks and cards to the database
+
+# db.session.add(card1)
+# db.session.add(card2)
+# db.session.add(card3)
+# db.session.add(card4)
+# db.session.add(card5)
+# db.session.add(card6)
+# db.session.add(card7)
+# db.session.add(card8)
+# db.session.commit()
+
+#fmanager.review_deck(1)
+#root_decks = Deck.query.filter_by(parent_id=None).all()
+
+
+
+
+# print(isinstance(root_decks, list))
+# all_decks = fmanager.get_all_decks(root_decks)
+# for deck in all_decks:
+#     print(deck.name)
+#print(root_decks[0])
+
+
+
+#IN FLASHCARD
+
+    # '''returns a list of decks that the user owns'''
+    # def get_all_decks(self) -> List[Deck]:
+    #     root_decks = []
+    #     for deck in self.user.decks:
+    #         root_decks.append(deck)
+    #     return
+
+    # '''returns a list of subdecks that the user owns'''
+    # def get_all_subdecks(self,user:User) -> List[Deck]:
+    #     subdecks = []
+    #     for deck in user.decks:
+    #         subdecks.append(deck.children_deck)
+    #     return subdecks
+
+
