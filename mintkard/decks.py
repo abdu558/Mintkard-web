@@ -131,14 +131,19 @@ class FlashcardManager:
 
     #This is the main thing that is called,
     def review_deck(self, deck_id_or_deck) -> List[Tuple[Card, bool]]:#deck_id: int = None,deck: Deck = None if deck_id is not None: then find the deck else use the deck
+        '''
+        This method is called to review decks, this will review all subdecks 
+        '''
         if isinstance(deck_id_or_deck, int):#Polymorphism
             deck= Deck.query.get(deck_id_or_deck)
+
         flashcards_to_review = []
-        #print('deck.id is',deck.id)
         for flashcard in deck.cards:
             #print('flashcard is',flashcard.question)
             if self.is_card_due(flashcard):
                 flashcards_to_review.append(flashcard)
+
+        #Supports subdecks byy using recursion       
         for subdeck in deck.children_deck:
             flashcards_to_review.extend(self.review_deck(subdeck.id))
         #print('flashcards to review is ',flashcards_to_review)
@@ -323,7 +328,7 @@ def study(deck_id):
     '''
     Allows the user to study new cards
     '''
-    
+    g.fmanager.review_deck(deck_id)
     cards = Card.query.filter_by(deck_id=1).all()
     if request.method == 'POST':
         if request.form.get('quality'):

@@ -61,3 +61,6 @@ flask shell
 Name can be changed to apollo
 
 <!--the {{}} is a variable whereas {% %} is a command e,g. for loops etc, its jinja2 which is what flask's rendering uses-->
+
+make the filter option in browse, one list of all the decks and subdecks and make it more easy to move alot of decks to another deck
+print the cards too.
