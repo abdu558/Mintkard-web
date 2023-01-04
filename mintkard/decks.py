@@ -306,25 +306,25 @@ def create():
             db.session.commit()
     return render_template("create.html")
 
-#study entire deck, where there is a redirect to study each card
-@login_required
-@decks.route('/study-deck/<int:deck_id>')
-def study_deck(deck_id):
+# #study entire deck, where there is a redirect to study each card
+# @login_required
+# @decks.route('/study-deck/<int:deck_id>')
+# def study_deck(deck_id):
 
-    deck = Deck.query.get(id=deck_id,user_id = current_user.id)
-    print('Revise deck')
+#     deck = Deck.query.filter_by(id=deck_id,user_id = current_user.id).first()
+#     print('Revise deck')
 
-    return redirect(url_for('decks.decks_route'), permanent=True)
+#     return redirect(url_for('decks.decks_route'), permanent=True)
 
 #study one card
 @login_required
-@decks.route('/study/<int:id>',methods=['GET','POST'])
-def study(id):
+@decks.route('/study/<int:deck_id>',methods=['GET','POST'])
+def study(deck_id):
     '''
     Allows the user to study new cards
     '''
-    deck = Deck.query.filter_by(id=deck_id,user_id =current_user.id).first()
-    cards = Card.query.filter_by(deck_id=deck_id,user_id =current_user.id).all()
+    
+    cards = Card.query.filter_by(deck_id=1).all()
     if request.method == 'POST':
         if request.form.get('quality'):
             question = request.form.get('quaity')
@@ -363,7 +363,7 @@ def edit_deck(deck_id):
             current_deck.description = description
             db.session.commit()
             flash('Deck has been updated',category='success')
-            return redirect(url_for('decks.edit_deck',deck_id=deck_id),code=301)#301 is a permanent redirect
+            #return redirect(url_for('decks.edit_deck',deck_id=deck_id),code=301)#301 is a permanent redirect
 
         elif request.form.get('delete_subdeck'):
             subdeck_id = request.form.get('delete_subdeck')
@@ -381,19 +381,24 @@ def edit_deck(deck_id):
 
 
         elif request.form.get('add_subdeck'):
-            if request.form.get('name'):
-                new_subdeck= Deck(name=request.form['name'], user_id=current_user.id, parent_id=deck_id)
+            if request.form.get('subdeck_name'):
+                new_subdeck= Deck(name=request.form['subdeck_name'], user_id=current_user.id, parent_id=deck_id)
                 db.session.add(new_subdeck)
                 db.session.commit()
                 flash('Subdeck has been added successfully',category='success')
-                return redirect(url_for('decks.decks_route'),code=301)
+                #return  redirect(url_for('decks.edit_deck',deck_id=deck_id),code=301)#301 is a permanent redirect
 
             else:
                 flash('Please add a valid subdeck title, title is required',category='danger')
+        else:
+            flash('POST request has been recieved with no valid content',category='danger')
+       # return redirect(url_for('decks.decks_route'),code=301)
 
-            return render_template("edit_deck.html",deck = sub_deck)
     # put the infomraiton has a placeholder and check if there is a change, then check how to update deck info
     return render_template("edit_deck.html",deck=current_deck)
+
+
+
 
 #edits individual cards
 @login_required

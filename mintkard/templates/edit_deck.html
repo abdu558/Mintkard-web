@@ -7,6 +7,7 @@
 {% block body %}
 <div class="container my-5">
   <h1>Edit Deck</h1>
+  <hr>
   <br>
   <form method="post">
 
@@ -32,10 +33,14 @@
     <!-- Submit/Cancel Buttons -->
     <div class="btn-group mt-3">
       <a type="button" class="btn btn-secondary" href="/decks/">Cancel</a>
-      <input type="submit" class="btn btn-primary" name="submit"></input>
+      <input type="submit" class="btn btn-success" name="submit"></input>
     </div>
   </form>
   <hr>
+  
+  
+  <h3>Subdecks</h3>
+  
   <div id="flashcard-deck" class="d-grid ">
     <!--subdecks in the current deck-->
     {% for subdeck in deck.children_deck %}
@@ -55,16 +60,17 @@
   <br>
 
   <h4> Add Subdeck</h4>
-  <div>
+  <form method="post">
     <div class="form-group d-grid gap-3">
-      <label for="subdeck1Title">Subdeck Title</label>
-      <input type="text" class="form-control" id="subdeck1Title" placeholder="Enter subdeck title">
+      <label for="subdeck_title">Subdeck Title</label>
+      <input type="text" class="form-control" name="subdeck_name" id="subdeck_title" placeholder="Enter subdeck title">
     </div>
     <!-- Add/Delete Subdeck Buttons -->
     <div class="btn-group mt-3">
-      <button type="button" class="btn btn-primary" id="addSubdeckButton">Add Subdeck</button>
+      <button type="submit" class="btn btn-success btn-lg" name="add_subdeck" value="add">Add New Subdeck</button>
     </div>
-  </div>
+  </form>
+  
 
 
 
