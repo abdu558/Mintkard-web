@@ -58,10 +58,14 @@ class Card(db.Model):
     def __repr__(self):
         return f"Card('{self.id}',{self.question}', '{self.answer}', '{self.deck_id}')"
 
-    def delete(self):
-        print('SUCCESS')
+    def update_studydate(self):
+        self.last_study= datetime.now()
 
-    def update_stats(self):# PASS IN quality
+
+    # def delete(self):
+    #     del self
+
+    def update_stats(self,quality):# PASS IN quality
         '''
         This function is used on one card at a time
         Calculate the new interval based on the easiness factor, quality and interval.
@@ -69,15 +73,14 @@ class Card(db.Model):
         if the quality is more than 3 but the easiness factor is more than the
         the base limits we modify the easiness factor to make it stop it repeating too much or too little      
         '''
-        print('!quality is',self.quality)
+        self.quality = quality
+        self.update_studydate()
         if self.is_new:
             self.easiness_factor = 2.5
             self.interval = 1
             self.is_new=False
             return
             #return self.easiness_factor, self.interval
-        self.quality = int(input('Enter the quality of the card: '))
-
         if self.quality <3:
             self.easiness_factor = 2.5
             self.interval = 1
@@ -93,7 +96,9 @@ class Card(db.Model):
             new_interval = self.interval * new_easiness_factor
             self.easiness_factor = new_easiness_factor
             self.interval = new_interval
-            self.last_study = datetime.now()
+            #self.last_study = datetime.now()
+            self.last_study= datetime.now()
+            db.session.commit()
             return
             #return self.interval,self.easiness_factor
 

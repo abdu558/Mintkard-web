@@ -9,37 +9,64 @@
 
   <h1 >Edit</h1>
 
+  {% macro display_subdecks(subdeck,deck,selected_id) %}
+  <!-- The selceted line in the dropdown option the same, after post request, thats what the selected id which is passed in and out through the function display_subdecks-->
+    <option value = "{{subdeck.id}}" {% if subdeck.id == selected_id %}selected{% endif %}>
+      {{deck.name}} ->- {{ subdeck.name }}
+    </option>
+    {% if subdeck.children_deck %}
+      {% for sub in subdeck.children_deck %}
+        {{ display_subdecks(sub,subdeck,selected_id) }}
+      {% endfor %}
+    {% endif %}
+  {% endmacro %}
+
   <div class="container-fluid">
     <!--width and height of the card height was 80vh-->
     <div class="card mx-auto" style="width: 90%; height: 100%;">
       <div class="card-body mx-4">
         <div class="form-group">
-          <label for="deck-filter">Deck:</label>
-          <select class="form-control" id="deck-filter">
-            <option>All</option>
-            <option>Deck 1</option>
-            <option>Deck 2</option>
+          <label for="deck-filter">All Decks and Subdecks:</label>
+          <select class="form-control" name="deck" required>
+            <!--Can't remove the duplicate in the list, the following code auto selects the deck of the card-->
+            {% set found_deck = decks | selectattr("id", "equalto", card.deck_id) | first %}
+            {% if found_deck %}
+              <option selected value="same">{{found_deck.name}}</option>
+            {% else %}
+              <option selected>{{card.deck_id}}</option>
+            {% endif %}
+
+
+
+
+
+            {% for deck in decks %}
+            <!--This is disables so users cant select it, its just to make the user aware which subdecks belong together-->
+            <option disabled>---Deck group:---</option>
+            <!-- The selceted line in the dropdown option the same, after post request-->
+            <option value="{{deck.id}}">
+              {{ deck.name }}
+            </option>
+            {% if deck.children_deck %}
+              {% for subdeck in deck.children_deck %}
+                {{ display_subdecks(subdeck,deck) }}
+              {% endfor %}
+            {% endif %}
+  
+            {% endfor %}
+  
           </select>
         </div>
-        <div class="form-group">
-          <label for="subdeck-filter">Subdeck:</label>
-          <select class="form-control" id="subdeck-filter">
-            <option>All</option>
-            <option>Subdeck 1</option>
-            <option>Subdeck 2</option>
-          </select>
-        </div>
+
         <h5 class="card-title my-3">
-          <label for="card-question">Card question</label>
+          <label for="card-question">Question</label>
           <input type="text" style="width: 100%" name="card-question" value="{{card.question}}">
         </h5>
 
         <h5>
-        <label for="card-title">Card answer</label>
+        <label for="card-title">Answer</label>
           <p class="card-text">
-          <textarea style="width: 100%" name="card-answer">
-          {{card.answer}}
-          </textarea>
+          <textarea style="width: 100%" name="card-answer">{{card.answer}}</textarea>
           </p>
         </h5>
         
@@ -51,6 +78,7 @@
         <input type="file" id="card-image" accept="image/*">
       </div>
     </div>
+    <br>
     <input href="#" class="btn btn-primary m-3" value="Update" type="submit" ></input>
   </div>
   </form>

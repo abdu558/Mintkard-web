@@ -64,3 +64,17 @@ Name can be changed to apollo
 
 make the filter option in browse, one list of all the decks and subdecks and make it more easy to move alot of decks to another deck
 print the cards too.
+
+
+
+FIX THE REVIEW_fLASHCARDS FUNCTION AND ALLOW REVIEW_dECK TO CALL REVIEW_fLASHCARDS, CURRENTLY TRYING TO GET REVIEW_FLASHCARD INTO THE DECK ITSELF, WILL PASS IN CARDS[0] EACH TIME AND WHEN IT GETS REMOVED IT WILL 
+
+
+maybe add a linked list instead of a array to increase marks???
+
+add the stats and browse and create card, implemnt the dropdown in browse and create card
+
+REMOVE BEFORE FIRST REQUEST AS ITS INITLIZED EVERY SINGLE TIME I THINK
+
+
+CREATE A 404 CUSTOM PAGE

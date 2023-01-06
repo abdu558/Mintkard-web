@@ -17,8 +17,8 @@
           <h5 class="card-title">{{loop.index}})  {{deck.name}}</h5>
           <p class="card-text">{{deck.description}}</p>
           <p class="card-text">Deck id: {{deck.id}}</p>
-          <div class=" d-flex "> <!-- makes the three buttons next to each other, rather than the delete button be underneath-->
-            <a class="btn btn-primary " style="margin-left: 5px" name="deck_button" value="start" href ='/decks/study-deck/{{deck.id}}'>Start</a>
+          <div class=" d-flex "> <!--makes the three buttons next to each other, rather than the delete button be underneath-->
+            <a class="btn btn-primary " style="margin-left: 5px" name="deck_button" value="start" href ='/decks/study/{{deck.id}}'>Start</a>
             <a class="btn btn-secondary" style="margin-left: 5px" name="deck_button" value="edit" href = '/decks/edit-deck/{{deck.id}}' >Edit</a>
             
             <form method="post" style="margin-left: 5px">
@@ -33,15 +33,27 @@
           <ul class="dropdown-menu" style="width:100%">
             {% for subdeck in deck.children_deck %}
               <li><a class="dropdown-item" href="#" name="subdeck_revise" value="revise">{{subdeck.name}}</a></li>
+        
+              {% if subdeck.children_deck %}
+                <ul class="dropdown-menu" style="width:100%">
+                  {% for subdeck2 in subdeck.children_deck %}
+                    <li><a class="dropdown-item" href="#" name="subdeck_revise" value="revise">{{subdeck2.name}}</a></li>  
+                  {% endfor %}
+                </ul>
+              {% endif %}
+        
             {% endfor %}
           </ul>
-        </div>        
+        </div> 
+              
       </div>
     </div>
     {% endfor%}
   </div>
+
   <!--margin bottom is to add space to the bottom of the screen and stop the button being stuck on the bottom-->
   <form method="post"><button type ="submit" style = "margin-bottom: 2rem" class="btn btn-success mt-3 btn-lg" id="add" value="add" name = "add_deck">Add New Deck</button></form>
 </div>
+
 
 {% endblock %}

@@ -33,3 +33,6 @@ Average quality:
 Copy code
 SELECT AVG(quality) as avg_quality FROM Card;
 These queries assume that you are using an SQL database and that you have tables named Deck and Card with the columns listed in the original question. You may need to modify the queries to match the specific structure of your database.
+
+
+from mintkard import db

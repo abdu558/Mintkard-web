@@ -40,7 +40,7 @@
                           <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
                         </ul>
                     </li>
-                    {% endif %}
+                    
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/decks/">Decks</a>
                     </li>
@@ -56,6 +56,17 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/decks/stats">Statistics</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/decks/help">Help</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/register">Register</a>
+                    </li>
+                    {% endif %}
 
                 </ul>
 

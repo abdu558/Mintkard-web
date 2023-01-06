@@ -6,7 +6,12 @@
 
 {% block body %}
 <div class="container my-5">
-  <h1>Edit Deck</h1>
+  <h1>
+    Edit Deck     
+    {% if deck.parent_id %}
+    <a type="button" class="btn btn-secondary btn-sm" href="/decks/edit-deck/{{deck.parent_id}}">Go to parent deck?</a>
+    {% endif %}
+  </h1>
   <hr>
   <br>
   <form method="post">
@@ -36,6 +41,8 @@
       <input type="submit" class="btn btn-success" name="submit"></input>
     </div>
   </form>
+
+
   <hr>
   
   

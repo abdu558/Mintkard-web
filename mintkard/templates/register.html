@@ -7,8 +7,11 @@
 {% block body %}
 <!--You can access these items in the backend using the name=""-->
 
+
+<h1>Register</h1>
+<p class="text-muted">"Spaced repition is a supernatural ability for the mind to absorb and retain information"</p>
+<hr>
 <form method="POST">
-  <h1>Register</h1>
   <br>
   <div class="form-group form-signin w-50">
     <p>Already have an account? <a href="/auth/login">Login</a></p>
@@ -33,15 +36,10 @@
       <label for="password2">Confirm Password</label>
     </div>
 
-    <p class="text-muted">"Spaced repition is a supernatural ability for the mind to absorb and retain information"</p>
-    <button class="btn btn-primary" type="submit">Register</button>
-  </div>
-</form>
 
-
-
+  
 <hr>
-  <h4>Rules:</h4>
+  <h4>Requirments:</h4>
   <ul>
     <li>Username:
       <ul>
@@ -58,6 +56,8 @@
       </ul>
     </li>
   </ul>
-  
+  <button class="btn btn-primary" type="submit">Register</button>
+</div>
 </form>
+
 {% endblock %}

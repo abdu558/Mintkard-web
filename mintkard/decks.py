@@ -20,11 +20,12 @@ class FlashcardManager:
 
         cards = []
         for deck in self.user.decks:
-            cards.extend(self.get_cards_from_deck(deck))
+            if deck.parent_id is None:# so it starts from the top of the tree, as decks gets all the decks.
+                cards.extend(self.get_cards_from_deck(deck))
         return cards
 
     def get_cards_from_deck(self,deck: Deck) -> List[Card]:
-        cards = deck.cards#gets the cards in the currrent deck, but cards in child_decks are not collected yet
+        cards = deck.cards#gets the cards in the currrent deck, but cards in child_decks are not collected yet, till the recursion
         for child_deck in deck.children_deck:
             cards.extend(self.get_cards_from_deck(child_deck))
         return cards
@@ -39,12 +40,15 @@ class FlashcardManager:
     '''
 
 
-    def get_all_decks(self,root_decks: List[Deck]) -> List[Deck]:
+    def get_all_decks(self):#,root_decks: List[Deck]) -> List[Deck]:
         all_decks = []
-        for root_deck in root_decks:
-            all_decks.extend(self.get_all_decks_recursive(root_deck))
+        #print('DECKS ARE',self.user.decks)
+        for root_deck in self.user.decks:
+            if root_deck.parent_id is None:# this will only check parent decks, as self.user.decks has some subdecks
+                all_decks.extend(self.get_all_decks_recursive(root_deck))
         return all_decks
 
+    #DO NOT CALL THIS! THIS IS ONLY USED BY OTHER FUNCTIONS
     def get_all_decks_recursive(self,root_deck: Deck) -> List[Deck]:
         all_decks = [root_deck]
         for subdeck in root_deck.children_deck:
@@ -91,6 +95,7 @@ class FlashcardManager:
     #     return sorted_items
 
     def review_flashcards(self, flashcards: List[Card]) -> List[Tuple[Card]]:
+        '''Currently unused used to be called on the return statemnt  in the review_deck'''
         reviewed_flashcards = []
 
         # flashcards_to_sort = []
@@ -117,13 +122,18 @@ class FlashcardManager:
     def is_card_due(self,flashcard:Card) -> bool:
         if flashcard.is_new == True:
             return True
+        print('ID IS ',flashcard.id)
         try:
+
             review_interval = timedelta(days=flashcard.interval)#converts int to time using datetime
-            return flashcard.last_study + review_interval <= datetime.now()
-        except TypeError:
-            # Handle TypeError if it's not an integer
-            print("Error: Interval must be an integer")
-            return False
+            print(review_interval)
+            print(flashcard.last_study + review_interval)
+            print(flashcard.last_study + review_interval <= datetime.now())
+            return (flashcard.last_study + review_interval <= datetime.now())
+        # except TypeError:
+        #     # Handle TypeError if it's not an integer
+        #     print("Error: Interval must be an integer")
+        #     return False
         except ValueError:
             # Handle ValueError if its a negative integer
             print("Error: Interval must be a positive integer")
@@ -147,7 +157,9 @@ class FlashcardManager:
         for subdeck in deck.children_deck:
             flashcards_to_review.extend(self.review_deck(subdeck.id))
         #print('flashcards to review is ',flashcards_to_review)
-        return self.review_flashcards(flashcards_to_review)
+
+        #return self.review_flashcards(flashcards_to_review)
+        return flashcards_to_review
 
 
 '''
@@ -168,15 +180,29 @@ return redirect(url_for("login", next_page="/profile"))
 #Globally initlize flashcard mana
 @decks.before_request
 def before_request():
-    '''Globally initlise flashcard manager, will be accessed as g.fmanager in all routes in the decks blueprint'''
+    '''Globally initlise flashcard manager, will be accessed as g.fmanager in all routes in the decks blueprint
+    This is a complex user-defined objected oriented model, will only be inilized with the user sending a request,
+    which the id of the user is initialized at runtime
+    '''
     g.fmanager = FlashcardManager(user_id=current_user.id, app=current_app)
+    # card1 = Card.query.get(4)
+    # card1.is_new = True
+    # db.session.commit()
+    # card.update_time()
+    # print('updated time is',card.last_study)
 
+
+    #print(g.fmanager.get_all_decks())
+
+# if User.is_authenticated:
+#     g.fmanager = FlashcardManager(user_id=current_user.id, app=current_app)
+#     print(g.fmanager.get_all_decks())
 # deck_id_a=8
 # result = db.session.execute(f"SELECT user_id FROM deck WHERE id={deck_id_a}")
 # card_userid=result.fetchone()[0]
 # print(card_userid)
 def user_owned_card(card_id):
-    '''Returns true if the user does own the card, false if the user does not, preventing unauthorised access'''
+    '''Returns true if the user does own the flashcard, false if the user does not, preventing unauthorised access of cards, if it the id is changed'''
     result = db.session.execute("""
         SELECT deck.user_id
         FROM card card
@@ -186,6 +212,30 @@ def user_owned_card(card_id):
     if result.fetchone()[0] == current_user.id:
         return True
     return False
+
+
+
+# # # Create the cards
+# card1 = Card(question='Question 1', answer='Answer 1', deck_id=51)
+# card2 = Card(question='Question 2', answer='Answer 2', deck_id=51)
+# card3 = Card(question='Question 3', answer='Answer 3', deck_id=52)
+# card4 = Card(question='Question 4', answer='Answer 4', deck_id=51)
+# card5 = Card(question='Question 5', answer='Answer 5', deck_id=51)
+# card6 = Card(question='Question 6', answer='Answer 6', deck_id=56)
+# card7 = Card(question='Question 7', answer='Answer 7', deck_id=58)
+# card8 = Card(question='Question 8', answer='Answer 8', deck_id=54)
+
+# # Add the decks and cards to the database
+
+# db.session.add(card1)
+# db.session.add(card2)
+# db.session.add(card3)
+# db.session.add(card4)
+# db.session.add(card5)
+# db.session.add(card6)
+# db.session.add(card7)
+# db.session.add(card8)
+# db.session.commit()
 '''
 This is the main homepage for the decks page, where all decks(set of cards) are shown and their subdecks
 They will have the option to study a deck, edit a deck, CHECK LATER HOW TO REDIRECT EDIT DECKS TO THE RIGHT DECK.
@@ -194,7 +244,7 @@ The name is deck_route, because if its called decks it would cause an error as i
 
 
 
-@decks.route('/home')
+@decks.route('/home',methods=['GET','POST'])
 @decks.route('/',methods=['GET','POST'])
 @login_required
 def decks_route():
@@ -214,19 +264,28 @@ def decks_route():
         num_of_decks = 'Deck' + str(num_of_decks)
         new_deck = Deck(name='DECKS',user_id=current_user.id)
         db.session.add(new_deck)
-        db.session.commit() 
+        db.session.commit()
         
         root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
         return render_template("decks.html",root_decks = root_decks)
     if request.form.get('delete_deck'):
-        
+        deck_id = request.form.get('delete_deck')
         try:
-            deck_id = request.form.get('delete_deck')
-        except:
-            flash('Deck with id {} not found'.format(deck_id), category='danger')
+            deck_id = request.form['delete_deck']
+            deck_to_delete = Deck.query.get(deck_id)
+        except Exception as e:
+            flash('Error locating deck: {}'.format(e),category='danger') 
+
         
-        deck_to_delete = Deck.query.get_or_404(deck_id)
-        db.session.delete(deck_to_delete)
+        decks_to_delete = g.fmanager.get_all_decks_recursive(deck_to_delete)
+        for delete_deck in decks_to_delete:
+            db.session.delete(delete_deck)
+        
+
+        #db.session.delete(deck_to_delete)
+        # db.session.commit()
+
+        # db.session.delete(deck_to_delete)
         db.session.commit()
 
         root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
@@ -247,69 +306,98 @@ def stats():
 # Average quality: You can use the quality column in the Card table to calculate the average quality of all of the cards.
     return render_template("stats.html")
 
+
+
 @login_required
-@decks.route('/browse')
+@decks.route('/browse',methods=['GET','POST'])
 def browse():
+    '''
+    Browse page which allows users to filter deck and 
+    '''
+    #keeps the selected filter the same after a post request,
+    if request.form.get('filter') == 'All':
+        selected_id = request.form.get('filter')
+    else:
+        selected_id = int(request.form.get('filter')) if request.form.get('filter') is not None else None
+    # try:
+    #     all_cards = g.fmanager.get_all_cards()
+    # except Exception as e:
+    #     flash('Error locating decks: {}'.format(e),category='danger')
 
-    # if request.form.get('edit_card'):
-    #     try:
-    #         card_id =  request.form['edit_deck']
-    #     except:
-    #         flash('card with id {} not found'.format(card_id), category='danger')
-
-    
-    #     card_to_edit = Deck.query.get_or_404(card_id)
-    #     db.session.delete(card_to_edit)
-    #     db.session.commit()
-
-    if request.form.get('delete_deck'):  
+    if request.form.get('delete_card'):
+        card_id = request.form['delete_card']
         try:
-            deck_id = request.form.get('delete_deck')
-        except:
-            flash('Deck with id {} not found'.format(deck_id), category='danger')
-        
-        deck_to_delete = Deck.query.get_or_404(deck_id)
-        db.session.delete(deck_to_delete)
+            card_to_delete = Card.query.get(card_id)
+            db.session.delete(card_to_delete)
+        except Exception as e:
+            flash('Error locating card: {}'.format(e),category='danger')
+
         db.session.commit()
+        #return redirect(url_for('decks.browse'), code=301)
 
-        root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
-        return render_template("decks.html",root_decks= root_decks)
 
+
+    if request.form.get('filter') not in (None, 'All'):
+        print('1')
+        deck_id = request.form['filter']
+        try:
+            deck_filter = Deck.query.get(deck_id)
+            cards = g.fmanager.get_cards_from_deck(deck_filter)
+
+        except Exception as e:
+            flash('Error locating deck: {}'.format(e),category='danger')
+
+    #If there is a deck filter submitted, that is not ALL then 
+    # if request.form.get('filter') in (None, 'All'):
+    #     print('2')
+    else:
+        try:
+            cards = g.fmanager.get_all_cards()
+        except Exception as e:
+            flash('Error locating decks: {}'.format(e),category='danger')
+
+    #user = User.query.get(current_user.id)
+    # for deck_list in g.fmanager.get_all_decks():
+    #     print(deck_list)
     try:
-        all_cards = g.fmanager.get_all_cards()
-    except Exception as e:
+        root_deck = [deck for deck in g.fmanager.user.decks if deck.parent_id == None]# used in the filter dropdown option 
+        #all_decks = g.fmanager.get_all_decks() # used to get the title of deck for the cards as a card could be in a subdeck and complex iteration and searching can be avoided with this
+    except:
         flash('Error locating decks: {}'.format(e),category='danger')
-    print(all_cards)
-
-    return render_template("browse.html",cards =all_cards)
+    return render_template("browse.html",cards = cards,decks=root_deck,selected_id=selected_id,all_decks = g.fmanager.user.decks)
 
 #ADD AN ID TO IT SO IF A USER PRESSES STUDY IT WOULD SEND A ID, HOW DO YOU AUTOMAITCALLY GENERATE AN ID
 #maybe make the options show all the decks and subdecks, if a user wants to put something theyl put it inside the subdeck
+
 @login_required
 @decks.route('/create',methods=['POST','GET'])
 def create():
     '''
     Allows the user to create a new card
     '''
+    
     if request.method == 'POST':
-        if request.form.get('question') and request.form.get('answer') and request.form.get('deck_id'):
-            question = request.form.get('question')
-            answer = request.form.get('answer')
-            deck_id = request.form.get('deck_id')
-            if request.form.get('subdeck_id'):
-                subdeck_id = request.form.get('subdeck_id')
-                #DO STUFF
+        print(request.form)
+        if request.form.get('question') and request.form.get('answer') and request.form.get('deck'):
+            try:
+                question = request.form.get('question')
+                answer = request.form.get('answer')
+                deck_id = request.form.get('deck')
+                #paramzlied sql query
+                card = Card(question = question,answer= answer,deck_id =deck_id)
+                db.session.add(card)
+                db.session.commit()
+            except Exception as e:
+                flash('Error adding card, report to the developer or try again later: {}'.format(e),category='danger')
+            flash('Card successfully added',category='success')
+            print('DONEEEE')
+    
 
-
-
-            #perform check here??!!?
-
-            #paramzlied sql query
-
-            card = Card(question = question,answer= answer,deck_id =request.form['deck_id'])
-            db.session.add(card)
-            db.session.commit()
-    return render_template("create.html")
+    try:
+        root_deck = [deck for deck in g.fmanager.user.decks if deck.parent_id == None]# used in the filter dropdown option 
+    except:
+        flash('Error locating decks: {}'.format(e),category='danger')
+    return render_template("create.html",decks=root_deck)
 
 # #study entire deck, where there is a redirect to study each card
 # @login_required
@@ -328,15 +416,35 @@ def study(deck_id):
     '''
     Allows the user to study new cards
     '''
-    g.fmanager.review_deck(deck_id)
-    cards = Card.query.filter_by(deck_id=1).all()
-    if request.method == 'POST':
-        if request.form.get('quality'):
-            question = request.form.get('quaity')
+    #print(request.form)
+    #if request.method == 'GET':
+    #flashcards = g.fmanager.review_deck(deck_id)
+    #cards = Card.query.filter_by(deck_id=deck_id).all()
+    # if request.method == 'POST':
+    #     if request.form.get('quality'):
+    #         question = request.form.get('quaity')
 
+    if request.method == 'POST':# and flashcards:#checks if flashcard exists if it does not it ignores post requesst and goes down delte later and chec kif it works
+        #flashcard_id = request.form.get('flashcard_id')
+        #print(request.form)
+        quality = request.form.get('quality')
+        #flashcard = Card.query.get(flashcard_id)
+        quality= int(quality)
+        flashcards[0].update_stats(quality)
+        #print(flashcards[0].quality)
+        db.session.commit()
+
+        # if flashcards[0].last_study== False:
+        #     print('WTH WHYYYY')
+        #     flashcards[0].last_study=datetime.now()
+        #     print('INSIDE THE ROUTE,LAST STUDY IS',flashcards[0].last_study)
+        #     db.session.commit()
+        # print(flashcards[0].quality)
+        # print(flashcards[0].last_study)
+        flashcards.remove(flashcards[0])#FIFO data structure
     
-
-    return render_template("study.html")
+    flashcards = g.fmanager.review_deck(deck_id)
+    return render_template("study.html",flashcard = flashcards[0] if flashcards else None)
 
 #edit entire deck
 @login_required
@@ -349,10 +457,7 @@ def edit_deck(deck_id):
     # new_subdeck= Deck(name='this is just a test', user_id=current_user.id, parent_id=18)
     # db.session.add(new_subdeck)
     # db.session.commit()
-    try:
-        current_deck = Deck.query.filter_by(id=deck_id,user_id =current_user.id).first()#.all()    parent_id=None,
-    except Exception as e:
-        flash('Error : {}'.format(e),category='danger')
+
 
     if current_deck is None:    
         flash('Deck id cannot be found',category='danger')
@@ -376,10 +481,19 @@ def edit_deck(deck_id):
             deck_to_delete = Deck.query.get(subdeck_id)
 
             if deck_to_delete is None:
-                flash('Deck with id {} not found'.format(deck_id), category='danger')
+                flash('Deck with id {} not found'.format(subdeck_id), category='danger')
                 return redirect(url_for('decks.edit_deck', deck_id=deck_id), code=301)
 
-            db.session.delete(deck_to_delete)
+
+            #deck_to_delete = Deck.query.get(subdeck_id)
+            #This is a different variable name, and is a list.
+            decks_to_delete = g.fmanager.get_all_decks_recursive(deck_to_delete)
+
+            for delete_deck in decks_to_delete:
+                db.session.delete(delete_deck)
+            
+
+            #db.session.delete(deck_to_delete)
             db.session.commit()
             flash('Subdeck has been deleted',category='success')
             return  redirect(url_for('decks.edit_deck',deck_id=deck_id),code=301)#301 is a permanent redirect
@@ -416,6 +530,11 @@ def edit(card_id):
     if not user_owned_card(card_id):
         return redirect(url_for('decks.decks_route'),code=301)
 
+    try:
+        decks = [deck for deck in g.fmanager.user.decks if deck.parent_id == None]# used in the filter dropdown option 
+        #all_decks = g.fmanager.get_all_decks() # used to get the title of deck for the cards as a card could be in a subdeck and complex iteration and searching can be avoided with this
+    except:
+        flash('Error locating decks: {}'.format(e),category='danger')
     # try:
     #     current_card = Card.query.filter_by(id=card_id).first()
     #     get_card_userid(card_id)
@@ -435,9 +554,19 @@ def edit(card_id):
     # print(request)
 
     if request.method == 'POST':
-        print('ENTERED 1')
+        current_card = Card.query.filter_by(id=card_id).first()
+
+        if request.form.get('deck'):
+
+            #if the deck location has changed, update it in the database
+            if request.form.get('deck') not in ('same',None,current_card.parent_id):
+                deck_id = request.form.get('deck')
+                current_card.parent_id = deck_id
+                db.session.commit()
+                
         print(request.form.get('card-question'))
         print(request)
+
         if request.form.get('card-question') or request.form.get('card-answer'):
             current_card.question = request.form['card-question']
             current_card.answer = request.form['card-answer']
@@ -448,7 +577,13 @@ def edit(card_id):
 
             #return redirect(request.referrer)
     current_card = Card.query.filter_by(id=card_id).first()
-    return render_template("edit.html",card=current_card)
+    return render_template("edit.html",card=current_card,decks=decks)
+
+
+
+@decks.route('/help')
+def help():
+    return render_template("help.html")
 
 
 
