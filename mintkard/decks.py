@@ -9,9 +9,13 @@ import requests
 decks = Blueprint('decks', __name__)
 
 class FlashcardManager:
-    def __init__(self,user_id:int,app):
+    def __init__(self,user,app):#user can be an int or an object
         self.app = app
-        self.user = User.query.get(user_id)
+        
+        if isinstance(user, int):#Polymorphism
+            self.user= User.query.get(user)
+        else:
+            self.user = user
 
 
 
@@ -162,6 +166,47 @@ class FlashcardManager:
         return flashcards_to_review
 
 
+
+#inheritance
+class FlashcardManagerStats(FlashcardManager):
+    def __init__(self,user,app):
+        super().__init__(user,app)
+        self.flashcard_manager = FlashcardManager(user, app)#composition
+
+    def num_of_all_cards(self):
+        result = db.session.execute("""SELECT COUNT(*) as num_cards FROM Card""")
+
+    def num_of_all_decks(self):
+        '''
+        returns the number of all cards including subdecks
+        '''
+        result = db.session.execute("""SELECT COUNT(*) as num_decks FROM Deck""")
+
+
+    def avg_cards_per_deck(sekf):
+        result = db.session.execute("""
+        SELECT AVG(num_cards) as avg_cards_per_deck FROM (
+        SELECT COUNT(*) as num_cards FROM Card WHERE deck_id = Deck.id);
+        """)
+
+
+    def percentage_new_cards(self):
+        result = db.session.execute("""SELECT AVG(is_new) as pct_new_cards FROM Card;""")
+
+
+    def avg_interval(self):
+        result = db.session.execute("""SELECT AVG(interval) as avg_interval FROM Card;""")
+
+
+    def avg_easiness_factor(self):
+        result = db.session.execute("""SELECT AVG(easiness_factor) as avg_easiness_factor FROM Card;""")
+
+
+    def avg_quality(self):
+        result = db.session.execute("""SELECT AVG(quality) as avg_quality FROM Card""")
+
+
+
 '''
 TO-DO in edit pages maybe
 return redirect(url_for("login", next_page="/profile"))
@@ -184,7 +229,7 @@ def before_request():
     This is a complex user-defined objected oriented model, will only be inilized with the user sending a request,
     which the id of the user is initialized at runtime
     '''
-    g.fmanager = FlashcardManager(user_id=current_user.id, app=current_app)
+    g.fmanager = FlashcardManager(user=current_user.id, app=current_app)
     # card1 = Card.query.get(4)
     # card1.is_new = True
     # db.session.commit()
@@ -350,20 +395,25 @@ def browse():
     #If there is a deck filter submitted, that is not ALL then 
     # if request.form.get('filter') in (None, 'All'):
     #     print('2')
+    
     else:
         try:
+            print('HERE')
             cards = g.fmanager.get_all_cards()
+            print('HERE')
         except Exception as e:
             flash('Error locating decks: {}'.format(e),category='danger')
-
+    cards = g.fmanager.get_all_cards()
+    print(cards)
     #user = User.query.get(current_user.id)
     # for deck_list in g.fmanager.get_all_decks():
     #     print(deck_list)
     try:
         root_deck = [deck for deck in g.fmanager.user.decks if deck.parent_id == None]# used in the filter dropdown option 
         #all_decks = g.fmanager.get_all_decks() # used to get the title of deck for the cards as a card could be in a subdeck and complex iteration and searching can be avoided with this
-    except:
+    except Exception as e:
         flash('Error locating decks: {}'.format(e),category='danger')
+
     return render_template("browse.html",cards = cards,decks=root_deck,selected_id=selected_id,all_decks = g.fmanager.user.decks)
 
 #ADD AN ID TO IT SO IF A USER PRESSES STUDY IT WOULD SEND A ID, HOW DO YOU AUTOMAITCALLY GENERATE AN ID
@@ -416,6 +466,8 @@ def study(deck_id):
     '''
     Allows the user to study new cards
     '''
+    flashcards = g.fmanager.review_deck(deck_id)
+
     #print(request.form)
     #if request.method == 'GET':
     #flashcards = g.fmanager.review_deck(deck_id)
@@ -432,7 +484,9 @@ def study(deck_id):
         quality= int(quality)
         flashcards[0].update_stats(quality)
         #print(flashcards[0].quality)
-        db.session.commit()
+        db.session.commit()      
+        flashcards.pop(0)#Queue
+
 
         # if flashcards[0].last_study== False:
         #     print('WTH WHYYYY')
@@ -441,9 +495,13 @@ def study(deck_id):
         #     db.session.commit()
         # print(flashcards[0].quality)
         # print(flashcards[0].last_study)
-        flashcards.remove(flashcards[0])#FIFO data structure
+
+        #flashcards.remove(flashcards[0])
+        #FIFO data structure
     
-    flashcards = g.fmanager.review_deck(deck_id)
+    #flashcards = g.fmanager.review_deck(deck_id)
+    # flashcard = flashcards[0] if flashcards else None
+    # print(flashcard)
     return render_template("study.html",flashcard = flashcards[0] if flashcards else None)
 
 #edit entire deck
@@ -530,10 +588,11 @@ def edit(card_id):
     if not user_owned_card(card_id):
         return redirect(url_for('decks.decks_route'),code=301)
 
+    #Gets all the root decks so it can be displayed in change decks dropdown menu
     try:
         decks = [deck for deck in g.fmanager.user.decks if deck.parent_id == None]# used in the filter dropdown option 
         #all_decks = g.fmanager.get_all_decks() # used to get the title of deck for the cards as a card could be in a subdeck and complex iteration and searching can be avoided with this
-    except:
+    except Exception as e:
         flash('Error locating decks: {}'.format(e),category='danger')
     # try:
     #     current_card = Card.query.filter_by(id=card_id).first()
@@ -559,9 +618,9 @@ def edit(card_id):
         if request.form.get('deck'):
 
             #if the deck location has changed, update it in the database
-            if request.form.get('deck') not in ('same',None,current_card.parent_id):
+            if request.form.get('deck') not in ('same',None,current_card.deck_id):
                 deck_id = request.form.get('deck')
-                current_card.parent_id = deck_id
+                current_card.deck_id = deck_id
                 db.session.commit()
                 
         print(request.form.get('card-question'))
