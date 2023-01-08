@@ -468,8 +468,38 @@ def decks_route():
 
     return render_template("decks.html",root_decks= root_decks)#,current_user=current_user)#Remove this later
 
+
+
 @login_required
-@decks.route('/stats')
+@decks.route('/search')
+def search():
+    # create a hash table to store the cards
+    card_table = {}
+
+    # add all the cards to the table
+    # cards = [
+    #     Card(question='What is the capital of France?', answer='Paris'),
+    #     Card(question='What is the capital of Italy?', answer='Rome'),
+    #     Card(question='What is the capital of Spain?', answer='Madrid'),
+    #     Card(question='What is the capital of Germany?', answer='Berlin'),
+    # ]
+    cards = Card.query.all()
+
+    for i, card in enumerate(cards):
+        card_table[i] = card
+
+    # search the card table for cards with a particular word in the question or answer
+    search_term = request.args.get('text')
+
+
+    # use the .items() method to get a list of tuples representing the key-value pairs in the dictionary
+    for key, card in card_table.items():
+        if search_term in card.answer or search_term in card.question:
+           x= f'Card {key}: {card.question} / {card.answer}'
+    return "<p>{}</p>".format(x)
+
+@login_required
+@decks.route('/stats', methods=['GET', 'POST'])
 def stats():
     #try:
     user_data = g.fmanagerstats.get_all_data()
