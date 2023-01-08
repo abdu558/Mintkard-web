@@ -8,6 +8,7 @@
 
 <h1 >Create Card</h1>
 
+<!--Jinja function to display the subdecks, this is a recursive function-->
 {% macro display_subdecks(subdeck,deck) %}
 <!-- The selceted line in the dropdown option the same, after post request, thats what the selected id which is passed in and out through the function display_subdecks-->
   <option value = "{{subdeck.id}}" >

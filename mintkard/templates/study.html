@@ -45,7 +45,7 @@
 </div> -->
 <style>
 button {
-  padding: 0 100px;
+  padding: 0 10px;
 }
 </style>
 
@@ -57,7 +57,8 @@ button {
   {% if flashcard%}
     <div class="card-body">
       <h5 class="card-title" style="width:100%;">{{flashcard.question}}</h5>
-      <div id="hide">
+      <!--Elemenets to hide untill user presses show answer-->
+      <div style="display:none" id="answer">
           <p class="card-text" style="width: 100%;">{{flashcard.answer}}</p>
         </div>
         <img class="card-img-bottom" src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" alt="Card image cap" style="max-height: 200px;object-fit: contain">
@@ -79,12 +80,14 @@ button {
           </div>
       </div> 
     </form>
-    <div class="card-footer text-muted d-flex justify-content-between bg-secondary">
+    <!-- <div class="card-footer text-muted d-flex justify-content-between bg-secondary"> -->
 
 
     </div>
 
     <div class="card-footer text-muted d-flex justify-content-between bg-secondary"></div>
+  <br>
+  <button id="show_answer" class="btn btn-primary">Show Answer</button>
     {% else %}
     <h3 style ="text-align: center;padding: 90px;">Well done you have studied all the cards in this deck
       <img style="padding:20px;height:auto;max-width: 50vw;"src="https://static.standard.co.uk/s3fs-public/thumbnails/image/2012/08/14/11/AN7457469Jamaicas%20Usain%20Bol.jpg?width=968&auto=webp&quality=50&crop=968%3A645%2Csmart">
@@ -93,6 +96,17 @@ button {
   </div>
 </div>
 
+<script>
+  window.addEventListener('load', () => {
+    const show_answer = document.getElementById('show_answer');
+    const answer = document.getElementById('answer');
+  
+    show_answer.addEventListener('click', () => {
+      show_answer.style.display = 'none';
+      answer.style.display = 'block';
+    });
+  });
+</script>
 <!-- <h1>Study</h1>
 <br>
 <div class="container-fluid">

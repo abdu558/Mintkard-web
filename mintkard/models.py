@@ -18,14 +18,12 @@ CHECK IF IS_AUTHENTICATED FUNCTION AND GET_ID FUNCTION IS REQUIRED TO HAVE DESPI
 
 
 '''
-INTEGRATION OF THE METHODS AND CALSSES IN THE MODELS FILE
-NOTES:
-NOT ADDING AN INIT METHOD
-ADD TIME FUNC .NOW TO THE ALST STUDIED, WHENEVER QUALITY CHANGES
-STUDY_DUE CAN HAVE EXPECTIONS FLASHED? AND PRINTED?
-THE FILL THE GAPS FUNCTION? I HAVE NO IDEA HOW THAT WOULD WORK, KEEP IT LATER
 ADD A ADD CARD GETTER AND SETTER? MAYBE EVEN UPDATE AND GET QUESTION,ANSWER GETTER AND SETTER
+
+backref allows accessing the realtionship object e.g. if in the deck object it had a backref deck. this would allow the card to do card.deck and now access the deck's info directly
+
 '''
+
 class Deck(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100),nullable=False)
@@ -33,7 +31,7 @@ class Deck(db.Model):
     date = db.Column(db.DateTime(timezone=True),default=func.now())
     parent_id = db.Column(db.Integer, db.ForeignKey('deck.id'))#This is the foreign key for the parent deck
     children_deck = db.relationship('Deck',backref=db.backref('parent', remote_side=[id]),primaryjoin='Deck.parent_id == Deck.id')#This is the relationship for the child deck, the backref is the parent deck, the primaryjoin is the foreign key for the child deck
-    cards = db.relationship('Card',lazy= True)
+    cards = db.relationship('Card',lazy= True,cascade='all, delete-orphan',backref='deck')#cascade will delete all the cards in the deck if its deleted
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     '''allows a string output'''

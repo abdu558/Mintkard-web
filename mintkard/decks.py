@@ -30,6 +30,8 @@ class FlashcardManager:
 
     def get_cards_from_deck(self,deck: Deck) -> List[Card]:
         cards = deck.cards#gets the cards in the currrent deck, but cards in child_decks are not collected yet, till the recursion
+        print('ID IS',deck.id)
+        print('Cards are',deck.cards)
         for child_deck in deck.children_deck:
             cards.extend(self.get_cards_from_deck(child_deck))
         return cards
@@ -169,41 +171,136 @@ class FlashcardManager:
 
 #inheritance
 class FlashcardManagerStats(FlashcardManager):
+    '''
+    .fetchone() will not get an error if there are no cards
+    .fetchone_or_none() will not get an error even if there are no decks
+
+    Using innerjoin instead of and is because and is less efficent as it checks for every combination between the two tables, rather than rows that match
+    '''
     def __init__(self,user,app):
         super().__init__(user,app)
         self.flashcard_manager = FlashcardManager(user, app)#composition
 
-    def num_of_all_cards(self):
-        result = db.session.execute("""SELECT COUNT(*) as num_cards FROM Card""")
+    def get_average_review_success_rate(self) -> float:
+        cards = self.flashcard_manager.get_all_cards()
+        if len(cards) == 0:
+            return 'No data'
+        num_of_cards=0 #exclude the new cards
+        total_quality = 0
+        successful_reviews = 0
+        for card in cards:
+            if card.is_new == False:
+                num_of_cards += 1
+                total_quality += card.quality
+            elif card.quality > 2:
+                successful_reviews += 1
+        good_cards = (successful_reviews/num_of_cards) *100
 
-    def num_of_all_decks(self):
+        avg_quality = (total_quality/num_of_cards) *100
+        good_cards = good_cards[4:]
+        avg_quality = avg_quality[4:]
+        return avg_quality,good_cards
+
+    def card_nums(self):
+        data = len(self.flashcard_manager.get_all_cards())
+        return data
+
+    def deck_nums(self):
+        '''
+        returns the number of all cards including subdecks by countin the number of rows
+        '''
+        data = db.session.execute(f"SELECT COUNT(*) as deck_num FROM Deck WHERE user_id = {user.id};").fetchone_or_none()
+        return data.deck_num
+
+
+
+
+    def easiness_factor_avg(self):
+        data = db.session.execute(f"SELECT AVG(easiness_factor) as easiness_avg FROM Card WHERE deck_id IN (SELECT id FROM Deck WHERE user_id = :{user.id});").fetchone_or_none()
+        return data.easiness_avg
+
+
+    def quality_avg(self):
+        data = db.session.execute(f"SELECT AVG(quality) as avg_quality FROM Card WHERE deck_id IN (SELECT id FROM Deck WHERE user_id = :{user.id});").fetchone_or_none()
+        return data.quality_avg
+
+
+    def interval_avg(self):
+        data = db.session.execute(f"SELECT AVG(interval) as inter_avg FROM Card (SELECT id FROM Deck WHERE user_id = :{user.id});").fetchone_or_none()
+        return data.inter_avg
+
+
+    def get_all_data(self):
+        'This function can be called to return all the data from all the above methods with one call rather than calling each one in the stats route'
+        success_rate = self.get_average_review_success_rate()
+        card_nums = self.card_nums()
+        deck_nums = self.deck_nums()
+        interval_avg = self.interval_avg()
+        easiness_factor_avg = self.easiness_factor_avg()
+        quality_avg = self.quality_avg()
+
+#gets the average data from the average user
+class FlashcardManagerPublicStats(FlashcardManagerStats):
+    def __init__(self,app):
+        super().__init__(app)
+    
+    def get_average_review_success_rate(self):
+        cards = Card.query.all()
+        if len(cards) == 0:
+            return 'No data'
+        num_of_cards=0 #exclude the new cards
+        total_quality = 0
+        successful_reviews = 0
+        for card in cards:
+            if card.is_new == False:
+                num_of_cards += 1
+                total_quality += card.quality
+            elif card.quality > 2:
+                successful_reviews += 1
+        good_cards = (successful_reviews/num_of_cards) *100
+
+        avg_quality = (total_quality/num_of_cards) *100
+        good_cards = good_cards[4:]
+        avg_quality = avg_quality[4:]
+        return avg_quality,good_cards
+
+    #method overiding
+    def card_nums(self):
+        result = db.session.execute("SELECT COUNT(*) as card_nums FROM Card").fetchone_or_none()
+        return result.card_nums
+
+    def deck_nums(self):
         '''
         returns the number of all cards including subdecks
         '''
-        result = db.session.execute("""SELECT COUNT(*) as num_decks FROM Deck""")
+        data = db.session.execute("SELECT COUNT(*) as deck_num FROM Deck").fetchone_or_none()
+        return data.deck_num
+
+    def easiness_factor_avg(self):
+        data = db.session.execute("SELECT AVG(easiness_factor) as easiness_avg FROM Card;").fetchone_or_none()
+        return data.easiness_avg
 
 
-    def avg_cards_per_deck(sekf):
-        result = db.session.execute("""
-        SELECT AVG(num_cards) as avg_cards_per_deck FROM (
-        SELECT COUNT(*) as num_cards FROM Card WHERE deck_id = Deck.id);
-        """)
+    def quality_avg(self):
+        data = db.session.execute("""SELECT AVG(quality) as quality_avg FROM Card""").fetchone_or_none()
+        return data.quality_avg
+
+    def interval_avg(self):
+        data = db.session.execute("""SELECT AVG(interval) as inter_avg FROM Card;""").fetchone_or_none()
+        return data.inter_avg
 
 
-    def percentage_new_cards(self):
-        result = db.session.execute("""SELECT AVG(is_new) as pct_new_cards FROM Card;""")
 
 
-    def avg_interval(self):
-        result = db.session.execute("""SELECT AVG(interval) as avg_interval FROM Card;""")
+    def get_all_data(self):
+        'This function can be called to return all the data from all the above methods with one call rather than calling each one in the stats route'
+        success_rate = self.get_average_review_success_rate()
+        card_nums = self.card_nums()
+        deck_nums = self.deck_nums()
+        interval_avg = self.interval_avg()
+        easiness_factor_avg = self.easiness_factor_avg()
+        quality_avg = self.quality_avg()
 
-
-    def avg_easiness_factor(self):
-        result = db.session.execute("""SELECT AVG(easiness_factor) as avg_easiness_factor FROM Card;""")
-
-
-    def avg_quality(self):
-        result = db.session.execute("""SELECT AVG(quality) as avg_quality FROM Card""")
 
 
 
@@ -224,12 +321,18 @@ return redirect(url_for("login", next_page="/profile"))
 
 #Globally initlize flashcard mana
 @decks.before_request
+@login_required
 def before_request():
     '''Globally initlise flashcard manager, will be accessed as g.fmanager in all routes in the decks blueprint
     This is a complex user-defined objected oriented model, will only be inilized with the user sending a request,
     which the id of the user is initialized at runtime
     '''
+    #try:
     g.fmanager = FlashcardManager(user=current_user.id, app=current_app)
+    g.fmanagerstats = FlashcardManagerStats(user=current_user.id, app=current_app)
+    g.fmanagerstats_public = FlashcardManagerPublicStats(user=current_user.id)
+    #except:
+        #redirect(url_for('auth.login'))
     # card1 = Card.query.get(4)
     # card1.is_new = True
     # db.session.commit()
@@ -247,7 +350,8 @@ def before_request():
 # card_userid=result.fetchone()[0]
 # print(card_userid)
 def user_owned_card(card_id):
-    '''Returns true if the user does own the flashcard, false if the user does not, preventing unauthorised access of cards, if it the id is changed'''
+    '''Returns true if the user does own the flashcard, false if the user does not, preventing unauthorised access of cards, if it the id is changed
+    ON means what two tables should there should be a match in'''
     result = db.session.execute("""
         SELECT deck.user_id
         FROM card card
@@ -257,6 +361,14 @@ def user_owned_card(card_id):
     if result.fetchone()[0] == current_user.id:
         return True
     return False
+
+#Not directly used anymore but still passed to the browse template, for future use
+def deck_id_dict(decks):
+    '''A dictionary of all decks,subdecks and their id, used to show the deck in the cards'''
+    deck_dict ={}
+    for d in decks:
+        deck_dict[d.id] = d.name
+    return deck_dict
 
 
 
@@ -349,8 +461,10 @@ def stats():
 # Average interval: You can use the interval column in the Card table to calculate the average interval between study sessions for all of the cards.
 # Average easiness factor: You can use the easiness_factor column in the Card table to calculate the average easiness factor for all of the cards.
 # Average quality: You can use the quality column in the Card table to calculate the average quality of all of the cards.
-    return render_template("stats.html")
+    public_data = g.fmanagerstats.get_all_data
+    public_data = g.fmanagerstats_public.get_all_data
 
+    return render_template("stats.html",)
 
 
 @login_required
@@ -359,6 +473,7 @@ def browse():
     '''
     Browse page which allows users to filter deck and 
     '''
+    deck_dict = deck_id_dict(g.fmanager.user.decks)
     #keeps the selected filter the same after a post request,
     if request.form.get('filter') == 'All':
         selected_id = request.form.get('filter')
@@ -381,16 +496,16 @@ def browse():
         #return redirect(url_for('decks.browse'), code=301)
 
 
+    if request.method == 'POST':
+        if request.form.get('filter') not in (None, 'All'):
+            deck_id = request.form['filter']
+            try:
+                print(deck_id)
+                deck_filter = Deck.query.get(deck_id)
+                cards = g.fmanager.get_cards_from_deck(deck_filter)
 
-    if request.form.get('filter') not in (None, 'All'):
-        print('1')
-        deck_id = request.form['filter']
-        try:
-            deck_filter = Deck.query.get(deck_id)
-            cards = g.fmanager.get_cards_from_deck(deck_filter)
-
-        except Exception as e:
-            flash('Error locating deck: {}'.format(e),category='danger')
+            except Exception as e:
+                flash('Error locating deck: {}'.format(e),category='danger')
 
     #If there is a deck filter submitted, that is not ALL then 
     # if request.form.get('filter') in (None, 'All'):
@@ -398,12 +513,11 @@ def browse():
     
     else:
         try:
-            print('HERE')
             cards = g.fmanager.get_all_cards()
-            print('HERE')
         except Exception as e:
             flash('Error locating decks: {}'.format(e),category='danger')
-    cards = g.fmanager.get_all_cards()
+    #cards = g.fmanager.get_all_cards()
+
     print(cards)
     #user = User.query.get(current_user.id)
     # for deck_list in g.fmanager.get_all_decks():
@@ -414,7 +528,7 @@ def browse():
     except Exception as e:
         flash('Error locating decks: {}'.format(e),category='danger')
 
-    return render_template("browse.html",cards = cards,decks=root_deck,selected_id=selected_id,all_decks = g.fmanager.user.decks)
+    return render_template("browse.html",cards = cards,decks=root_deck,selected_id=selected_id,all_decks = g.fmanager.user.decks,deck_dict=deck_dict)
 
 #ADD AN ID TO IT SO IF A USER PRESSES STUDY IT WOULD SEND A ID, HOW DO YOU AUTOMAITCALLY GENERATE AN ID
 #maybe make the options show all the decks and subdecks, if a user wants to put something theyl put it inside the subdeck
@@ -515,6 +629,10 @@ def edit_deck(deck_id):
     # new_subdeck= Deck(name='this is just a test', user_id=current_user.id, parent_id=18)
     # db.session.add(new_subdeck)
     # db.session.commit()
+    try:
+        current_deck = Deck.query.filter_by(id=deck_id,user_id =current_user.id).first()#.all()    parent_id=None,
+    except Exception as e:
+        flash('Error : {}'.format(e),category='danger')
 
 
     if current_deck is None:    
@@ -548,7 +666,10 @@ def edit_deck(deck_id):
             decks_to_delete = g.fmanager.get_all_decks_recursive(deck_to_delete)
 
             for delete_deck in decks_to_delete:
+                for c in delete_deck.cards:
+                    db.session.delete(c)
                 db.session.delete(delete_deck)
+
             
 
             #db.session.delete(deck_to_delete)
@@ -714,5 +835,3 @@ def help():
     #     for deck in user.decks:
     #         subdecks.append(deck.children_deck)
     #     return subdecks
-
-

@@ -7,7 +7,7 @@
 {% block body %}
 <style>
   #revision-card {
-    max-height: 250px;
+    height: 250px;
     overflow-y: auto;
     /* if the flashcard is more than the maximum height this element will add a scroll bar */
   }
@@ -70,7 +70,7 @@
 
   <!-- Flashcard cards -->
   <!--m-2 add a margin element to each flashcard in all 4 sides -->
-  <div class="row m-3" id="flashcard-cards">
+  <div class="row m-2" id="flashcard-cards">
     {% for card in cards %}
     <!--On small screen, there will be 6 cards and on medium screen there will be 4-->
     <div class="col-sm-6 col-md-4" style="margin-bottom: 15px;">
@@ -84,15 +84,12 @@
         </div>
         <div class="card-body">
         <!-- deck title-->
-        {% set found_deck = all_decks | selectattr("id", "equalto", card.deck_id) | first %}
-        {% if found_deck %}
-          <h5 class="card-title">Deck: {{found_deck.name}} {{card.deck_id}}</h5>
+        {% if deck_dict.get(card.deck_id) %}
+        <!--Can also use {{card.deck.name}}-->
+          <h5 class="card-title">Deck: {{deck_dict.get(card.deck_id)}}</h5>
         {% else %}
           <h5 class="card-title">Deck id: {{card.deck_id}} was not found</h5>
         {% endif %}
-
-          
-          
         
           <p class="card-text">Question:{{card.question}}</p>
           <p class="card-text">Answer: {{card.answer}}</p>

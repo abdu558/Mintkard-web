@@ -46,7 +46,7 @@ def create_app():
         return User.query.get(id)
 
     app.app_context().push()
-
+    print(db.session.execute("""SELECT COUNT(*) as num_cards FROM Card""").fetchone())
     # db.drop_all()
     # db.create_all()
     # student1 = User(username='bob',email='john@gmail.com',password='5555')    
