@@ -132,9 +132,11 @@ class FlashcardManager:
         try:
 
             review_interval = timedelta(days=flashcard.interval)#converts int to time using datetime
+            
             print(review_interval)
             print(flashcard.last_study + review_interval)
             print(flashcard.last_study + review_interval <= datetime.now())
+
             return (flashcard.last_study + review_interval <= datetime.now())
         # except TypeError:
         #     # Handle TypeError if it's not an integer
@@ -173,7 +175,6 @@ class FlashcardManager:
 class FlashcardManagerStats(FlashcardManager):
     '''
     .fetchone() will not get an error if there are no cards
-    .fetchone_or_none() will not get an error even if there are no decks
 
     Using innerjoin instead of and is because and is less efficent as it checks for every combination between the two tables, rather than rows that match
     '''
@@ -181,25 +182,28 @@ class FlashcardManagerStats(FlashcardManager):
         super().__init__(user,app)
         self.flashcard_manager = FlashcardManager(user, app)#composition
 
-    def get_average_review_success_rate(self) -> float:
+    def good_cards_percent(self) -> float:
+        '''
+        avg quality- is the average quality of all cards
+        good_cards - is the percentage of cards rated good, which is a 3 or 4 quality rating
+        '''
         cards = self.flashcard_manager.get_all_cards()
         if len(cards) == 0:
             return 'No data'
         num_of_cards=0 #exclude the new cards
-        total_quality = 0
-        successful_reviews = 0
+        good_quality = 0
         for card in cards:
-            if card.is_new == False:
-                num_of_cards += 1
-                total_quality += card.quality
+            if card.is_new == True:
+                continue
             elif card.quality > 2:
-                successful_reviews += 1
-        good_cards = (successful_reviews/num_of_cards) *100
+                good_quality += 1
+                num_of_cards +=1
 
-        avg_quality = (total_quality/num_of_cards) *100
-        good_cards = good_cards[4:]
-        avg_quality = avg_quality[4:]
-        return avg_quality,good_cards
+        good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
+
+        good_cards = round(good_cards, 1)#limit it to 1 decimal place
+        return good_cards
+
 
     def card_nums(self):
         data = len(self.flashcard_manager.get_all_cards())
@@ -209,98 +213,105 @@ class FlashcardManagerStats(FlashcardManager):
         '''
         returns the number of all cards including subdecks by countin the number of rows
         '''
-        data = db.session.execute(f"SELECT COUNT(*) as deck_num FROM Deck WHERE user_id = {user.id};").fetchone_or_none()
+        data = db.session.execute(f"SELECT COUNT(*) as deck_num FROM Deck WHERE user_id = {self.user.id};").fetchone()
         return data.deck_num
 
 
 
 
     def easiness_factor_avg(self):
-        data = db.session.execute(f"SELECT AVG(easiness_factor) as easiness_avg FROM Card WHERE deck_id IN (SELECT id FROM Deck WHERE user_id = :{user.id});").fetchone_or_none()
+        data = db.session.execute(f"SELECT AVG(easiness_factor) as easiness_avg FROM Card  WHERE id IN (SELECT id FROM Deck WHERE user_id = {self.user.id});").fetchone()
         return data.easiness_avg
 
 
     def quality_avg(self):
-        data = db.session.execute(f"SELECT AVG(quality) as avg_quality FROM Card WHERE deck_id IN (SELECT id FROM Deck WHERE user_id = :{user.id});").fetchone_or_none()
-        return data.quality_avg
+        data = db.session.execute(f"SELECT AVG(quality) as quality_avg FROM Card  WHERE id IN (SELECT id FROM Deck WHERE user_id = {self.user.id});").fetchone()
+        try:
+            quality = round(data.quality_avg,1)
+            return quality
+        except Exception as e:
+            print('Error rounding quality average: {}'.format(e))
+        
+            return data.quality_avg
 
 
     def interval_avg(self):
-        data = db.session.execute(f"SELECT AVG(interval) as inter_avg FROM Card (SELECT id FROM Deck WHERE user_id = :{user.id});").fetchone_or_none()
+        data = db.session.execute(f"SELECT AVG(interval) as inter_avg FROM Card WHERE id IN (SELECT id FROM Deck WHERE user_id = {self.user.id});").fetchone()
         return data.inter_avg
 
 
     def get_all_data(self):
         'This function can be called to return all the data from all the above methods with one call rather than calling each one in the stats route'
-        success_rate = self.get_average_review_success_rate()
+        success_rate = self.good_cards_percent()
         card_nums = self.card_nums()
         deck_nums = self.deck_nums()
         interval_avg = self.interval_avg()
         easiness_factor_avg = self.easiness_factor_avg()
         quality_avg = self.quality_avg()
+        return success_rate,card_nums,deck_nums,interval_avg,easiness_factor_avg,quality_avg
+
+
+
 
 #gets the average data from the average user
 class FlashcardManagerPublicStats(FlashcardManagerStats):
-    def __init__(self,app):
-        super().__init__(app)
-    
-    def get_average_review_success_rate(self):
+    def __init__(self,app,user=None):
+        super().__init__(app,user)    
+
+    def good_cards_percent(self):
+        '''
+        avg quality- is the average quality of all cards
+        good_cards - is the percentage of cards rated good, which is a 3 or 4 quality rating
+        '''
         cards = Card.query.all()
         if len(cards) == 0:
             return 'No data'
         num_of_cards=0 #exclude the new cards
-        total_quality = 0
-        successful_reviews = 0
+        good_quality = 0
         for card in cards:
-            if card.is_new == False:
-                num_of_cards += 1
-                total_quality += card.quality
+            if card.is_new == True:
+                continue
             elif card.quality > 2:
-                successful_reviews += 1
-        good_cards = (successful_reviews/num_of_cards) *100
+                good_quality += 1
+                num_of_cards +=1
+        
 
-        avg_quality = (total_quality/num_of_cards) *100
-        good_cards = good_cards[4:]
-        avg_quality = avg_quality[4:]
-        return avg_quality,good_cards
+
+        good_cards = (good_quality/num_of_cards) *100
+
+        good_cards = round(good_cards, 1)#limit it to 1 decimal place
+        return good_cards
 
     #method overiding
     def card_nums(self):
-        result = db.session.execute("SELECT COUNT(*) as card_nums FROM Card").fetchone_or_none()
+        result = db.session.execute("SELECT COUNT(*) as card_nums FROM Card").fetchone()
         return result.card_nums
 
     def deck_nums(self):
         '''
         returns the number of all cards including subdecks
         '''
-        data = db.session.execute("SELECT COUNT(*) as deck_num FROM Deck").fetchone_or_none()
+        data = db.session.execute("SELECT COUNT(*) as deck_num FROM Deck").fetchone()
         return data.deck_num
 
     def easiness_factor_avg(self):
-        data = db.session.execute("SELECT AVG(easiness_factor) as easiness_avg FROM Card;").fetchone_or_none()
+        data = db.session.execute("SELECT AVG(easiness_factor) as easiness_avg FROM Card;").fetchone()
         return data.easiness_avg
 
 
     def quality_avg(self):
-        data = db.session.execute("""SELECT AVG(quality) as quality_avg FROM Card""").fetchone_or_none()
-        return data.quality_avg
+        data = db.session.execute("""SELECT AVG(quality) as quality_avg FROM Card""").fetchone()
+        try:
+            quality = round(data.quality_avg,1)
+        except Exception as e:
+            print('Error rounding quality average: {}'.format(e))
+        
+        return quality
 
     def interval_avg(self):
-        data = db.session.execute("""SELECT AVG(interval) as inter_avg FROM Card;""").fetchone_or_none()
+        data = db.session.execute("""SELECT AVG(interval) as inter_avg FROM Card;""").fetchone()
+        #return round(data.inter_avg,1)
         return data.inter_avg
-
-
-
-
-    def get_all_data(self):
-        'This function can be called to return all the data from all the above methods with one call rather than calling each one in the stats route'
-        success_rate = self.get_average_review_success_rate()
-        card_nums = self.card_nums()
-        deck_nums = self.deck_nums()
-        interval_avg = self.interval_avg()
-        easiness_factor_avg = self.easiness_factor_avg()
-        quality_avg = self.quality_avg()
-
 
 
 
@@ -330,7 +341,7 @@ def before_request():
     #try:
     g.fmanager = FlashcardManager(user=current_user.id, app=current_app)
     g.fmanagerstats = FlashcardManagerStats(user=current_user.id, app=current_app)
-    g.fmanagerstats_public = FlashcardManagerPublicStats(user=current_user.id)
+    g.fmanagerstats_public = FlashcardManagerPublicStats(user=None,app=current_app)#there is no user as it gets the apps average data
     #except:
         #redirect(url_for('auth.login'))
     # card1 = Card.query.get(4)
@@ -453,18 +464,24 @@ def decks_route():
 @login_required
 @decks.route('/stats')
 def stats():
-# Number of decks: You can count the number of rows in the Deck table to get the total number of decks.
-# Number of cards: You can count the number of rows in the Card table to get the total number of cards.
-# Average number of cards per deck: You can divide the total number of cards by the total number of decks to get the average number of cards per deck.
-# Date of last study: You can use the last_study column in the Card table to find the date of the last study for each card.
-# Percentage of new cards: You can use the is_new column in the Card table to determine the percentage of cards that are new.
-# Average interval: You can use the interval column in the Card table to calculate the average interval between study sessions for all of the cards.
-# Average easiness factor: You can use the easiness_factor column in the Card table to calculate the average easiness factor for all of the cards.
-# Average quality: You can use the quality column in the Card table to calculate the average quality of all of the cards.
-    public_data = g.fmanagerstats.get_all_data
-    public_data = g.fmanagerstats_public.get_all_data
+    #try:
+    user_data = g.fmanagerstats.get_all_data()
+    public_data = g.fmanagerstats_public.get_all_data() #inherited method
+    # except Exception as e:
+    #     flash('Error loading data, try adding a deck and cards first: {}'.format(e),category='danger')
 
-    return render_template("stats.html",)
+    # if (user_data == None) or (public_data == None):
+    #     #['success_rate','card_nums','deck_nums','interval_avg','easiness_factor_avg','quality_avg']
+    info = ['success rate','Number of cards','Number of decks','Average interval','Average easiness factor','Average quality']
+    #     #merges the three lists to have a list of tuples, with the first item in the title of data, the second is the user's own data and the third is the  public data about all users in the app
+    data = tuple(zip(info,user_data,public_data))
+    # else:
+    #     data = None
+    #     flash('Error in deck')
+
+
+
+    return render_template("stats.html",data=data)
 
 
 @login_required

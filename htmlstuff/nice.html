@@ -12,11 +12,11 @@
         </div>
     </div>
     <!-- Stats rows -->
-    <div class="row mt-4">
+    <div class="row m-4">
         <!-- Number of decks -->
-        <div class="col-6">
+        <div class="col-6 py-3">
             <div class="card h-100">
-                <div class="card-header">Number of Decks</div>
+                <div class="card-header bg-secondary text-light">Number of Decks</div>
                 <div class="card-body d-flex align-items-center">
                     <div class="mr-2">
                         <h2 class="card-title mb-0">{{ num_decks }}</h2>
@@ -30,7 +30,7 @@
             </div>
         </div>
         <!-- Number of cards -->
-        <div class="col-6">
+        <div class="col-6 py-3">
             <div class="card h-100">
                 <div class="card-header">Number of Cards</div>
                 <div class="card-body d-flex align-items-center">
@@ -44,85 +44,21 @@
                     </div>
                 </div>
             </div>
-            <!-- Average cards per deck -->
-            <div class="col-6">
-                <div class="card h-100">
-                    <div class="card-header">Average Cards per Deck</div>
-                    <div class="card-body d-flex align-items-center">
-                        <div class="mr-2">
-                            <h2 class="card-title mb-0">{{ avg_cards_per_deck }}</h2>
-                            <p class="card-text text-muted">Your average</p>
-                        </div>
-                        <div class="ml-2">
-                            <h2 class="card-title mb-0">{{ avg_avg_cards_per_deck }}</h2>
-                            <p class="card-text text-muted">Overall average</p>
-                        </div>
+        </div>
+        <div class="col-6 py-3">
+            <div class="card h-100">
+                <div class="card-header">Number of Cards</div>
+                <div class="card-body d-flex align-items-center">
+                    <div class="mr-2">
+                        <h2 class="card-title mb-0">{{ num_cards }}</h2>
+                        <p class="card-text text-muted">Your cards</p>
                     </div>
-                </div>
-            </div>
-            <!-- Percentage of new cards -->
-            <div class="col-6">
-                <div class="card h-100">
-                    <div class="card-header">Percentage of New Cards</div>
-                    <div class="card-body d-flex align-items-center">
-                        <div class="mr-2">
-                            <h2 class="card-title mb-0">{{ pct_new_cards }}%</h2>
-                            <p class="card-text text-muted">Your percentage</p>
-                        </div>
-                        <div class="ml-2">
-                            <h2 class="card-title mb-0">{{ avg_pct_new_cards }}%</h2>
-                            <p class="card-text text-muted">Overall percentage</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Average interval -->
-            <div class="col-6">
-                <div class="card h-100">
-                    <div class="card-header">Average Interval</div>
-                    <div class="card-body d-flex align-items-center">
-                        <div class="mr-2">
-                            <h2 class="card-title mb-0">{{ avg_interval }} days</h2>
-                            <p class="card-text text-muted">Your average</p>
-                        </div>
-                        <div class="ml-2">
-                            <h2 class="card-title mb-0">{{ avg_avg_interval }} days</h2>
-                            <p class="card-text text-muted">Overall average</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Average easiness factor -->
-            <div class="col-6">
-                <div class="card h-100">
-                    <div class="card-header">Average Easiness Factor</div>
-                    <div class="card-body d-flex align-items-center">
-                        <div class="mr-2">
-                            <h2 class="card-title mb-0">{{ avg_easiness_factor }}</h2>
-                            <p class="card-text text-muted">Your average</p>
-                        </div>
-                        <div class="ml-2">
-                            <h2 <h2 class="card-title mb-0">{{ avg_avg_easiness_factor }}</h2>
-                            <p class="card-text text-muted">Overall average</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Average quality -->
-            <div class="col-6">
-                <div class="card h-100">
-                    <div class="card-header">Average Quality</div>
-                    <div class="card-body d-flex align-items-center">
-                        <div class="mr-2">
-                            <h2 class="card-title mb-0">{{ avg_quality }}%</h2>
-                            <p class="card-text text-muted">Your average</p>
-                        </div>
-                        <div class="ml-2">
-                            <h2 class="card-title mb-0">{{ avg_avg_quality }}%</h2>
-                            <p class="card-text text-muted">Overall average</p>
-                        </div>
+                    <div class="ml-2">
+                        <h2 class="card-title mb-0">{{ avg_num_cards }}</h2>
+                        <p class="card-text text-muted">Average cards</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
