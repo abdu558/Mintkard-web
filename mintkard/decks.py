@@ -68,37 +68,34 @@ class FlashcardManager:
     The following three function review_flashcards, is_card_due and review_deck are used to review the flashcards and are used and work together 
     alongside the update_stats in card class
     '''
-    # def merge_sort(items):
-    #     if len(items) <= 1:
-    #         return items
+    #dates is a list of int/datetimes
+    def merge_sort(self,dates):
+        dates_len = len(dates)
+        if dates_len <=1:
+            return dates
+            
+        #divide and conquer
+        middle = dates_len //2
+        right = self.merge_sort(dates[middle:])
+        left = self.merge_sort(dates[:middle])
+        
+        return self.merge_list(left,right)
+        
+    def merge_list(self,left,right):
+        dates_list = []
+        l=r=0#left and right
+        while (r <len(right) and l<len(left)):
+            if left[l].last_study < right[r].last_study:
+                dates_list.append(left[l])
+                l = l+1
+            else:
+                dates_list.append(right[r])
+                r = r+1
+        dates_list.extend(left[l:])
+        dates_list.extend(right[r:])
+        return dates_list
 
-    #     middle_index = len(items) // 2
-    #     left_items = items[:middle_index]
-    #     right_items = items[middle_index:]
 
-    #     left_items = merge_sort(left_items)
-    #     right_items = merge_sort(right_items)
-
-    #     return merge(left_items, right_items)
-
-    # def merge(left_items, right_items):
-    #     sorted_items = []
-
-    #     left_index = 0
-    #     right_index = 0
-
-    #     while left_index < len(left_items) and right_index < len(right_items):
-    #         if left_items[left_index] <= right_items[right_index]:
-    #             sorted_items.append(left_items[left_index])
-    #             left_index += 1
-    #         else:
-    #             sorted_items.append(right_items[right_index])
-    #             right_index += 1
-
-    #     sorted_items.extend(left_items[left_index:])
-    #     sorted_items.extend(right_items[right_index:])
-
-    #     return sorted_items
 
     def review_flashcards(self, flashcards: List[Card]) -> List[Tuple[Card]]:
         '''Currently unused used to be called on the return statemnt  in the review_deck'''
@@ -167,6 +164,16 @@ class FlashcardManager:
         #print('flashcards to review is ',flashcards_to_review)
 
         #return self.review_flashcards(flashcards_to_review)
+        unsorted_list = []
+        for c in flashcards_to_review:
+            if c.is_new == False:
+                unsorted_list.append(c)
+                flashcards_to_review.remove(c)
+            
+        sorted_list = self.merge_sort(unsorted_list)
+        flashcards_to_review.extend(sorted_list)
+
+            
         return flashcards_to_review
 
 
@@ -473,6 +480,7 @@ def stats():
     # if (user_data == None) or (public_data == None):
     #     #['success_rate','card_nums','deck_nums','interval_avg','easiness_factor_avg','quality_avg']
     info = ['success rate','Number of cards','Number of decks','Average interval','Average easiness factor','Average quality']
+    print(user_data)
     #     #merges the three lists to have a list of tuples, with the first item in the title of data, the second is the user's own data and the third is the  public data about all users in the app
     data = tuple(zip(info,user_data,public_data))
     # else:
@@ -513,16 +521,22 @@ def browse():
         #return redirect(url_for('decks.browse'), code=301)
 
 
-    if request.method == 'POST':
-        if request.form.get('filter') not in (None, 'All'):
-            deck_id = request.form['filter']
-            try:
-                print(deck_id)
-                deck_filter = Deck.query.get(deck_id)
-                cards = g.fmanager.get_cards_from_deck(deck_filter)
+    if (request.method == 'POST') and (request.form.get('filter') not in (None, 'All')):
+        deck_id = request.form['filter']
+        try:
+            deck_filter = Deck.query.get(deck_id)
+            cards = g.fmanager.get_cards_from_deck(deck_filter)
 
-            except Exception as e:
-                flash('Error locating deck: {}'.format(e),category='danger')
+        except Exception as e:
+            flash('Error locating deck: {}'.format(e),category='danger')
+
+    # if request.form.get('filter') i 'All':
+    #     try:
+    #         cards = g.fmanager.get_all_cards()
+    #     except Exception as e:
+    #         flash('Error locating decks: {}'.format(e),category='danger')
+
+
 
     #If there is a deck filter submitted, that is not ALL then 
     # if request.form.get('filter') in (None, 'All'):
@@ -535,7 +549,7 @@ def browse():
             flash('Error locating decks: {}'.format(e),category='danger')
     #cards = g.fmanager.get_all_cards()
 
-    print(cards)
+    #print(cards)
     #user = User.query.get(current_user.id)
     # for deck_list in g.fmanager.get_all_decks():
     #     print(deck_list)
@@ -558,13 +572,11 @@ def create():
     '''
     
     if request.method == 'POST':
-        print(request.form)
         if request.form.get('question') and request.form.get('answer') and request.form.get('deck'):
             try:
                 question = request.form.get('question')
                 answer = request.form.get('answer')
                 deck_id = request.form.get('deck')
-                #paramzlied sql query
                 card = Card(question = question,answer= answer,deck_id =deck_id)
                 db.session.add(card)
                 db.session.commit()
@@ -615,7 +627,9 @@ def study(deck_id):
         quality= int(quality)
         flashcards[0].update_stats(quality)
         #print(flashcards[0].quality)
-        db.session.commit()      
+        db.session.commit()
+        if len(flashcards)==0:#if the user refreshes and sends another post request
+            return redirect(url_for('decks.study', deck_id=deck_id), code=301)
         flashcards.pop(0)#Queue
 
 
