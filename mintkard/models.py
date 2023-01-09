@@ -29,11 +29,12 @@ class Deck(db.Model):
     name = db.Column(db.String(100),nullable=False)
     description = db.Column(db.String(100))
     date = db.Column(db.DateTime(timezone=True),default=func.now())
+    image_hash = db.Column(db.String)#new
     parent_id = db.Column(db.Integer, db.ForeignKey('deck.id'))#This is the foreign key for the parent deck
     children_deck = db.relationship('Deck',backref=db.backref('parent', remote_side=[id]),primaryjoin='Deck.parent_id == Deck.id')#This is the relationship for the child deck, the backref is the parent deck, the primaryjoin is the foreign key for the child deck
     cards = db.relationship('Card',lazy= True,cascade='all, delete-orphan',backref='deck')#cascade will delete all the cards in the deck if its deleted
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
+    
     '''allows a string output'''
     def __repr__(self):
         return f"Deck('{self.name}','{self.children_deck}','{self.parent_id}')"
@@ -50,7 +51,7 @@ class Card(db.Model):
     interval = db.Column(db.Integer)
     easiness_factor = db.Column(db.Integer)
     quality = db.Column(db.Integer)
-    
+    image_hash = db.Column(db.String)#new
     deck_id = db.Column(db.Integer, db.ForeignKey('deck.id'))#One to many relationship with decks
     
     def __repr__(self):

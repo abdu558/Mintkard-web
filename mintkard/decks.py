@@ -408,25 +408,25 @@ def allowed_file(filename):
 #update the database
 
 
-# def upload_image(files) -> str:
-#     # if 'image' not in request.files:
-#     #     flash('No image upload detected',category='info')
-#     #     return False
-#     #print(request.files)
-#     image = files
-#     if image.filename=='':
-#         flash('No image upload detected',category='info')
-#         return False
-#     if image and allowed_file(image.filename):
-#         filename=secure_filename(image.filename)
-#         if not os.path.exists('./user_images'):
-#             # Create the directory
-#             os.makedirs('./user_images')
+def upload_image(files) -> str:
+    # if 'image' not in request.files:
+    #     flash('No image upload detected',category='info')
+    #     return False
+    #print(request.files)
+    image = files
+    if image.filename=='':
+        flash('No image upload detected',category='info')
+        return False
+    if image and allowed_file(image.filename):
+        filename=secure_filename(image.filename)
+        if not os.path.exists('mintkard/static/user_images'):
+            # Create the directory
+            os.makedirs('mintkard/static/user_images')
 
-#         image.filename 
-#         image.save(os.path.join('./user_images',filename))
-#         return True
-#     return False
+        image.filename 
+        image.save(os.path.join('mintkard/static/user_images',filename))
+        return True
+    return False
 
 
 # # # Create the cards

@@ -19,10 +19,10 @@ def create_app():
 
 
 
-    UPLOAD_FOLDER = '/user_images'
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    # UPLOAD_FOLDER = '/user_images'
+    # ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    # app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 
