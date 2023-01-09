@@ -21,7 +21,8 @@
   {% endif %}
 {% endmacro %}
 
-<form method="POST">
+<!--enctype allows files/images to be uploaded, in this case its for image upload-->
+<form method="POST" enctype="multipart/form-data">
 
   <div class="container-fluid">
     <!--width and height of the card height was 80vh-->
@@ -90,7 +91,7 @@
             alt="Card image cap" style="max-height: 300px;object-fit: contain">
           <!--ADD BUTTON TO UPLOAD NEW IMAGE-->
           <div class="card-footer text-muted">
-            <input type="file" id="card-image" accept="image/*">
+            <input type="file" name="image" accept="image/*">
           </div>
         </div>
       </div>

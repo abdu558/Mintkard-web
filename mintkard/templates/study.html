@@ -20,6 +20,7 @@
   height: 80px;
 }
 </style>
+
 <!-- 
 <h1>Study</h1>
 <br>
@@ -43,6 +44,8 @@
     </div>    
   </div>
 </div> -->
+
+
 <style>
 button {
   padding: 0 10px;
@@ -64,7 +67,7 @@ button {
         <img class="card-img-bottom" src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" alt="Card image cap" style="max-height: 200px;object-fit: contain">
 
         <form method="post">
-          <div class="text-muted d-flex justify-content-between" style="position: absolute; bottom: 0;">
+          <div class="text-muted d-flex justify-content-evenly"> <!--style="position: absolute; bottom: 0;"-->
             <button style="background-color: transparent; border:none;" type="submit" name="quality" value="1" class="btn">
               <img src="/static/red.png" alt="Again">
             </button>
@@ -78,13 +81,11 @@ button {
               <img src="/static/very_green.png" alt="Easy">
             </button>
           </div>
-      </div> 
-    </form>
+        </div> 
+      </form>
+      <button id="show_answer" class="btn btn-primary btn-lg">Show Answer</button>
     <!-- <div class="card-footer text-muted d-flex justify-content-between bg-secondary"> -->
-
-
     </div>
-
     <div class="card-footer text-muted d-flex justify-content-between bg-secondary"></div>
   <br>
   <button id="show_answer" class="btn btn-primary">Show Answer</button>

@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 from typing import List,Tuple
 import requests
 
+import os
+from werkzeug.utils import secure_filename
+
 decks = Blueprint('decks', __name__)
 
 class FlashcardManager:
@@ -205,8 +208,13 @@ class FlashcardManagerStats(FlashcardManager):
             elif card.quality > 2:
                 good_quality += 1
                 num_of_cards +=1
-
-        good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
+        try:
+            good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
+        except Exception as e:
+            print('good_cards_percent error when dividing',e)
+            good_cards = None
+            return good_cards
+            
 
         good_cards = round(good_cards, 1)#limit it to 1 decimal place
         return good_cards
@@ -389,7 +397,33 @@ def deck_id_dict(decks):
     return deck_dict
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg', 'gif']
 
+
+#files is going to be request.files.get('image')
+#generate a unique file name and save it
+#return the file name
+#update the database
+def upload_image(files) -> str:
+    # if 'image' not in request.files:
+    #     flash('No image upload detected',category='info')
+    #     return False
+    #print(request.files)
+    image = files
+    if image.filename=='':
+        flash('No image upload detected',category='info')
+        return False
+    if image and allowed_file(image.filename):
+        filename=secure_filename(image.filename)
+        if not os.path.exists('./user_images'):
+            # Create the directory
+            os.makedirs('./user_images')
+
+        image.save(os.path.join('./user_images',filename))
+        return True
+    return False
 # # # Create the cards
 # card1 = Card(question='Question 1', answer='Answer 1', deck_id=51)
 # card2 = Card(question='Question 2', answer='Answer 2', deck_id=51)
@@ -607,13 +641,31 @@ def create():
                 question = request.form.get('question')
                 answer = request.form.get('answer')
                 deck_id = request.form.get('deck')
+
+                if 'image' not in request.files:
+                    flash('No image upload detected',category='info')
+                print(request.files)
+                image = request.files['image']
+                if image.filename=='':
+                    flash('No image upload detected',category='info')
+                if image and allowed_file(image.filename):
+                    filename=secure_filename(image.filename)
+                    if not os.path.exists('./user_images'):
+                        # Create the directory
+                        os.makedirs('./user_images')
+
+                    image.save(os.path.join('./user_images',filename))
+                    flash('Image successfully recieved',category='success')
+                
+
+
+
                 card = Card(question = question,answer= answer,deck_id =deck_id)
                 db.session.add(card)
                 db.session.commit()
+                flash('Card successfully added',category='success')
             except Exception as e:
                 flash('Error adding card, report to the developer or try again later: {}'.format(e),category='danger')
-            flash('Card successfully added',category='success')
-            print('DONEEEE')
     
 
     try:

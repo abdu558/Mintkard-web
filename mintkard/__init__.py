@@ -16,6 +16,16 @@ def create_app():
     app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
     db.init_app(app)
 
+
+
+
+    UPLOAD_FOLDER = '/user_images'
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+
     #Set up for the loginmanager for flask
     login_manager = LoginManager()    
     login_manager.login_view = 'auth.login' #Where does flask redirect the user if they are not logged in
@@ -33,7 +43,7 @@ def create_app():
     #This will add /decks before all routes in the decks file
     app.register_blueprint(decks, url_prefix='/decks')
 
-    
+
     from .models import User, Deck, Card#, FlashcardManager
 
     #from .models import User, Deck, Card#, FlashcardManager
