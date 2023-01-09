@@ -406,24 +406,29 @@ def allowed_file(filename):
 #generate a unique file name and save it
 #return the file name
 #update the database
-def upload_image(files) -> str:
-    # if 'image' not in request.files:
-    #     flash('No image upload detected',category='info')
-    #     return False
-    #print(request.files)
-    image = files
-    if image.filename=='':
-        flash('No image upload detected',category='info')
-        return False
-    if image and allowed_file(image.filename):
-        filename=secure_filename(image.filename)
-        if not os.path.exists('./user_images'):
-            # Create the directory
-            os.makedirs('./user_images')
 
-        image.save(os.path.join('./user_images',filename))
-        return True
-    return False
+
+# def upload_image(files) -> str:
+#     # if 'image' not in request.files:
+#     #     flash('No image upload detected',category='info')
+#     #     return False
+#     #print(request.files)
+#     image = files
+#     if image.filename=='':
+#         flash('No image upload detected',category='info')
+#         return False
+#     if image and allowed_file(image.filename):
+#         filename=secure_filename(image.filename)
+#         if not os.path.exists('./user_images'):
+#             # Create the directory
+#             os.makedirs('./user_images')
+
+#         image.filename 
+#         image.save(os.path.join('./user_images',filename))
+#         return True
+#     return False
+
+
 # # # Create the cards
 # card1 = Card(question='Question 1', answer='Answer 1', deck_id=51)
 # card2 = Card(question='Question 2', answer='Answer 2', deck_id=51)
@@ -650,11 +655,11 @@ def create():
                     flash('No image upload detected',category='info')
                 if image and allowed_file(image.filename):
                     filename=secure_filename(image.filename)
-                    if not os.path.exists('./user_images'):
+                    if not os.path.exists('mintkard/static/user_images'):
                         # Create the directory
-                        os.makedirs('./user_images')
+                        os.makedirs('mintkard/static/user_images')
 
-                    image.save(os.path.join('./user_images',filename))
+                    image.save(os.path.join('mintkard/static/user_images',filename))
                     flash('Image successfully recieved',category='success')
                 
 
