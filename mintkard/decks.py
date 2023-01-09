@@ -5,7 +5,7 @@ from flask_login import current_user,login_required
 from datetime import datetime, timedelta 
 from typing import List,Tuple
 import requests
-
+import uuid
 import os
 from werkzeug.utils import secure_filename
 
@@ -242,6 +242,8 @@ class FlashcardManagerStats(FlashcardManager):
     def quality_avg(self):
         data = db.session.execute(f"SELECT AVG(quality) as quality_avg FROM Card  WHERE id IN (SELECT id FROM Deck WHERE user_id = {self.user.id});").fetchone()
         try:
+            print(data.quality_avg)
+            print(self.user.id)
             quality = round(data.quality_avg,1)
             return quality
         except Exception as e:
@@ -397,18 +399,17 @@ def deck_id_dict(decks):
     return deck_dict
 
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg', 'gif']
-
 
 #files is going to be request.files.get('image')
 #generate a unique file name and save it
 #return the file name
 #update the database
 
-
-def upload_image(files) -> str:
+def upload_image(files):# -> str:
     # if 'image' not in request.files:
     #     flash('No image upload detected',category='info')
     #     return False
@@ -418,14 +419,17 @@ def upload_image(files) -> str:
         flash('No image upload detected',category='info')
         return False
     if image and allowed_file(image.filename):
-        filename=secure_filename(image.filename)
+        #filename=secure_filename(image.filename)
+        filename=image.filename
         if not os.path.exists('mintkard/static/user_images'):
             # Create the directory
             os.makedirs('mintkard/static/user_images')
-
-        image.filename 
+        #print('hash is',generate_password_hash(image))
+        filename = str(uuid.uuid4()) + '.' + filename.rsplit('.', 1)[1].lower()
+        #filename = image.filename
+        print('filename is',filename)
         image.save(os.path.join('mintkard/static/user_images',filename))
-        return True
+        return filename
     return False
 
 
@@ -474,14 +478,15 @@ def decks_route():
     root_decks = Deck.query.filter_by(parent_id=None,user_id =current_user.id).all()
     #if request.method == 'POST':
     if request.form.get('add_deck'):
-        num_of_decks = len(root_decks)
-        num_of_decks = 'Deck' + str(num_of_decks)
+        # num_of_decks = len(root_decks)
+        # num_of_decks = 'Deck' + str(num_of_decks)
         new_deck = Deck(name='DECKS',user_id=current_user.id)
         db.session.add(new_deck)
         db.session.commit()
         
         root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
-        return render_template("decks.html",root_decks = root_decks)
+        #return render_template("decks.html",root_decks = root_decks)
+        redirect(url_for('decks.decks_route'))
     if request.form.get('delete_deck'):
         deck_id = request.form.get('delete_deck')
         try:
@@ -540,11 +545,12 @@ def decks_route():
 @login_required
 @decks.route('/stats', methods=['GET', 'POST'])
 def stats():
-    #try:
-    user_data = g.fmanagerstats.get_all_data()
-    public_data = g.fmanagerstats_public.get_all_data() #inherited method
-    # except Exception as e:
-    #     flash('Error loading data, try adding a deck and cards first: {}'.format(e),category='danger')
+    try:
+        user_data = g.fmanagerstats.get_all_data()
+        public_data = g.fmanagerstats_public.get_all_data() #inherited method
+    except Exception as e:
+        flash('Error loading data, try adding a deck,cards and reviewing them first: {}'.format(e),category='danger')
+        return(redirect(url_for('decks.decks_route')))
 
     # if (user_data == None) or (public_data == None):
     #     #['success_rate','card_nums','deck_nums','interval_avg','easiness_factor_avg','quality_avg']
@@ -647,25 +653,32 @@ def create():
                 answer = request.form.get('answer')
                 deck_id = request.form.get('deck')
 
-                if 'image' not in request.files:
-                    flash('No image upload detected',category='info')
-                print(request.files)
-                image = request.files['image']
-                if image.filename=='':
-                    flash('No image upload detected',category='info')
-                if image and allowed_file(image.filename):
-                    filename=secure_filename(image.filename)
-                    if not os.path.exists('mintkard/static/user_images'):
-                        # Create the directory
-                        os.makedirs('mintkard/static/user_images')
+                if request.files.get('image'):
+                    image_hash = upload_image(request.files['image'])
+                    if image_hash != False:
+                        print(image_hash)
+                        card = Card(question = question,answer= answer,deck_id =deck_id,image_hash=image_hash)
+                    else:
+                        flash('Image has not been saved',category='danger')
+                        card = Card(question = question,answer= answer,deck_id =deck_id)
+                else:
+                    card = Card(question = question,answer= answer,deck_id =deck_id)    
 
-                    image.save(os.path.join('mintkard/static/user_images',filename))
-                    flash('Image successfully recieved',category='success')
+                # if 'image' not in request.files:
+                #     flash('No image upload detected',category='info')
+                # print(request.files)
+                # image = request.files['image']
+                # if image.filename=='':
+                #     flash('No image upload detected',category='info')
+                # if image and allowed_file(image.filename):
+                #     filename=secure_filename(image.filename)
+                #     if not os.path.exists('mintkard/static/user_images'):
+                #         # Create the directory
+                #         os.makedirs('mintkard/static/user_images')
+
+                #     image.save(os.path.join('mintkard/static/user_images',filename))
+                #     flash('Image successfully recieved',category='success')
                 
-
-
-
-                card = Card(question = question,answer= answer,deck_id =deck_id)
                 db.session.add(card)
                 db.session.commit()
                 flash('Card successfully added',category='success')

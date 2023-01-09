@@ -63,6 +63,10 @@ def create_app():
     # db.session.commit()
     # print(User.query.all())
 
+    #write an sql statement to alter table card and deck to add a nullable column for image hash
+    # db.session.execute("ALTER TABLE card ADD COLUMN image_hash TEXT")
+    # db.session.execute("ALTER TABLE deck ADD COLUMN image_hash TEXT")
+    # db.session.commit()
 
     # if not path.exists('/data.db'):
     #     with app.app_context():
