@@ -8,6 +8,8 @@ import requests
 import uuid
 import os
 from werkzeug.utils import secure_filename
+import hashlib
+
 
 decks = Blueprint('decks', __name__)
 
@@ -208,14 +210,18 @@ class FlashcardManagerStats(FlashcardManager):
             elif card.quality > 2:
                 good_quality += 1
                 num_of_cards +=1
-        try:
-            good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
-        except Exception as e:
-            print('good_cards_percent error when dividing',e)
-            good_cards = None
-            return good_cards
-            
 
+        if num_of_cards == 0:
+            return 'No data'
+        good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
+
+        # try:
+        #     good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
+        # except Exception as e:
+        #     print('good_cards_percent error when dividing',e)
+        #     good_cards = 0
+        #     return good_cards
+            
         good_cards = round(good_cards, 1)#limit it to 1 decimal place
         return good_cards
 
@@ -293,9 +299,10 @@ class FlashcardManagerPublicStats(FlashcardManagerStats):
                 num_of_cards +=1
         
 
+        if num_of_cards == 0:
+            return 'No data'
 
-        good_cards = (good_quality/num_of_cards) *100
-
+        good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
         good_cards = round(good_cards, 1)#limit it to 1 decimal place
         return good_cards
 
@@ -424,9 +431,21 @@ def upload_image(files):# -> str:
         if not os.path.exists('mintkard/static/user_images'):
             # Create the directory
             os.makedirs('mintkard/static/user_images')
+
+
+        #image hashing that checks if the image is the same
+        # filename2 = hashlib.md5(image.read()).hexdigest()
+        # print(filename2)
+
         #print('hash is',generate_password_hash(image))
-        filename = str(uuid.uuid4()) + '.' + filename.rsplit('.', 1)[1].lower()
+
+        #This is a hash of the imag to help identify the same images and store them once. It also makes it easier to retrieve the image
+        #filename = str(hashlib.md5(image.read()).hexdigest()) + '.' + filename.rsplit('.', 1)[1].lower()
+        print(filename)
+        image.seek(0)
+        filename = str(hashlib.md5(image.read()).hexdigest()) + '.' + filename.rsplit('.', 1)[1].lower()
         #filename = image.filename
+        image.seek(0)
         print('filename is',filename)
         image.save(os.path.join('mintkard/static/user_images',filename))
         return filename
@@ -545,12 +564,12 @@ def decks_route():
 @login_required
 @decks.route('/stats', methods=['GET', 'POST'])
 def stats():
-    try:
-        user_data = g.fmanagerstats.get_all_data()
-        public_data = g.fmanagerstats_public.get_all_data() #inherited method
-    except Exception as e:
-        flash('Error loading data, try adding a deck,cards and reviewing them first: {}'.format(e),category='danger')
-        return(redirect(url_for('decks.decks_route')))
+    # try:
+    user_data = g.fmanagerstats.get_all_data()
+    public_data = g.fmanagerstats_public.get_all_data() #inherited method
+    # except Exception as e:
+    #     flash('Error loading data, try adding a deck,cards and reviewing them first: {}'.format(e),category='danger')
+    #     return(redirect(url_for('decks.decks_route')))
 
     # if (user_data == None) or (public_data == None):
     #     #['success_rate','card_nums','deck_nums','interval_avg','easiness_factor_avg','quality_avg']
@@ -725,11 +744,13 @@ def study(deck_id):
         quality = request.form.get('quality')
         #flashcard = Card.query.get(flashcard_id)
         quality= int(quality)
+        if len(flashcards) == 0: #if the user refreshes and sends another post request
+            return redirect(url_for('decks.study', deck_id=deck_id), code=301)
         flashcards[0].update_stats(quality)
         #print(flashcards[0].quality)
         db.session.commit()
-        if len(flashcards)==0:#if the user refreshes and sends another post request
-            return redirect(url_for('decks.study', deck_id=deck_id), code=301)
+        # if len(flashcards)==0:#if the user refreshes and sends another post request
+        #     return redirect(url_for('decks.study', deck_id=deck_id), code=301)
         flashcards.pop(0)#Queue
 
 
