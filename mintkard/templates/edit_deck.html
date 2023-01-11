@@ -14,13 +14,13 @@
   </h1>
   <hr>
   <br>
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
 
     <div class="d-grid gap-3">
       <!-- Deck Image -->
       <div class="form-group">
         <label for="deckImage">Deck Image</label>
-        <input type="file" class="form-control-file" id="deckImage">
+        <input type="file" name="image" accept="image/*">
       </div>
       <!-- Deck Title -->
       <div class="form-group">

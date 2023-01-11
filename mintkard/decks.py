@@ -803,6 +803,16 @@ def edit_deck(deck_id):
             flash('Deck has been updated',category='success')
             #return redirect(url_for('decks.edit_deck',deck_id=deck_id),code=301)#301 is a permanent redirect
 
+        if request.files.get('image'):
+            image_hash = upload_image(request.files['image'])
+            print(image_hash)
+            if image_hash not in(None,False,current_deck.image_hash):
+                current_deck.image_hash = image_hash
+                db.session.commit()
+            else:
+                print('Failed to upload image')
+            
+
         elif request.form.get('delete_subdeck'):
             subdeck_id = request.form.get('delete_subdeck')
 
@@ -897,23 +907,33 @@ def edit(card_id):
                 db.session.commit()
                 
         print(request.form.get('card-question'))
-        print(request)
 
-        if request.form.get('card-question') or request.form.get('card-answer'):
+        #if any of the fields are not empty, update the card
+        if request.form.get('card-question') or request.form.get('card-answer') or request.files.get('image'):
             current_card.question = request.form['card-question']
             current_card.answer = request.form['card-answer']
+
+            if request.files.get('image'):
+                image_hash = upload_image(request.files['image'])
+                print(image_hash)
+                if image_hash not in(None,False,current_card.image_hash):
+                    current_card.image_hash = image_hash
+                else:
+                    print('Failed to upload image')
+
             db.session.commit()
             flash('Flashcard has been successfully updated',category='success')
-            #REDIRECT BACK TO ITS PLACE
             return redirect(url_for('decks.browse'),code=301)
+        else:
+            flash('Please fill out the form',category='danger')
+            return redirect(url_for('decks.edit',card_id=card_id),code=301)
 
-            #return redirect(request.referrer)
     current_card = Card.query.filter_by(id=card_id).first()
     return render_template("edit.html",card=current_card,decks=decks)
 
 
 
-@decks.route('/help')
+@decks.route('/help') 
 def help():
     return render_template("help.html")
 

@@ -93,7 +93,9 @@
         
           <p class="card-text">Question:{{card.question}}</p>
           <p class="card-text">Answer: {{card.answer}}</p>
-          <img src="/static/user_images/{{card.image_hash}}" class="card-img-bottom" alt="card image">
+          {% if card.image_hash %}
+            <img src="/static/user_images/{{card.image_hash}}" class="card-img-bottom">
+          {% endif %}
         </div>
       </div>
     </div>

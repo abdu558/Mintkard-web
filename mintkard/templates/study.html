@@ -64,8 +64,9 @@ button {
       <div style="display:none" id="answer">
           <p class="card-text" style="width: 100%;">{{flashcard.answer}}</p>
         <!-- <img class="card-img-bottom" src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" alt="Card image cap" style="max-height: 200px;object-fit: contain"> -->
-        <img src="/static/user_images/{{flashcard.image_hash}}" class="card-img-bottom" alt="card image">
-
+        {% if flashcard.image_hash %}
+          <img src="/static/user_images/{{flashcard.image_hash}}" class="card-img-bottom" alt="card image">
+        {% endif %}
         <form method="post">
           <div class="text-muted d-flex justify-content-evenly"> <!--style="position: absolute; bottom: 0;"-->
             <button style="background-color: transparent; border:none;" type="submit" name="quality" value="1" class="btn">

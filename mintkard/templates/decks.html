@@ -12,7 +12,11 @@
     {% for deck in root_decks %}
     <div class="col-sm-4">
       <div class="card" style="margin-bottom: 2rem">
-        <img src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" class="card-img-top" alt="Deck 1">
+        {% if deck.image_hash %}
+          <img src="/static/user_images/{{deck.image_hash}}" class="card-img-top" alt="Deck 1">
+        {% else %}
+          <img src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" class="card-img-top" alt="Deck 1">
+        {% endif %}
         <div class="card-body">
           <h5 class="card-title">{{loop.index}})  {{deck.name}}</h5>
           <p class="card-text">{{deck.description}}</p>
