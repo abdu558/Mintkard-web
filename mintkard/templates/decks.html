@@ -6,7 +6,6 @@
 
 {% block body %}
 <div class="container mt-5">
-
 <h1>All Decks</h1>
   <div class="row">
     {% for deck in root_decks %}
@@ -15,7 +14,8 @@
         {% if deck.image_hash %}
           <img src="/static/user_images/{{deck.image_hash}}" class="card-img-top" alt="Deck 1">
         {% else %}
-          <img src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" class="card-img-top" alt="Deck 1">
+          <!--Image Credit:NASA Apollo Image gallery-->
+          <img src="/static/moon.jpg" class="card-img-top" alt="Deck">
         {% endif %}
         <div class="card-body">
           <h5 class="card-title">{{loop.index}})  {{deck.name}}</h5>
@@ -26,7 +26,7 @@
             <a class="btn btn-secondary" style="margin-left: 5px" name="deck_button" value="edit" href = '/decks/edit-deck/{{deck.id}}' >Edit</a>
             
             <form method="post" style="margin-left: 5px">
-              <button class="btn btn-danger" type="submit" name="delete_deck" value="{{deck.id}}" onclick="confirm('Press ok if you are sure you want to delete this deck, and all its cards and subdecks')";>Delete</button>         
+              <button class="btn btn-danger" type="submit" name="delete_deck" value="{{deck.id}}" onclick="if (!confirm('Press ok if you are sure you want to delete this deck, and all its cards and subdecks')) event.preventDefault();">Delete</button>         
             </form>
           </div>
         </div>
@@ -36,8 +36,9 @@
           </button>
           <ul class="dropdown-menu" style="width:100%">
             {% for subdeck in deck.children_deck %}
-              <li><a class="dropdown-item" href="#" name="subdeck_revise" value="revise">->{{subdeck.name}}</a></li>
+              <li><a class="dropdown-item" href="'/decks/study/{{subdeck.id}}'" name="subdeck_revise" value="revise">->{{subdeck.name}}</a></li>
         
+              <!--Does not work as of yet-->
               {% if subdeck.children_deck %}
                 <ul class="dropdown-menu" style="width:100%">
                   {% for subdeck2 in subdeck.children_deck %}

@@ -53,7 +53,6 @@ class FlashcardManager:
 
     def get_all_decks(self):#,root_decks: List[Deck]) -> List[Deck]:
         all_decks = []
-        #print('DECKS ARE',self.user.decks)
         for root_deck in self.user.decks:
             if root_deck.parent_id is None:# this will only check parent decks, as self.user.decks has some subdecks
                 all_decks.extend(self.get_all_decks_recursive(root_deck))
@@ -70,11 +69,11 @@ class FlashcardManager:
 
 
     '''
-    The following three function review_flashcards, is_card_due and review_deck are used to review the flashcards and are used and work together 
+    The following two function  is_card_due and get_flashcards_to_review are used to review the flashcards and are used and work together 
     alongside the update_stats in card class
     '''
     #dates is a list of int/datetimes
-    #inspiration from: https://developer.nvidia.com/blog/merge-sort-explained-a-data-scientists-algorithm-guide/
+    #reference: https://developer.nvidia.com/blog/merge-sort-explained-a-data-scientists-algorithm-guide/
     def merge_sort(self,dates):
         dates_len = len(dates)
         if dates_len <=1:
@@ -102,32 +101,6 @@ class FlashcardManager:
         return dates_list
 
 
-    #DELETE THIS LATER
-    def review_flashcards(self, flashcards: List[Card]) -> List[Tuple[Card]]:
-        '''Currently unused used to be called on the return statemnt  in the review_deck'''
-        reviewed_flashcards = []
-
-        # flashcards_to_sort = []
-        # flashcards.extend(flashcards_to_sort)
-        # for flashcard in flashcards:
-        #     if flashcard.is_new == True:
-        #         continue
-        #     else:
-        #         flashcards_to_sort.append(flashcard)
-        #         flashcards.remove(flashcard)
-        
-        #flashcards_to_sort = merge_sort(flashcards_to_sort)
-        #flashcards.extend(flashcards_to_sort) # puts both of them back
-
-        for flashcard in flashcards:
-            print(flashcard.question)
-            #send card to flask front end
-            flashcard.update_stats()
-            flashcard.last_study = datetime.now()
-            db.session.commit()
-            reviewed_flashcards.append(flashcard)
-        return reviewed_flashcards
-
     def is_card_due(self,flashcard:Card) -> bool:
         if flashcard.is_new == True:
             return True
@@ -143,10 +116,13 @@ class FlashcardManager:
             flash('ERROR: checking if card is due: {}'.format(e),category='danger')
             return True#True will let the card be reviewed, so that the error will get fixed
 
-    #This is the main thing that is called,
-    def review_deck(self, deck_id_or_deck) -> List[Tuple[Card, bool]]:#deck_id: int = None,deck: Deck = None if deck_id is not None: then find the deck else use the deck
+
+
+    def get_flashcards_to_review(self, deck_id_or_deck):
         '''
-        This method is called to review decks, this will review all subdecks 
+        This method is called to review decks, this will review all subdecks recusively
+        This is method is called, when a user wants to review a deck/subdeck and it calls the is_card_Due method
+        to check if the card is due to be reviewed.
         '''
         if isinstance(deck_id_or_deck, int):#Polymorphism
             deck= Deck.query.get(deck_id_or_deck)
@@ -159,7 +135,7 @@ class FlashcardManager:
 
         #Supports subdecks byy using recursion       
         for subdeck in deck.children_deck:
-            flashcards_to_review.extend(self.review_deck(subdeck.id))
+            flashcards_to_review.extend(self.get_flashcards_to_review(subdeck.id))
         #print('flashcards to review is ',flashcards_to_review)
 
         #return self.review_flashcards(flashcards_to_review)
@@ -172,7 +148,6 @@ class FlashcardManager:
         sorted_list = self.merge_sort(unsorted_list)
         flashcards_to_review.extend(sorted_list)
 
-            
         return flashcards_to_review
 
 
@@ -514,7 +489,6 @@ def browse():
         search_term = request.args.get('search')
         try:
             cards = db.session.query(Card).filter(Card.question.like('%{}%'.format(search_term)) | (Card.answer.like('%{}%'.format(search_term)))).all()
-            print(cards)
         except Exception as e:
             flash('Error searching for cards: {}'.format(e),category='danger')
         
@@ -587,7 +561,7 @@ def study(deck_id):
     '''
     Allows the user to study new cards
     '''
-    flashcards = g.fmanager.review_deck(deck_id)
+    flashcards = g.fmanager.get_flashcards_to_review(deck_id)
 
     if request.method == 'POST':# and flashcards:#checks if flashcard exists if it does not it ignores post requesst and goes down delte later and check if it works
         quality = request.form.get('quality')
