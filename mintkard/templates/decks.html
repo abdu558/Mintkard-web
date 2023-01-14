@@ -36,12 +36,12 @@
           </button>
           <ul class="dropdown-menu" style="width:100%">
             {% for subdeck in deck.children_deck %}
-              <li><a class="dropdown-item" href="#" name="subdeck_revise" value="revise">{{subdeck.name}}</a></li>
+              <li><a class="dropdown-item" href="#" name="subdeck_revise" value="revise">->{{subdeck.name}}</a></li>
         
               {% if subdeck.children_deck %}
                 <ul class="dropdown-menu" style="width:100%">
                   {% for subdeck2 in subdeck.children_deck %}
-                    <li><a class="dropdown-item" href="#" name="subdeck_revise" value="revise">{{subdeck2.name}}</a></li>  
+                    <li><a class="dropdown-item" href="#" name="subdeck_revise" value="revise">-->{{subdeck2.name}}</a></li>  
                   {% endfor %}
                 </ul>
               {% endif %}

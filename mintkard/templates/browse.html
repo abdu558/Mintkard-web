@@ -17,13 +17,13 @@
 
 <div class="container mt-5">
   <!-- Search bar -->
-  <div class="input-group mb-4" style="width:80%;margin: auto;">
-    <input type="text" class="col-auto form-control" placeholder="Search flashcards">
+  <form class="input-group mb-4" style="width:80%;margin: auto;">
+    <input type="text" class="col-auto form-control" name="search" placeholder="Search flashcards">
     <button type="submit" class="col-auto btn btn-primary ">🔍Search</button>
-
-  </div>
+  </form>
 
   <!--jinja recursive function for the filter dropdown-->
+  <!--This function displays subdecks in the dropdown-->
   {% macro display_subdecks(subdeck,deck,selected_id) %}
   <!-- The selceted line in the dropdown option the same, after post request, thats what the selected id which is passed in and out through the function display_subdecks-->
     <option value = "{{subdeck.id}}" {% if subdeck.id == selected_id %}selected{% endif %}>

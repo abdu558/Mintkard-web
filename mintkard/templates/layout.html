@@ -69,11 +69,12 @@
                     {% endif %}
 
                 </ul>
-
-                <form method ="method" action ="decks/browse" class="d-flex">
+                
+                <form  action ="{{url_for('decks.browse')}}" class="d-flex">
                     <input class="form-control me-2" name ="search" type="search" placeholder="Search Cards" aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
+                
             </div>
         </div>
     </nav>

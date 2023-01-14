@@ -74,6 +74,7 @@ class FlashcardManager:
     alongside the update_stats in card class
     '''
     #dates is a list of int/datetimes
+    #inspiration from: https://developer.nvidia.com/blog/merge-sort-explained-a-data-scientists-algorithm-guide/
     def merge_sort(self,dates):
         dates_len = len(dates)
         if dates_len <=1:
@@ -101,7 +102,7 @@ class FlashcardManager:
         return dates_list
 
 
-
+    #DELETE THIS LATER
     def review_flashcards(self, flashcards: List[Card]) -> List[Tuple[Card]]:
         '''Currently unused used to be called on the return statemnt  in the review_deck'''
         reviewed_flashcards = []
@@ -210,19 +211,20 @@ class FlashcardManagerStats(FlashcardManager):
             elif card.quality > 2:
                 good_quality += 1
                 num_of_cards +=1
+            elif card.quality <=2:
+                num_of_cards +=1
 
         if num_of_cards == 0:
             return 'No data'
-        good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
+        #good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
 
-        # try:
-        #     good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
-        # except Exception as e:
-        #     print('good_cards_percent error when dividing',e)
-        #     good_cards = 0
-        #     return good_cards
+        try:
+            good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
+        except Exception as e:
+            print('good_cards_percent error when dividing',e)
+            good_cards = 0
+            return good_cards
             
-        good_cards = round(good_cards, 1)#limit it to 1 decimal place
         return good_cards
 
 
@@ -241,27 +243,34 @@ class FlashcardManagerStats(FlashcardManager):
 
 
     def easiness_factor_avg(self):
+        
         data = db.session.execute(f"SELECT AVG(easiness_factor) as easiness_avg FROM Card  WHERE id IN (SELECT id FROM Deck WHERE user_id = {self.user.id});").fetchone()
         return data.easiness_avg
 
 
     def quality_avg(self):
         data = db.session.execute(f"SELECT AVG(quality) as quality_avg FROM Card  WHERE id IN (SELECT id FROM Deck WHERE user_id = {self.user.id});").fetchone()
-        try:
-            print(data.quality_avg)
-            print(self.user.id)
-            quality = round(data.quality_avg,1)
-            return quality
-        except Exception as e:
-            print('Error rounding quality average: {}'.format(e))
+        return data.quality_avg
+        # try:
+        #     quality = round(data.quality_avg,2)
+        #     return quality
+        # except Exception as e:
+        #     print('Error rounding quality average: {}'.format(e))
         
-            return data.quality_avg
+        #     return data.quality_avg
 
 
     def interval_avg(self):
         data = db.session.execute(f"SELECT AVG(interval) as inter_avg FROM Card WHERE id IN (SELECT id FROM Deck WHERE user_id = {self.user.id});").fetchone()
         return data.inter_avg
-
+        # try:
+        #     interval = round(data.inter_avg,2)
+        #     print('awgrragwga',interval)
+        #     return interval
+        # except Exception as e:
+        #     flash('Error rounding quality average: {}'.format(e))
+        
+        #     return data.inter_avg
 
     def get_all_data(self):
         'This function can be called to return all the data from all the above methods with one call rather than calling each one in the stats route'
@@ -277,7 +286,11 @@ class FlashcardManagerStats(FlashcardManager):
 
 
 #gets the average data from the average user
+
 class FlashcardManagerPublicStats(FlashcardManagerStats):
+    '''
+    This is the public stats class that gets stats averages from all users of the app
+    '''
     def __init__(self,app,user=None):
         super().__init__(app,user)    
 
@@ -297,13 +310,15 @@ class FlashcardManagerPublicStats(FlashcardManagerStats):
             elif card.quality > 2:
                 good_quality += 1
                 num_of_cards +=1
+            elif card.quality <=2:
+                num_of_cards +=1
         
 
         if num_of_cards == 0:
             return 'No data'
 
         good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
-        good_cards = round(good_cards, 1)#limit it to 1 decimal place
+        #good_cards = round(good_cards, 1)#limit it to 1 decimal place
         return good_cards
 
     #method overiding
@@ -325,12 +340,12 @@ class FlashcardManagerPublicStats(FlashcardManagerStats):
 
     def quality_avg(self):
         data = db.session.execute("""SELECT AVG(quality) as quality_avg FROM Card""").fetchone()
-        try:
-            quality = round(data.quality_avg,1)
-        except Exception as e:
-            print('Error rounding quality average: {}'.format(e))
+        # try:
+        #     quality = round(data.quality_avg,1)
+        # except Exception as e:
+        #     print('Error rounding quality average: {}'.format(e))
         
-        return quality
+        return data.quality_avg
 
     def interval_avg(self):
         data = db.session.execute("""SELECT AVG(interval) as inter_avg FROM Card;""").fetchone()
@@ -343,18 +358,8 @@ class FlashcardManagerPublicStats(FlashcardManagerStats):
 TO-DO in edit pages maybe
 return redirect(url_for("login", next_page="/profile"))
 '''
-
-# def redirect_unauth():
-#     '''
-#     Redirects unauthenticated people to the login page
-#     DELETE LATER MAYBE CHECK IF WORKS
-#     '''
-#     if not current_user.is_authenticated():
-#         return redirect(url_for("login", next_page="/profile"))
-#     else:
-#         return None
-
-#Globally initlize flashcard mana
+#Globally initlize flashcard manager, to be accessed in all routes, g. is global.
+#its a complex user-defined oop model, will only be inilized with the user sending a request,
 @decks.before_request
 @login_required
 def before_request():
@@ -362,28 +367,13 @@ def before_request():
     This is a complex user-defined objected oriented model, will only be inilized with the user sending a request,
     which the id of the user is initialized at runtime
     '''
-    #try:
-    g.fmanager = FlashcardManager(user=current_user.id, app=current_app)
-    g.fmanagerstats = FlashcardManagerStats(user=current_user.id, app=current_app)
-    g.fmanagerstats_public = FlashcardManagerPublicStats(user=None,app=current_app)#there is no user as it gets the apps average data
-    #except:
-        #redirect(url_for('auth.login'))
-    # card1 = Card.query.get(4)
-    # card1.is_new = True
-    # db.session.commit()
-    # card.update_time()
-    # print('updated time is',card.last_study)
+    try:
+        g.fmanager = FlashcardManager(user=current_user.id, app=current_app)
+        g.fmanagerstats = FlashcardManagerStats(user=current_user.id, app=current_app)
+        g.fmanagerstats_public = FlashcardManagerPublicStats(user=None,app=current_app)#there is no user as it gets the apps average data
+    except Exception as e:
+        flash('Error inilizing flashcard manager: {}'.format(e))
 
-
-    #print(g.fmanager.get_all_decks())
-
-# if User.is_authenticated:
-#     g.fmanager = FlashcardManager(user_id=current_user.id, app=current_app)
-#     print(g.fmanager.get_all_decks())
-# deck_id_a=8
-# result = db.session.execute(f"SELECT user_id FROM deck WHERE id={deck_id_a}")
-# card_userid=result.fetchone()[0]
-# print(card_userid)
 def user_owned_card(card_id):
     '''Returns true if the user does own the flashcard, false if the user does not, preventing unauthorised access of cards, if it the id is changed
     ON means what two tables should there should be a match in'''
@@ -406,73 +396,36 @@ def deck_id_dict(decks):
     return deck_dict
 
 
+#Taken from flask documentation,reference: https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg', 'gif']
 
+
 #files is going to be request.files.get('image')
 #generate a unique file name and save it
 #return the file name
 #update the database
-
+#Taken from flask documentation,reference:https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
 def upload_image(files):# -> str:
-    # if 'image' not in request.files:
-    #     flash('No image upload detected',category='info')
-    #     return False
-    #print(request.files)
     image = files
     if image.filename=='':
         flash('No image upload detected',category='info')
         return False
     if image and allowed_file(image.filename):
-        #filename=secure_filename(image.filename)
         filename=image.filename
         if not os.path.exists('mintkard/static/user_images'):
             # Create the directory
             os.makedirs('mintkard/static/user_images')
-
-
-        #image hashing that checks if the image is the same
-        # filename2 = hashlib.md5(image.read()).hexdigest()
-        # print(filename2)
-
-        #print('hash is',generate_password_hash(image))
-
-        #This is a hash of the imag to help identify the same images and store them once. It also makes it easier to retrieve the image
-        #filename = str(hashlib.md5(image.read()).hexdigest()) + '.' + filename.rsplit('.', 1)[1].lower()
-        print(filename)
         image.seek(0)
         filename = str(hashlib.md5(image.read()).hexdigest()) + '.' + filename.rsplit('.', 1)[1].lower()
-        #filename = image.filename
         image.seek(0)
         print('filename is',filename)
         image.save(os.path.join('mintkard/static/user_images',filename))
         return filename
     return False
 
-
-# # # Create the cards
-# card1 = Card(question='Question 1', answer='Answer 1', deck_id=51)
-# card2 = Card(question='Question 2', answer='Answer 2', deck_id=51)
-# card3 = Card(question='Question 3', answer='Answer 3', deck_id=52)
-# card4 = Card(question='Question 4', answer='Answer 4', deck_id=51)
-# card5 = Card(question='Question 5', answer='Answer 5', deck_id=51)
-# card6 = Card(question='Question 6', answer='Answer 6', deck_id=56)
-# card7 = Card(question='Question 7', answer='Answer 7', deck_id=58)
-# card8 = Card(question='Question 8', answer='Answer 8', deck_id=54)
-
-# # Add the decks and cards to the database
-
-# db.session.add(card1)
-# db.session.add(card2)
-# db.session.add(card3)
-# db.session.add(card4)
-# db.session.add(card5)
-# db.session.add(card6)
-# db.session.add(card7)
-# db.session.add(card8)
-# db.session.commit()
 '''
 This is the main homepage for the decks page, where all decks(set of cards) are shown and their subdecks
 They will have the option to study a deck, edit a deck, CHECK LATER HOW TO REDIRECT EDIT DECKS TO THE RIGHT DECK.
@@ -495,16 +448,13 @@ def decks_route():
     root deck is a deck without a parent deck, just like a tree graph where a root can have children but cant have a parent
     '''
     root_decks = Deck.query.filter_by(parent_id=None,user_id =current_user.id).all()
-    #if request.method == 'POST':
     if request.form.get('add_deck'):
-        # num_of_decks = len(root_decks)
-        # num_of_decks = 'Deck' + str(num_of_decks)
+
         new_deck = Deck(name='DECKS',user_id=current_user.id)
         db.session.add(new_deck)
         db.session.commit()
         
         root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
-        #return render_template("decks.html",root_decks = root_decks)
         redirect(url_for('decks.decks_route'))
     if request.form.get('delete_deck'):
         deck_id = request.form.get('delete_deck')
@@ -514,16 +464,10 @@ def decks_route():
         except Exception as e:
             flash('Error locating deck: {}'.format(e),category='danger') 
 
-        
         decks_to_delete = g.fmanager.get_all_decks_recursive(deck_to_delete)
         for delete_deck in decks_to_delete:
             db.session.delete(delete_deck)
-        
 
-        #db.session.delete(deck_to_delete)
-        # db.session.commit()
-
-        # db.session.delete(deck_to_delete)
         db.session.commit()
 
         root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
@@ -531,57 +475,19 @@ def decks_route():
 
     return render_template("decks.html",root_decks= root_decks)#,current_user=current_user)#Remove this later
 
-
-
-# @login_required
-# @decks.route('/search')
-# def search():
-#     # create a hash table to store the cards
-#     card_table = {}
-
-#     # add all the cards to the table
-#     # cards = [
-#     #     Card(question='What is the capital of France?', answer='Paris'),
-#     #     Card(question='What is the capital of Italy?', answer='Rome'),
-#     #     Card(question='What is the capital of Spain?', answer='Madrid'),
-#     #     Card(question='What is the capital of Germany?', answer='Berlin'),
-#     # ]
-#     cards = Card.query.all()
-
-#     for i, card in enumerate(cards):
-#         card_table[i] = card
-
-#     # search the card table for cards with a particular word in the question or answer
-#     search_term = request.args.get('text')
-
-
-#     # use the .items() method to get a list of tuples representing the key-value pairs in the dictionary
-#     for key, card in card_table.items():
-#         if search_term in card.answer or search_term in card.question:
-#            x= f'Card {key}: {card.question} / {card.answer}'
-#     return "<p>{}</p>".format(x)
-
 @login_required
 @decks.route('/stats', methods=['GET', 'POST'])
 def stats():
-    # try:
-    user_data = g.fmanagerstats.get_all_data()
-    public_data = g.fmanagerstats_public.get_all_data() #inherited method
-    # except Exception as e:
-    #     flash('Error loading data, try adding a deck,cards and reviewing them first: {}'.format(e),category='danger')
-    #     return(redirect(url_for('decks.decks_route')))
-
-    # if (user_data == None) or (public_data == None):
-    #     #['success_rate','card_nums','deck_nums','interval_avg','easiness_factor_avg','quality_avg']
-    info = ['success rate','Number of cards','Number of decks','Average interval','Average easiness factor','Average quality']
-    print(user_data)
-    #     #merges the three lists to have a list of tuples, with the first item in the title of data, the second is the user's own data and the third is the  public data about all users in the app
-    data = tuple(zip(info,user_data,public_data))
-    # else:
-    #     data = None
-    #     flash('Error in deck')
-
-
+    try:
+        user_data = g.fmanagerstats.get_all_data()
+        public_data = g.fmanagerstats_public.get_all_data() #inherited method
+        user_data = [round(i,2) for i in user_data]
+        public_data = [round(i,2) for i in public_data]
+        info = ['success rate','Number of cards','Number of decks','Average interval','Average easiness factor','Average quality']
+        data = tuple(zip(info,user_data,public_data))
+    except Exception as e:
+        flash('Error loading data, try adding a deck,cards and reviewing them first: {}'.format(e),category='danger')
+        return(redirect(url_for('decks.decks_route')))
 
     return render_template("stats.html",data=data)
 
@@ -598,10 +504,6 @@ def browse():
         selected_id = request.form.get('filter')
     else:
         selected_id = int(request.form.get('filter')) if request.form.get('filter') is not None else None
-    # try:
-    #     all_cards = g.fmanager.get_all_cards()
-    # except Exception as e:
-    #     flash('Error locating decks: {}'.format(e),category='danger')
 
     if request.form.get('delete_card'):
         card_id = request.form['delete_card']
@@ -612,10 +514,17 @@ def browse():
             flash('Error locating card: {}'.format(e),category='danger')
 
         db.session.commit()
-        #return redirect(url_for('decks.browse'), code=301)
 
-
-    if (request.method == 'POST') and (request.form.get('filter') not in (None, 'All')):
+    elif request.args.get('search'):
+        search_term = request.args.get('search')
+        try:
+            cards = db.session.query(Card).filter(Card.question.like('%{}%'.format(search_term)) | (Card.answer.like('%{}%'.format(search_term)))).all()
+            print(cards)
+        except Exception as e:
+            flash('Error searching for cards: {}'.format(e),category='danger')
+        
+    #If there is a deck filter, that is not ALL or None than get all the card from that deck and its subdecks
+    elif (request.method == 'POST') and (request.form.get('filter') not in (None, 'All')):
         deck_id = request.form['filter']
         try:
             deck_filter = Deck.query.get(deck_id)
@@ -624,39 +533,20 @@ def browse():
         except Exception as e:
             flash('Error locating deck: {}'.format(e),category='danger')
 
-    # if request.form.get('filter') i 'All':
-    #     try:
-    #         cards = g.fmanager.get_all_cards()
-    #     except Exception as e:
-    #         flash('Error locating decks: {}'.format(e),category='danger')
-
-
-
-    #If there is a deck filter submitted, that is not ALL then 
-    # if request.form.get('filter') in (None, 'All'):
-    #     print('2')
     
     else:
         try:
             cards = g.fmanager.get_all_cards()
         except Exception as e:
             flash('Error locating decks: {}'.format(e),category='danger')
-    #cards = g.fmanager.get_all_cards()
 
-    #print(cards)
-    #user = User.query.get(current_user.id)
-    # for deck_list in g.fmanager.get_all_decks():
-    #     print(deck_list)
     try:
         root_deck = [deck for deck in g.fmanager.user.decks if deck.parent_id == None]# used in the filter dropdown option 
-        #all_decks = g.fmanager.get_all_decks() # used to get the title of deck for the cards as a card could be in a subdeck and complex iteration and searching can be avoided with this
     except Exception as e:
         flash('Error locating decks: {}'.format(e),category='danger')
 
     return render_template("browse.html",cards = cards,decks=root_deck,selected_id=selected_id,all_decks = g.fmanager.user.decks,deck_dict=deck_dict)
 
-#ADD AN ID TO IT SO IF A USER PRESSES STUDY IT WOULD SEND A ID, HOW DO YOU AUTOMAITCALLY GENERATE AN ID
-#maybe make the options show all the decks and subdecks, if a user wants to put something theyl put it inside the subdeck
 
 @login_required
 @decks.route('/create',methods=['POST','GET'])
@@ -682,22 +572,6 @@ def create():
                         card = Card(question = question,answer= answer,deck_id =deck_id)
                 else:
                     card = Card(question = question,answer= answer,deck_id =deck_id)    
-
-                # if 'image' not in request.files:
-                #     flash('No image upload detected',category='info')
-                # print(request.files)
-                # image = request.files['image']
-                # if image.filename=='':
-                #     flash('No image upload detected',category='info')
-                # if image and allowed_file(image.filename):
-                #     filename=secure_filename(image.filename)
-                #     if not os.path.exists('mintkard/static/user_images'):
-                #         # Create the directory
-                #         os.makedirs('mintkard/static/user_images')
-
-                #     image.save(os.path.join('mintkard/static/user_images',filename))
-                #     flash('Image successfully recieved',category='success')
-                
                 db.session.add(card)
                 db.session.commit()
                 flash('Card successfully added',category='success')
@@ -711,16 +585,6 @@ def create():
         flash('Error locating decks: {}'.format(e),category='danger')
     return render_template("create.html",decks=root_deck)
 
-# #study entire deck, where there is a redirect to study each card
-# @login_required
-# @decks.route('/study-deck/<int:deck_id>')
-# def study_deck(deck_id):
-
-#     deck = Deck.query.filter_by(id=deck_id,user_id = current_user.id).first()
-#     print('Revise deck')
-
-#     return redirect(url_for('decks.decks_route'), permanent=True)
-
 #study one card
 @login_required
 @decks.route('/study/<int:deck_id>',methods=['GET','POST'])
@@ -730,44 +594,17 @@ def study(deck_id):
     '''
     flashcards = g.fmanager.review_deck(deck_id)
 
-    #print(request.form)
-    #if request.method == 'GET':
-    #flashcards = g.fmanager.review_deck(deck_id)
-    #cards = Card.query.filter_by(deck_id=deck_id).all()
-    # if request.method == 'POST':
-    #     if request.form.get('quality'):
-    #         question = request.form.get('quaity')
-
-    if request.method == 'POST':# and flashcards:#checks if flashcard exists if it does not it ignores post requesst and goes down delte later and chec kif it works
-        #flashcard_id = request.form.get('flashcard_id')
-        #print(request.form)
+    if request.method == 'POST':# and flashcards:#checks if flashcard exists if it does not it ignores post requesst and goes down delte later and check if it works
         quality = request.form.get('quality')
-        #flashcard = Card.query.get(flashcard_id)
         quality= int(quality)
         if len(flashcards) == 0: #if the user refreshes and sends another post request
             return redirect(url_for('decks.study', deck_id=deck_id), code=301)
         flashcards[0].update_stats(quality)
-        #print(flashcards[0].quality)
+
         db.session.commit()
-        # if len(flashcards)==0:#if the user refreshes and sends another post request
-        #     return redirect(url_for('decks.study', deck_id=deck_id), code=301)
+
         flashcards.pop(0)#Queue
 
-
-        # if flashcards[0].last_study== False:
-        #     print('WTH WHYYYY')
-        #     flashcards[0].last_study=datetime.now()
-        #     print('INSIDE THE ROUTE,LAST STUDY IS',flashcards[0].last_study)
-        #     db.session.commit()
-        # print(flashcards[0].quality)
-        # print(flashcards[0].last_study)
-
-        #flashcards.remove(flashcards[0])
-        #FIFO data structure
-    
-    #flashcards = g.fmanager.review_deck(deck_id)
-    # flashcard = flashcards[0] if flashcards else None
-    # print(flashcard)
     return render_template("study.html",flashcard = flashcards[0] if flashcards else None)
 
 #edit entire deck
@@ -791,17 +628,14 @@ def edit_deck(deck_id):
         flash('Deck id cannot be found',category='danger')
         return redirect(url_for('decks.decks_route'),code=301)
         
-    #PREVENT SQL INJECTIONS HERE!!!
     if request.method== 'POST':
-        print(request.form)
-        if request.form.get('name'): #not checking if description is sent as its is optional
+        if request.form.get('name') or request.form.get('description'):
             name = request.form.get('name')
             description = request.form.get('description')
             current_deck.name = name
             current_deck.description = description
             db.session.commit()
             flash('Deck has been updated',category='success')
-            #return redirect(url_for('decks.edit_deck',deck_id=deck_id),code=301)#301 is a permanent redirect
 
         if request.files.get('image'):
             image_hash = upload_image(request.files['image'])
@@ -828,13 +662,13 @@ def edit_deck(deck_id):
             decks_to_delete = g.fmanager.get_all_decks_recursive(deck_to_delete)
 
             for delete_deck in decks_to_delete:
+                #delete all cards in the deck
                 for c in delete_deck.cards:
                     db.session.delete(c)
                 db.session.delete(delete_deck)
 
             
 
-            #db.session.delete(deck_to_delete)
             db.session.commit()
             flash('Subdeck has been deleted',category='success')
             return  redirect(url_for('decks.edit_deck',deck_id=deck_id),code=301)#301 is a permanent redirect
@@ -850,11 +684,9 @@ def edit_deck(deck_id):
 
             else:
                 flash('Please add a valid subdeck title, title is required',category='danger')
-        else:
-            flash('POST request has been recieved with no valid content',category='danger')
-       # return redirect(url_for('decks.decks_route'),code=301)
+        # else:
+        #     flash('POST request has been recieved with no valid content',category='danger')
 
-    # put the infomraiton has a placeholder and check if there is a change, then check how to update deck info
     return render_template("edit_deck.html",deck=current_deck)
 
 
@@ -877,11 +709,6 @@ def edit(card_id):
         #all_decks = g.fmanager.get_all_decks() # used to get the title of deck for the cards as a card could be in a subdeck and complex iteration and searching can be avoided with this
     except Exception as e:
         flash('Error locating decks: {}'.format(e),category='danger')
-    # try:
-    #     current_card = Card.query.filter_by(id=card_id).first()
-    #     get_card_userid(card_id)
-    # except Exception as e:
-    #     flash('Error locating card: {}'.format(e),category='danger')
 
     try:
         current_card = Card.query.filter_by(id=card_id).first()
@@ -891,9 +718,7 @@ def edit(card_id):
     if current_card is None:    
         flash('Card id cannot be found',category='danger')
     
-    # #QUERY CARD OBJECT  AND PASS IT IN THEN UPDATE IT WITH CARD.QUESTION = QUEST.FORM['QUESITON]
-    # print(request.form)
-    # print(request)
+    #QUERY CARD OBJECT  AND PASS IT IN THEN UPDATE IT WITH CARD.QUESTION = QUEST.FORM['QUESITON]
 
     if request.method == 'POST':
         current_card = Card.query.filter_by(id=card_id).first()
@@ -936,74 +761,3 @@ def edit(card_id):
 @decks.route('/help') 
 def help():
     return render_template("help.html")
-
-
-
-    #current_app.app_context().push()
-# db.session.execute('DELETE * FROM Deck')
-# db.session.commit()
-#print(current_user)
-
-
-# deck1 = Deck(name='Deck 1', user_id=)
-# deck2 = Deck(name='Deck 2', user_id=1)
-# db.session.add(deck1)
-# db.session.add(deck2)
-# db.session.commit()
-# subdeck1 = Deck(name='Subdeck 1', user_id=1, parent_id=deck1.id)
-# subdeck2 = Deck(name='Subdeck 2', user_id=1, parent_id=deck1.id)
-# db.session.add(subdeck1)
-# db.session.add(subdeck2)
-# db.session.commit()
-
-# # Create the cards
-# card1 = Card(question='Question 1', answer='Answer 1', deck_id=deck1.id)
-# card2 = Card(question='Question 2', answer='Answer 2', deck_id=deck1.id)
-# card3 = Card(question='Question 3', answer='Answer 3', deck_id=deck2.id)
-# card4 = Card(question='Question 4', answer='Answer 4', deck_id=deck2.id)
-# card5 = Card(question='Question 5', answer='Answer 5', deck_id=subdeck1.id)
-# card6 = Card(question='Question 6', answer='Answer 6', deck_id=subdeck1.id)
-# card7 = Card(question='Question 7', answer='Answer 7', deck_id=subdeck2.id)
-# card8 = Card(question='Question 8', answer='Answer 8', deck_id=subdeck2.id)
-
-# # Add the decks and cards to the database
-
-# db.session.add(card1)
-# db.session.add(card2)
-# db.session.add(card3)
-# db.session.add(card4)
-# db.session.add(card5)
-# db.session.add(card6)
-# db.session.add(card7)
-# db.session.add(card8)
-# db.session.commit()
-
-#fmanager.review_deck(1)
-#root_decks = Deck.query.filter_by(parent_id=None).all()
-
-
-
-
-# print(isinstance(root_decks, list))
-# all_decks = fmanager.get_all_decks(root_decks)
-# for deck in all_decks:
-#     print(deck.name)
-#print(root_decks[0])
-
-
-
-#IN FLASHCARD
-
-    # '''returns a list of decks that the user owns'''
-    # def get_all_decks(self) -> List[Deck]:
-    #     root_decks = []
-    #     for deck in self.user.decks:
-    #         root_decks.append(deck)
-    #     return
-
-    # '''returns a list of subdecks that the user owns'''
-    # def get_all_subdecks(self,user:User) -> List[Deck]:
-    #     subdecks = []
-    #     for deck in user.decks:
-    #         subdecks.append(deck.children_deck)
-    #     return subdecks

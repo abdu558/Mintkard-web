@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <nav id="mainNav" class="navbar navbar-light navbar-expand-md fixed-top">
+    <nav id="mainNav" class="navbar navbar-dark navbar-expand-md fixed-top">
         <div class="container"><a class="navbar-brand" href="#">Mintkard</a>
             <button class="navbar-toggler navbar-toggler-right" data-bs-toggle="collapse"
                 data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false"
@@ -40,21 +40,22 @@
     <!--https://i.postimg.cc/cCCLbRTN/ezgif-2-c3e2d1e5ab.webp-->
     <!--https://thewca.s3.us-west-1.amazonaws.com/wp/site_uploads/2021/01/19212925/21_01_05_expecting%20the%20expected_Blog_Blog%20Header%20Image.jpg-->
     <!--/static/mountains.jpg-->
+    <!--https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg-->
     <style>
 
     </style>
     <header class="masthead"
-        style="background: url('https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg');background-repeat:no-repeat;background-size:cover;font-family: 'JetBrains Mono', monospace;height: 100%">
+        style="background: url('static/home.jpg');background-repeat:no-repeat;background-size:cover;font-family: 'JetBrains Mono', monospace;height: 100%">
         <div class="intro-body">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8 mx-auto">
-                        <h1 class="brand-heading" style="font-family: Cabin, sans-serif;">Reach your peak potential</h1>
+                        <h1 class="brand-heading text-dark" style="font-family: Cabin, sans-serif;">Reach your peak potential</h1>
                         <p class="intro-text">Using algorithms to help you achieve your academic and linguistic goals</p>
                         {% if current_user.is_authenticated %}
-                        <button class="btn btn-primary" type="button" href="decks/">start now</button>
+                            <a class="btn btn-primary" type="button" href="decks/home" >start now</a>
                         {% else %}
-                        <button class="btn btn-primary" type="button" href = "/auth/register">start now</button>
+                            <a class="btn btn-primary" type="button" href = "/auth/register">start now</a>
                         {% endif %}
 
                     </div>
@@ -93,7 +94,7 @@
         </div>
         <footer>
             <div class="container text-center fixed-bottom">
-                <p>MINTKARD - empowering the next generation of learners</p>
+                <p class="text-dark">MINTKARD - empowering the next generation of learners</p>
             </div>
         </footer>
         <br>
