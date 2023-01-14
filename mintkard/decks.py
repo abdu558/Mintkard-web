@@ -136,19 +136,12 @@ class FlashcardManager:
 
             review_interval = timedelta(days=flashcard.interval)#converts int to time using datetime
             
-            print(review_interval)
-            print(flashcard.last_study + review_interval)
-            print(flashcard.last_study + review_interval <= datetime.now())
 
             return (flashcard.last_study + review_interval <= datetime.now())
-        # except TypeError:
-        #     # Handle TypeError if it's not an integer
-        #     print("Error: Interval must be an integer")
-        #     return False
-        except ValueError:
-            # Handle ValueError if its a negative integer
-            print("Error: Interval must be a positive integer")
-            return False
+
+        except Exception as e:
+            flash('ERROR: checking if card is due: {}'.format(e),category='danger')
+            return True#True will let the card be reviewed, so that the error will get fixed
 
     #This is the main thing that is called,
     def review_deck(self, deck_id_or_deck) -> List[Tuple[Card, bool]]:#deck_id: int = None,deck: Deck = None if deck_id is not None: then find the deck else use the deck
@@ -372,7 +365,8 @@ def before_request():
         g.fmanagerstats = FlashcardManagerStats(user=current_user.id, app=current_app)
         g.fmanagerstats_public = FlashcardManagerPublicStats(user=None,app=current_app)#there is no user as it gets the apps average data
     except Exception as e:
-        flash('Error inilizing flashcard manager: {}'.format(e))
+        flash('Error inilizing flashcard manager: {}'.format(e),category='danger')
+        
 
 def user_owned_card(card_id):
     '''Returns true if the user does own the flashcard, false if the user does not, preventing unauthorised access of cards, if it the id is changed
@@ -422,6 +416,7 @@ def upload_image(files):# -> str:
         filename = str(hashlib.md5(image.read()).hexdigest()) + '.' + filename.rsplit('.', 1)[1].lower()
         image.seek(0)
         print('filename is',filename)
+        #saves the image in the user images folder, its in static so that it can be reterived and viewed in the website, as flask only renders files in static
         image.save(os.path.join('mintkard/static/user_images',filename))
         return filename
     return False
