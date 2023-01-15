@@ -19,16 +19,15 @@ class Deck(db.Model):
     date = db.Column(db.DateTime(timezone=True),default=func.now())
     image_hash = db.Column(db.String, nullable=True)#new
     parent_id = db.Column(db.Integer, db.ForeignKey('deck.id'))#This is the foreign key for the parent deck
+    #reference for self referential/recurvisve relationship: https://docs.sqlalchemy.org/en/20/orm/self_referential.html
     children_deck = db.relationship('Deck',backref=db.backref('parent', remote_side=[id]),primaryjoin='Deck.parent_id == Deck.id')#This is the relationship for the child deck, the backref is the parent deck, the primaryjoin is the foreign key for the child deck
     cards = db.relationship('Card',lazy= True,cascade='all, delete-orphan',backref='deck')#cascade will delete all the cards in the deck if its deleted
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
-    '''allows a string output'''
-    def __repr__(self):
-        return f"Deck('{self.name}','{self.children_deck}','{self.parent_id}')"
+    # '''allows a string output'''
+    # def __repr__(self):
+    #     return f"Deck('{self.name}','{self.children_deck}','{self.parent_id}')"
 
-    def delete(self):
-        pass
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)#Primary key
@@ -42,11 +41,11 @@ class Card(db.Model):
     image_hash = db.Column(db.String, nullable=True)#new
     deck_id = db.Column(db.Integer, db.ForeignKey('deck.id'))#One to many relationship with decks
     
-    def __repr__(self):
-        return f"Card('{self.id}',{self.question}', '{self.answer}', '{self.deck_id}')"
+    # def __repr__(self):
+    #     return f"Card('{self.id}',{self.question}', '{self.answer}', '{self.deck_id}')"
 
-    def update_studydate(self):
-        self.last_study= datetime.now()
+    # def update_studydate(self):
+    #     self.last_study= datetime.now()
 
 
     # def delete(self):
@@ -61,7 +60,7 @@ class Card(db.Model):
         the base limits we modify the easiness factor to make it stop it repeating too much or too little      
         '''
         self.quality = quality
-        self.update_studydate()
+        #self.update_studydate()
         if self.is_new:
             self.easiness_factor = 2.5
             self.interval = 1
@@ -102,5 +101,5 @@ class User(db.Model,UserMixin):
     #Lazy  means that all subdecks and choldren will be loaded when a parent is loaded
     decks = db.relationship('Deck',backref = 'user_decks',lazy=True)#stores all the decks that the owner owns, in the parents class
 
-    def __repr__(self):
-        return f"User('{self.id}', '{self.username}','{self.email}','{self.password}')"
+    # def __repr__(self):
+    #     return f"User('{self.id}', '{self.username}','{self.email}','{self.password}')"
