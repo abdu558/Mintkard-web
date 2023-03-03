@@ -25,7 +25,7 @@ def check_email(email):
     if match == True:
         return match,''
     else:
-        return match,'Please a valid email'
+        return match,'Please enter a valid email,'
  
 def valid_char(user_input):
     '''
