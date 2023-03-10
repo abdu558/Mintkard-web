@@ -60,6 +60,7 @@ class Card(db.Model):
         the base limits we modify the easiness factor to make it stop it repeating too much or too little      
         '''
         self.quality = quality
+        self.last_study = datetime.now()
         #self.update_studydate()
         if self.is_new:
             self.easiness_factor = 2.5
@@ -83,7 +84,6 @@ class Card(db.Model):
             self.easiness_factor = new_easiness_factor
             self.interval = new_interval
             #self.last_study = datetime.now()
-            self.last_study= datetime.now()
             db.session.commit()
             return
             #return self.interval,self.easiness_factor

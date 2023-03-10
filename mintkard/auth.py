@@ -133,7 +133,7 @@ def login():
                 #print(check_password_hash(User.query.filter_by(email=email).first().password,password)[0])
             else:
                 flash('Email or password is incorrect',category='danger')
-                return redirect(url_for('auth.login'))
+                #return redirect(url_for('auth.login'))
 
 
             try:

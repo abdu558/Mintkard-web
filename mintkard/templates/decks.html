@@ -36,7 +36,7 @@
           </button>
           <ul class="dropdown-menu" style="width:100%">
             {% for subdeck in deck.children_deck %}
-              <li><a class="dropdown-item" href="'/decks/study/{{subdeck.id}}'" name="subdeck_revise" value="revise">->{{subdeck.name}}</a></li>
+              <li><a class="dropdown-item" href='/decks/study/{{subdeck.id}}'' name="subdeck_revise" value="revise">->{{subdeck.name}}</a></li>
         
               <!--Does not work as of yet-->
               {% if subdeck.children_deck %}

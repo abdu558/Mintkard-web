@@ -104,11 +104,10 @@ class FlashcardManager:
     def is_card_due(self,flashcard:Card) -> bool:
         if flashcard.is_new == True:
             return True
-        print('ID IS ',flashcard.id)
+
         try:
 
             review_interval = timedelta(days=flashcard.interval)#converts int to time using datetime
-            
 
             return (flashcard.last_study + review_interval <= datetime.now())
 
@@ -284,9 +283,12 @@ class FlashcardManagerPublicStats(FlashcardManagerStats):
 
         if num_of_cards == 0:
             return 'No data'
-
+        
         good_cards = (good_quality/num_of_cards) *100 #turn into a percentage
         #good_cards = round(good_cards, 1)#limit it to 1 decimal place
+        print(good_quality)
+        print(num_of_cards)
+        print(good_cards)
         return good_cards
 
     #method overiding
@@ -451,14 +453,23 @@ def stats():
     try:
         user_data = g.fmanagerstats.get_all_data()
         public_data = g.fmanagerstats_public.get_all_data() #inherited method
-        user_data = [round(i,2) for i in user_data]
-        public_data = [round(i,2) for i in public_data]
-        info = ['success rate','Number of cards','Number of decks','Average interval','Average easiness factor','Average quality']
+        # user_data = [round(i,2) for i in user_data]
+        # public_data = [round(i,2) for i in public_data]
+        user_data = [round(i,2) if i is not None else None for i in user_data]
+        public_data = [round(i,2) if i is not None else None for i in public_data]
+        info = ['Success rate','Number of cards','Number of decks and subdecks','Average interval','Average easiness factor','Average quality']
         data = tuple(zip(info,user_data,public_data))
+
+        #FIX THIS LATER
+        # data[0][0] = str(data[0][0])+ '%'
+        # data[0][1] = str(data[0][1])+ '%'
+
     except Exception as e:
         flash('Error loading data, try adding a deck,cards and reviewing them first: {}'.format(e),category='danger')
         return(redirect(url_for('decks.decks_route')))
 
+
+ 
     return render_template("stats.html",data=data)
 
 
@@ -525,7 +536,8 @@ def create():
     '''
     
     if request.method == 'POST':
-        if request.form.get('question') and request.form.get('answer') and request.form.get('deck'):
+        #if request.form.get('question') and request.form.get('answer') and request.form.get('deck'):
+        if request.form.get('question') and request.form.get('deck'):
             try:
                 question = request.form.get('question')
                 answer = request.form.get('answer')
@@ -546,6 +558,9 @@ def create():
                 flash('Card successfully added',category='success')
             except Exception as e:
                 flash('Error adding card, report to the developer or try again later: {}'.format(e),category='danger')
+        else:
+            flash('Error: Please select a valid deck or a question',category='danger')
+
     
 
     try:
@@ -565,7 +580,7 @@ def study(deck_id):
 
     if request.method == 'POST':# and flashcards:#checks if flashcard exists if it does not it ignores post requesst and goes down delte later and check if it works
         quality = request.form.get('quality')
-        quality= int(quality)
+        quality = int(quality)
         if len(flashcards) == 0: #if the user refreshes and sends another post request
             return redirect(url_for('decks.study', deck_id=deck_id), code=301)
         flashcards[0].update_stats(quality)
@@ -575,6 +590,7 @@ def study(deck_id):
         flashcards.pop(0)#Queue
 
     return render_template("study.html",flashcard = flashcards[0] if flashcards else None)
+
 
 #edit entire deck
 @login_required
