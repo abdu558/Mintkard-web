@@ -78,3 +78,7 @@ REMOVE BEFORE FIRST REQUEST AS ITS INITLIZED EVERY SINGLE TIME I THINK
 
 
 CREATE A 404 CUSTOM PAGE
+
+
+
+https://api.thecatapi.com/v1/images/search?limit=10

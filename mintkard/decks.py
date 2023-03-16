@@ -207,8 +207,6 @@ class FlashcardManagerStats(FlashcardManager):
         return data.deck_num
 
 
-
-
     def easiness_factor_avg(self):
         
         data = db.session.execute(f"SELECT AVG(easiness_factor) as easiness_avg FROM Card  WHERE id IN (SELECT id FROM Deck WHERE user_id = {self.user.id});").fetchone()
@@ -248,8 +246,6 @@ class FlashcardManagerStats(FlashcardManager):
         easiness_factor_avg = self.easiness_factor_avg()
         quality_avg = self.quality_avg()
         return success_rate,card_nums,deck_nums,interval_avg,easiness_factor_avg,quality_avg
-
-
 
 
 #gets the average data from the average user
@@ -293,14 +289,14 @@ class FlashcardManagerPublicStats(FlashcardManagerStats):
 
     #method overiding
     def card_nums(self):
-        result = db.session.execute("SELECT COUNT(*) as card_nums FROM Card").fetchone()
+        result = db.session.execute("SELECT COUNT(*) as card_nums FROM Card;").fetchone()
         return result.card_nums
 
     def deck_nums(self):
         '''
         returns the number of all cards including subdecks
         '''
-        data = db.session.execute("SELECT COUNT(*) as deck_num FROM Deck").fetchone()
+        data = db.session.execute("SELECT COUNT(*) as deck_num FROM Deck;").fetchone()
         return data.deck_num
 
     def easiness_factor_avg(self):
@@ -309,7 +305,7 @@ class FlashcardManagerPublicStats(FlashcardManagerStats):
 
 
     def quality_avg(self):
-        data = db.session.execute("""SELECT AVG(quality) as quality_avg FROM Card""").fetchone()
+        data = db.session.execute("SELECT AVG(quality) as quality_avg FROM Card;").fetchone()
         # try:
         #     quality = round(data.quality_avg,1)
         # except Exception as e:
@@ -318,7 +314,7 @@ class FlashcardManagerPublicStats(FlashcardManagerStats):
         return data.quality_avg
 
     def interval_avg(self):
-        data = db.session.execute("""SELECT AVG(interval) as inter_avg FROM Card;""").fetchone()
+        data = db.session.execute("SELECT AVG(interval) as inter_avg FROM Card;").fetchone()
         #return round(data.inter_avg,1)
         return data.inter_avg
 
@@ -341,6 +337,7 @@ def before_request():
         g.fmanager = FlashcardManager(user=current_user.id, app=current_app)
         g.fmanagerstats = FlashcardManagerStats(user=current_user.id, app=current_app)
         g.fmanagerstats_public = FlashcardManagerPublicStats(user=None,app=current_app)#there is no user as it gets the apps average data
+
     except Exception as e:
         flash('Error inilizing flashcard manager: {}'.format(e),category='danger')
         
