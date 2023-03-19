@@ -9,7 +9,7 @@ import uuid
 import os
 from werkzeug.utils import secure_filename
 import hashlib
-
+import random
 
 decks = Blueprint('decks', __name__)
 
@@ -368,7 +368,7 @@ def deck_id_dict(decks):
 
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg', 'gif']
+           filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg', 'gif','webp']
 
 
 #files is going to be request.files.get('image')
@@ -418,8 +418,8 @@ def decks_route():
     '''
     root_decks = Deck.query.filter_by(parent_id=None,user_id =current_user.id).all()
     if request.form.get('add_deck'):
-
-        new_deck = Deck(name='DECKS',user_id=current_user.id)
+        image_num = random.randint(0,26)
+        new_deck = Deck(name='Untitled Deck',image_hash = str(image_num) + '.jpg',user_id=current_user.id)
         db.session.add(new_deck)
         db.session.commit()
         
@@ -543,10 +543,9 @@ def create():
                 if request.files.get('image'):
                     image_hash = upload_image(request.files['image'])
                     if image_hash != False:
-                        print(image_hash)
                         card = Card(question = question,answer= answer,deck_id =deck_id,image_hash=image_hash)
                     else:
-                        flash('Image has not been saved',category='danger')
+                        flash('Image has not been saved, please use a correct image format of png, jpg, jpeg, gif,webp',category='danger')
                         card = Card(question = question,answer= answer,deck_id =deck_id)
                 else:
                     card = Card(question = question,answer= answer,deck_id =deck_id)    
@@ -556,7 +555,7 @@ def create():
             except Exception as e:
                 flash('Error adding card, report to the developer or try again later: {}'.format(e),category='danger')
         else:
-            flash('Error: Please select a valid deck or a question',category='danger')
+            flash('Error: Please select a valid deck or add a question',category='danger')
 
     
 

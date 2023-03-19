@@ -133,7 +133,7 @@ def login():
                 #print(check_password_hash(User.query.filter_by(email=email).first().password,password)[0])
             else:
                 flash('Email or password is incorrect',category='danger')
-                return redirect(url_for('auth.login'))
+                #return redirect(url_for('auth.login'))
 
 
             try:
@@ -206,6 +206,7 @@ def register():
                     db.session.commit()
                 except:
                     flash('Error in creating the account, please try again')
+
                 login_user(new_user,remember=True)#Changes remember me to the option of ticked
                 flash('Account successfully created',category='success')
                 return redirect(url_for('decks.decks_route'))
@@ -233,5 +234,5 @@ def logout():
     This will log out a user
     '''
     logout_user()
-    flash('Successfully logged out')
+    flash('Successfully logged out',category='success')
     return redirect(url_for('auth.login'))
