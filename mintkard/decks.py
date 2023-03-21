@@ -422,9 +422,9 @@ def decks_route():
         new_deck = Deck(name='Untitled Deck',image_hash = str(image_num) + '.jpg',user_id=current_user.id)
         db.session.add(new_deck)
         db.session.commit()
-        
-        root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
-        redirect(url_for('decks.decks_route'))
+        return redirect(url_for('decks.edit_deck',deck_id=new_deck.id),code=301)
+        #root_decks = Deck.query.filter_by(parent_id=None,user_id=current_user.id).all()
+        #redirect(url_for('decks.decks_route'))
     if request.form.get('delete_deck'):
         deck_id = request.form.get('delete_deck')
         try:
