@@ -32,20 +32,20 @@ class FlashcardManager:
         return cards
 
     def get_cards_from_deck(self,deck: Deck) -> List[Card]:
-        cards = deck.cards #gets the cards in the currrent deck, but cards in child_decks are not collected yet,they will be collected in the recursive call below
+        cards = deck.cards #gets the cards in the currrent deck, but cards in child_decks are not collected yet,
+        #they will be collected in the recursive call below
         for child_deck in deck.children_deck:# loops through all the children deck, and traverses each child deck 
-            if (child_deck.children_deck is not None) and len(child_deck.cards)!= 0:#if the child deck, has no children deck than dont traverse them
+            if (child_deck.children_deck is not None) and len(child_deck.cards)!= 0:#if the child deck, has no children deck than dont traverse it
                 cards.extend(self.get_cards_from_deck(child_deck))
         return cards
 
     '''
     The two methods above work together to get all the cards in a tree, so get_all_cards (first method) will iterate throught each deck
     then it will pass one root deck to the get_cards_from_deck which traverses the tree by calling itself recursively on each child deck
-    This means that the function will visit the nodes in a depth first search from the root node to the last decks in the bottom in the bottom of the hierarchy, 
-    i.e. the leaf nodes without any child decks
+    This means that the function will visit the nodes in a depth first search from the root node to the last decks in 
+    the bottom in the bottom of the hierarchy, i.e. the leaf nodes without any child decks
     This is used in the browse cards route
     '''
-
 
     def get_all_decks(self):
         all_decks = []
@@ -66,14 +66,11 @@ class FlashcardManager:
         return all_decks
 
 
-
-
     '''
     The following two function  is_card_due and get_flashcards_to_review are used in flashcard reviews and are used and work together 
     alongside the update_stats method in the card class
     '''
     #dates is a list of int/datetimes
-    #reference: https://developer.nvidia.com/blog/merge-sort-explained-a-data-scientists-algorithm-guide/
     def merge_sort(self,dates):
         dates_len = len(dates)
         if dates_len <=1:
@@ -140,8 +137,11 @@ class FlashcardManager:
             flashcards_to_review.extend(self.get_flashcards_to_review(subdeck.id))
 
         '''
-        There would be a list of all cards that are not new, as new cards do not have a interval or quality so new cards stay in the flashcards_to_review,
-        whereas the cards that are not new, have been reviewed before, are moved onto a unsorted_list, which is merge sorted by due date, then combined back with the flashcards_to_review list'''
+        There would be a list of all cards that are not new, as new cards do not have a 
+        interval or quality so new cards stay in the flashcards_to_review,
+        whereas the cards that are not new, have been reviewed before, are moved onto a 
+        unsorted_list, which is merge sorted by due date, then combined back with the flashcards_to_review list
+        '''
         unsorted_list = []
         for c in flashcards_to_review:
             if c.is_new == False:
@@ -152,8 +152,6 @@ class FlashcardManager:
         flashcards_to_review.extend(sorted_list)
 
         return flashcards_to_review
-
-
 
 
 class FlashcardManagerStats(FlashcardManager):
@@ -325,7 +323,7 @@ def user_owned_card(card_id):
     ON means what two tables should there should be a match in'''
     result = db.session.execute("""
         SELECT deck.user_id
-        FROM card card
+        FROM card
         INNER JOIN deck deck ON card.deck_id = deck.id
         WHERE card.id = {}
     """.format(card_id))
@@ -345,7 +343,7 @@ def deck_id_dict(decks):
     return deck_dict
 
 
-#Image support code is from flask documentation,reference: https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
+#function from flask documentation: https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ['png', 'jpg', 'jpeg', 'gif','webp']
@@ -588,7 +586,7 @@ def study(deck_id):
 
         db.session.commit()
 
-        flashcards.pop(0)#Remove the first item from the stack
+        flashcards.pop(0)#Removes the first item from the stack
 
     return render_template("study.html",flashcard = flashcards[0] if flashcards else None)
 
@@ -718,7 +716,7 @@ def edit(card_id):
             return redirect(url_for('decks.browse'),code=301)
         else:
             flash('Please fill out the form',category='danger')
-            return redirect(url_for('decks.edit',card_id=card_id),code=301)
+            return redirect(url_for('decks.edit',card_id=card_id),code=301)#301 is a permenent redirect
 
     current_card = Card.query.filter_by(id=card_id).first()
     return render_template("edit.html",card=current_card,decks=decks)
@@ -731,3 +729,10 @@ def help():
     Help guide which also has a help guide
     '''
     return render_template("help.html")
+
+
+
+
+
+
+

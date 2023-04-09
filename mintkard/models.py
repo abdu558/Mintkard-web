@@ -16,7 +16,7 @@ class Deck(db.Model):
     name = db.Column(db.String(100),nullable=False)
     description = db.Column(db.String(500))
     date = db.Column(db.DateTime(timezone=True),default=func.now())
-    image_hash = db.Column(db.String, nullable=True)#new
+    image_hash = db.Column(db.String, nullable=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('deck.id'))#This is the foreign key for the parent deck
 
     #reference for self referential/recurvisve relationship: https://docs.sqlalchemy.org/en/20/orm/self_referential.html
@@ -83,3 +83,6 @@ class User(db.Model,UserMixin):
 
     #Lazy  means that all subdecks and choldren will be loaded when a parent is loaded
     decks = db.relationship('Deck',backref = 'user_decks',lazy=True)#stores all the decks that the owner owns, in the parents class
+
+
+

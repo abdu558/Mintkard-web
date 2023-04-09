@@ -21,30 +21,6 @@
 }
 </style>
 
-<!-- 
-<h1>Study</h1>
-<br>
-<div class="container-fluid">
-  <div class="card mx-auto" style="width: 100%; height: 80vh;"style="min-width:400px;width:40vw;height: 80vh;">
-    <div class="card-body">
-      <h5 class="card-title" style="width:100%;">Card Title</h5>
-      <p class="card-text" style="width: 100%;">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      <a href="#" class="btn btn-primary">Go somewhere</a>
-    </div>
-    <img class="card-img-bottom" src="https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg" alt="Card image cap" style="max-height: 200px;object-fit: contain"> -->
-    <!--IMAGE IS GOING DOWN TOO FAR AND MAYBE CHANGE THE RANGE TO JUST 4 BUTTONS-->
-    <!-- <div class="card-footer text-muted">
-      <input type="range" class="custom-range" id="car_rating"min="1" max="4" step="1">
-    </div> -->
-    <!-- <div class="card-footer text-muted d-flex justify-content-between">
-      <button type="button" class="btn btn-secondary custom-button">Button 1</button>
-      <button type="button" class="btn btn-secondary custom-button">Button 2</button>
-      <button type="button" class="btn btn-secondary custom-button">Button 3</button>
-      <button type="button" class="btn btn-secondary custom-button">Button 4</button>
-    </div>    
-  </div>
-</div> -->
-
 
 <style>
 button {
@@ -52,11 +28,10 @@ button {
 }
 </style>
 
-<!--divstyle="min-width:400px;width:40vw;height: 80vh;"-->
 <h1>Study</h1>
 <br>
 <div class="container-fluid">
-  <div class="card mx-auto" style="width: 100%; height: 80vh;">
+  <div class="card mx-auto">
   {% if flashcard%}
     <div class="card-body">
       <h5 class="card-title" style="width:100%;">{{flashcard.question}}</h5>
@@ -87,7 +62,6 @@ button {
       <!-- <button id="show_answer" class="btn btn-primary btn-lg">Show Answer</button> -->
     <!-- <div class="card-footer text-muted d-flex justify-content-between bg-secondary"> -->
     </div>
-    <div style="display:none" id="footer" class="card-footer text-muted d-flex justify-content-between bg-secondary"></div>
   <button id="show_answer" class="btn btn-primary">Show Answer</button>
     {% else %}
     <h3 style ="text-align: center;padding: 40px;"><b>Well done, you have studied all the cards in this deck</b>

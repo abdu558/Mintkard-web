@@ -4,18 +4,22 @@ from .models import User
 from flask_login import login_user,login_required,logout_user,current_user
 from . import db #Relative import of the database connection
 import re #regular expressions library
-
+import secrets #used to generate a secure salt
 #flask setup code that registers this auth file with init file/app
 auth = Blueprint('auth', __name__)
 
 
 def check_email(email):
     '''
-    [a-zA-Z0-9_.+-] means any alphabet or number and the 4 symbols which are allowed in an email
-    the + sumbol means that the length of the square brackets must be 1 character or longer, so empty spaces get rejected
-    the \ will let the period be trated as a period rather than special regex character
-    the +$ will mean it represents the endof the domain name of the email
-    Only english emails work
+    [a-zA-Z0-9-`{}_~'*+/=?!#$%&^] means any alphabet or number and the symbols which are allowed in an email
+    And exactly one @
+    and [a-zA-Z0-9-] means any alphabet or number
+    and \. means exactly one dot, and to not count the . as a special regex character
+    the ^ means capital letters are allowed
+    +means one or more character
+    $ the end of the line
+
+    Only emails in english characters will be accepted
     '''
     pattern = r"^[a-zA-Z0-9-`{}_~'*+/=?!#$%&^]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
     match = bool(re.fullmatch(pattern,email))
@@ -47,7 +51,8 @@ def check_username(username):
     elif not valid_char(username):
         error = "Invalid characters used, please only use characters,numbers and -\.@`{}_~'+/=?!#$%&^"
 
-    #If there is an error, return the error, if not return None and True which would let the user continue/add to the database
+    #If there is an error, return the error, if not return None and True which would let the user continue/add 
+    #to the database
     if error:
         return False, error
     else:
@@ -73,7 +78,8 @@ def check_password(password,confirm_password):
     elif not valid_char(password):
         error = "Invalid characters used, please only use characters,numbers and -\.@`{}_~'+/=?!#$%&^"    
 
-    #If there is an error, return the error, if not, return '' and True which would let the account register or login
+    #If there is an error, return the error, if not, return '' and True which would let the account register 
+    #or login
     if error:
         return False, error
     else:
@@ -99,18 +105,22 @@ def check_username_exists(username):
     return False
     
 
-#methods is GET by default, To add adding post will allow the submission of login info without it showing up in link
+#methods is GET by default, To add adding post will allow the submission of login info without it 
+# showing up in link
 @auth.route('/login',methods=['GET','POST'])
 def login():
     '''
-    In the above auth.route, auth is due to the name declared in the blueprint, the methods are specified in this route due to it being GET by default and post is added and needed, 
+    In the above auth.route, auth is due to the name declared in the blueprint, the methods are specified in 
+    this route due to it being GET by default
+    and post is added and needed, 
     as POST requests are required for senseitive login info being sent which shouldnt be shown in the link.
 
     This function will get the data from the template login.html and would get the data
     using the request module to get the data from the form to this route in the backend.
     '''
 
-    #This will check data that is recieved via a POST request only as that's how the login data is entered with, and to avoid the access of the page which occurs as a GET request
+    #This will check data that is recieved via a POST request only as that's how the login data is entered with,
+    #and to avoid the access of the page which occurs as a GET request
     if request.method == 'POST':
         #Check if the email and password are recieved and they are not None
         if request.form.get('email') and request.form.get('password'):
@@ -125,8 +135,15 @@ def login():
                 flash('Email is not registered, Register instead?',category = 'danger')
                 return redirect(url_for('auth.register'))
             
-            #checks if the users password does not match, if it does not match the one registreerd with the email in the database, then an error occurs
-            if not(check_password_hash(User.query.filter_by(email=email).first().password,password)):#Why 0
+            #checks if the users password does not match, if it does not match the one registreerd with the email 
+            # in the database, then an error occurs
+            hash=User.query.filter_by(email=email).first().password
+
+            #the salt, the first 16 characters
+            salt = hash[:16]
+            #after adding the salt to the password entered, check if its the same as the password in the database, 
+            #after removing the saved salt, which was saved in the first 16 digits
+            if not(check_password_hash(hash[16:],password+salt)):
                 flash('Email or password is incorrect',category='danger')
                 return redirect(url_for('auth.login'))
 
@@ -186,7 +203,10 @@ def register():
                 #If the data passes the checks above, add them to the database
                 try:
                     #Hash the password, create a new user object and add it to the database and add it to the database
-                    new_user = User(username=username,email=email,password=generate_password_hash(password,method='sha256'))
+                    #creates a random 16 character salt
+                    salt = secrets.token_hex(8)
+                    #adds the salt infront of the hash, so that it can be chceked in the login
+                    new_user = User(username=username,email=email,password=salt+generate_password_hash(password+salt,method='sha256'))
                     db.session.add(new_user)
                     db.session.commit()
                 except:
@@ -226,3 +246,4 @@ def logout():
     logout_user()
     flash('Successfully logged out',category='success')
     return redirect(url_for('auth.login'))
+

@@ -7,8 +7,7 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    # Turns the file, by passing the name, into an flask applications
-    app.app_context().push()
+
     
     app.config['SECRET_KEY'] = '/B?E(G+KbPeShVmYq3t6w9z6rshts$C&F)J@Mc'
     app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -38,14 +37,12 @@ def create_app():
 
 
     login_manager.init_app(app)
-    #telling login manager which app its using
+    #tells login manager which app its using
 
     #tells loginmanager how the user is loaded by looking at the primary key, looks for the primary key by default so no need to specify what id equals
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(id)
-
-    app.app_context().push()
 
     # if not path.exists('/data.db'):
     #     with app.app_context():
