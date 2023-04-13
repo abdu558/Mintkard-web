@@ -2,10 +2,9 @@ from . import db #This will import from current package
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime #Allows the storing of the time of each card's creation
 from sqlalchemy.sql import func #used in the 
-from typing import List,Tuple
 from flask import Flask,current_app
 from flask_login import UserMixin
-
+import math
 
 '''
 backref allows accessing the realtionship object e.g. if in the deck object it had a backref deck. this would allow the card to do card.deck and now access the deck's info directly
@@ -45,6 +44,7 @@ class Card(db.Model):
         if the quality is more than 3 but the easiness factor is more than the
         the base limits we modify the easiness factor to make it stop it repeating too much or too little      
         '''
+
         self.quality = quality
         self.last_study = datetime.now()
         if self.is_new:
@@ -64,12 +64,18 @@ class Card(db.Model):
                 self.easiness_factor =2.5
             new_easiness_factor , new_interval = (0,0)
             new_easiness_factor += self.easiness_factor + (0.1 - (5 - self.quality) * (0.08 + (5 - self.quality) * 0.02))
+
+
+            #
+            time = (self.last_study - datetime.now()).days
             new_interval = self.interval * new_easiness_factor
+            if new_interval > 50:
+            new_interval =  new_interval * math.exp(-time/(new_easiness_factor*10))
             self.easiness_factor = new_easiness_factor
             self.interval = new_interval
+
             db.session.commit()
-            return
-            #return self.interval,self.easiness_factor
+
 
 
 class User(db.Model,UserMixin):

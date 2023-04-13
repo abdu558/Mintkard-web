@@ -493,8 +493,7 @@ def browse():
                 
 
                         
-                # for i in range(len(cards)):
-                #     if cards[i] in 
+
         except Exception as e:
             flash('Error searching for cards: {}'.format(e),category='danger')
         
