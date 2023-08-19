@@ -70,11 +70,11 @@ class Card(db.Model):
             time = (self.last_study - datetime.now()).days
             new_interval = self.interval * new_easiness_factor
             if new_interval > 50:
-            new_interval =  new_interval * math.exp(-time/(new_easiness_factor*10))
-            self.easiness_factor = new_easiness_factor
-            self.interval = new_interval
+                new_interval =  new_interval * math.exp(-time/(new_easiness_factor*10))
+                self.easiness_factor = new_easiness_factor
+                self.interval = new_interval
 
-            db.session.commit()
+                db.session.commit()
 
 
 
