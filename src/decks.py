@@ -359,15 +359,15 @@ def upload_image(image):
         return False
     if image and allowed_file(image.filename):
         filename=image.filename
-        if not os.path.exists('mintkard/static/user_images'):
+        if not os.path.exists('src/static/user_images'):
             # Create the directory, if it does not exist
-            os.makedirs('mintkard/static/user_images')
+            os.makedirs('src/static/user_images')
 
         filename = str(hashlib.md5(image.read()).hexdigest()) + '.' + filename.rsplit('.', 1)[1].lower()
         image.seek(0)#stops the image file from corrupting, by setting its default position in the file stream
 
         #saves the image in the user images folder, its in the static file so that it can be reterived and viewed in the website, as flask only renders files in the static file
-        image.save(os.path.join('mintkard/static/user_images',filename))
+        image.save(os.path.join('src/static/user_images',filename))
         return filename
     return False
 
