@@ -1,4 +1,5 @@
 # MintKard
+
 ## Demo
 
 https://github.com/abdu558/Mintkard-web/assets/61558312/2b5da0a7-d1a0-4042-b292-b6ccd00b78b8
@@ -13,6 +14,9 @@ Another big feature is the advanced algorithim that schedules cards to make sure
 
 ![Picture1](https://github.com/abdu558/Mintkard-web/assets/61558312/6cc748a6-d088-4798-82b2-2d60f101467f)
 
+## Project research
+
+[NEA Mintkards.docx.pdf](https://github.com/abdu558/Mintkard-web/files/14318273/NEA.Mintkards.docx.pdf)
 
 ## Getting Started
 
