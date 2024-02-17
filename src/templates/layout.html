@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- THIS IS THE BASE PAGE WHERE REPEATING INFORMATION IS PUT IN AND OTHER TEMPLATES INHEIRT THIS FROM IT EXCEPT THE HOME.HTML FILE-->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin">
+    <!-- <link rel="stylesheet" href="static/styles.min.css"> -->
+
+    <link rel="icon" type="image/x-icon" href="/static/logo.ico">
+    <title>{% block title%}{% endblock %} - Mintkard</title>
+</head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+<body>
+    <!--Green navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home"><img src="/static/logo.png" alt="Mintkard" width="135" height="42"></a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:white">
+                            Hi {{ current_user.username }}!
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li class="dropdown-item">Your user id: {{current_user.id}}</li>
+                          <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/decks/">Decks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/decks/browse">Browse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/decks/create">Add cards</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/decks/stats">Statistics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/decks/help">Help</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/register">Register</a>
+                    </li>
+                    {% endif %}
+
+                </ul>
+                
+                <form  action ="{{url_for('decks.browse')}}" class="d-flex">
+                    <input class="form-control me-2" name ="search" type="search" placeholder="Search Cards" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+                
+            </div>
+        </div>
+    </nav>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    <div class="container mt-3">
+        {% for category, message in messages %}
+        <!--If there are more than 2 errors/flashes than it would not display them, it would only display the first 2 flashes-->
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endwith %}
+    
+
+
+    <div class="container mt-5">
+    {% block body %}{% endblock %}
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"></script>
+
+</html>

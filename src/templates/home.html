@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--THIS DOES NOT INHERIT FROM LAYOUT FROM HOME-->
+<html lang="en">
+
+<head>
+    <!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin">
+    <link rel="stylesheet" href="static/styles.min.css">
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/x-icon" href="/static/logo.ico">
+    <title>Home</title>
+</head>
+
+<body >
+    <nav id="mainNav" class="navbar navbar-light navbar-expand-md fixed-top">
+        <div class="container"><a class="navbar-brand" href="#">Mintkard</a>
+            <button class="navbar-toggler navbar-toggler-right" data-bs-toggle="collapse"
+                data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false"
+                aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
+            <div id="navbarResponsive" class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item nav-link"><a class="nav-link active" href="/decks/"
+                        style="font-family: Cabin, sans-serif;">DECKS</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link" href="decks/browse">Browse</a></li>
+                    {% else %}
+                    <li class="nav-item nav-link"><a class="nav-link active" href="/auth/register"
+                        style="font-family: Cabin, sans-serif;">GET STARTED</a></li>
+                    <li class="nav-item nav-link"><a class="nav-link" href="auth/login">LOGIN</a></li>
+                    {% endif %}
+                    <li class="nav-item nav-link"><a class="nav-link" href="#about">ABOUT</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!--https://i.ibb.co/VDLL9zh/hj-Jd-NB2r-M5n-Yiq-Xuagv-Sm-P-1200-80.png     apollo rocket taking off-->
+    <!--old image = http://94.23.152.86/web/wallpapers/bright-pink-sunset-in-the-mountains-hd-wallpaper/1920x1080.jpg-->
+    <!--https://i.postimg.cc/cCCLbRTN/ezgif-2-c3e2d1e5ab.webp-->
+    <!--https://thewca.s3.us-west-1.amazonaws.com/wp/site_uploads/2021/01/19212925/21_01_05_expecting%20the%20expected_Blog_Blog%20Header%20Image.jpg-->
+    <!--/static/mountains.jpg-->
+    <!--https://cdn.mos.cms.futurecdn.net/hjJdNB2rM5nYiqXuagvSmP-1200-80.jpg-->
+    <style>
+
+    </style>
+    <header class="masthead bg-light"  
+            style="background: url('static/new.jpg');background-repeat:no-repeat;background-size:cover;font-family: 'JetBrains Mono', monospace;height: 100%">
+        <div class="intro-body" style="color: black">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <h1 class="brand-heading" style="font-family: Cabin, sans-serif;">Reach your peak potential</h1> 
+                        <p class="intro-text">Using algorithms to help you achieve your academic and linguistic goals</p> 
+                        {% if current_user.is_authenticated %}
+                            <a class="btn btn-primary" type="button" href="decks/home" >start now</a>
+                        {% else %}
+                            <a class="btn btn-primary" type="button" href = "/auth/register">start now</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <section id="about" class="text-center content-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2>About MINTKARD</h2>
+                    <p>MINTKARD is a active learning spaced-repition platform, which mean it tests your knowledge just
+                        when you will normally forget it. This is because if you test knowledge too early then that&#39;s useless
+                        revision, if it&#39;s too late then you would forget the content and have to re-understand it.
+                        Mintkard uses it&#39;s a algorithim to determine that best time to review it next.</p>
+                    <p>A big feature in Mintkard, is the gamification aspect, to make its users love spending time
+                        revising and achieve their goals and potential.</p>
+                    <p>"Spaced repetition is to the mind what exercise is to the body. It systematically trains and
+                        strengthens the connections between neurons, gradually building durable and efficient pathways
+                        for retrieving and using information. By spacing out study sessions and gradually increasing the
+                        intervals between them, you can embed new knowledge more deeply and retrieve it more easily over
+                        time"</p>
+                    <p>Do you find it hard to retain the information you study? Are you looking for a way to excel academically? Our spaced repetition flashcard app may be the answer you're looking for!
+                        With our app, you have the option to create your own flashcards or select from a variety of pre-made decks covering different subjects. 
+                        We utilize the proven technique of spaced repetition to help you remember what you learn. 
+                        As you review your flashcards, the app will present the cards you have difficulty with more frequently, gradually increasing the intervals between reviews as you become more comfortable with the material.
+                        Don't let a lack of retention hold you back any longer. Sign up for our app and take charge of your academic success!</p>
+                    <p>The use of spaced repetition as a method for achieving proficiency in any discipline cannot be
+                        understated. </p>
+                    <p>Most students in the modern education system do not revise effectively, this will fix it for free...</p>
+                    <p>A set a day will keep failure away</p>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div class="container text-center fixed-bottom">
+                <p class="text-dark">MINTKARD - empowering the next generation of learners</p>
+            </div>
+        </footer>
+        <br>
+    </section>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>

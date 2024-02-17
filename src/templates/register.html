@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+
+
+  <title>{% block title %}Register{% endblock %}</title>
+
+
+{% block body %}
+<!--You can access these items in the backend using the name=""-->
+
+
+<h1>Register</h1>
+<p class="text-muted">"Spaced repition is a supernatural ability for the mind to absorb and retain information"</p>
+<hr>
+<form method="POST">
+  <br>
+  <div class="form-group form-signin w-50">
+    <p>Already have an account? <a href="/auth/login">Login</a></p>
+
+    <div class="form-floating mb-3"> 
+      <input name="username" id="username" placeholder="Username" type="username" class="form-control" required>
+      <label for="username">Username</label>
+    </div>
+
+    <div class="form-floating mb-3"> 
+      <input name="email" id="email" placeholder="Email" type="email" class="form-control" required>
+      <label for="email">Email</label>
+    </div>
+
+    <div class="form-floating mb-3"> 
+      <input type="password" name="password1" id="password1" placeholder="Password" class="form-control" required>
+      <label for="password1">Password</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input type="password" name="password2" id="password2" placeholder="Confirm Password" class="form-control" required>
+      <label for="password2">Confirm Password</label>
+    </div>
+
+
+  
+<hr>
+  <h4>Requirments:</h4>
+  <ul>
+    <li>Username:
+      <ul>
+        <li>Must be at least 1 character long</li>
+        <li>Cannot contain spaces</li>
+        <li>Must use a valid character set and numbers</li>
+      </ul>
+    </li>
+    <li>Password:
+      <ul>
+        <li>Must be at least 4 characters long</li>
+        <li>Cannot contain spaces</li>
+        <li>Must use a valid character set and numbers</li>
+      </ul>
+    </li>
+  </ul>
+  <button class="btn btn-primary" type="submit">Register</button>
+</div>
+</form>
+
+{% endblock %}

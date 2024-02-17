@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+
+
+<title>{% block title %}Browse{% endblock %}</title>
+
+
+{% block body %}
+<style>
+  #revision-card {
+    /* if the flashcard is more than the maximum height this element will add a scroll bar */
+    height: 250px;
+    overflow-y: auto;
+  }
+</style>
+
+
+<div class="container mt-5">
+  <!-- Search bar -->
+  <form class="input-group mb-4" style="width:80%;margin: auto;">
+    <input type="text" class="col-auto form-control" name="search" placeholder="Search flashcards">
+    <button type="submit" class="col-auto btn btn-primary ">🔍Search</button>
+  </form>
+
+  <!--jinja recursive function for the filter dropdown-->
+  <!--This function displays all of the subdecks in the dropdown-->
+  {% macro display_subdecks(subdeck,deck,selected_id) %}
+  <!-- The selceted line in the dropdown option will be the same, after post request, thats what the selected id which is passed in and out through the function display_subdecks-->
+    <option value = "{{subdeck.id}}" {% if subdeck.id == selected_id %}selected{% endif %}>
+      {{deck.name}} ->- {{ subdeck.name }}
+    </option>
+    {% if subdeck.children_deck %}
+      {% for sub in subdeck.children_deck %}
+        <!--Recursively call the function of the children of the deck, to show all subdecks in the select deck dropdown-->
+        {{ display_subdecks(sub,subdeck,selected_id) }}
+      {% endfor %}
+    {% endif %}
+  {% endmacro %}
+
+  <!-- This will filter the decks and give you the options to select -->
+  <div class="card bg-light mt-3">
+    <div class="card-body">
+      <h5 class="card-title mb-4">Filters</h5>
+  
+
+      <form method="POST">
+        <div class="form-group">
+          <label for="deck-filter">All Decks and Subdecks:</label>
+          <select class="form-control" name="filter">
+            <option value ="All">All</option>
+    
+            {% for deck in decks %}
+            <!--This is disables so users cant select it, its just to make the user aware which subdecks belong together-->
+            <option disabled>--- Deck group: ---</option>
+            <!-- The selceted line in the dropdown option the same, after post request-->
+            <option value="{{deck.id}}" {% if deck.id == selected_id %}selected{% endif %}>
+              {{ deck.name }}
+            </option>
+            <!--If there are children decks then, it will call the diplay_subdecks function on each subdeck-->
+            {% if deck.children_deck %}
+              {% for subdeck in deck.children_deck %}
+                {{ display_subdecks(subdeck,deck,selected_id) }}
+              {% endfor %}
+            {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+        <!--Submit button that sends the post request of the deck filter to the server-->
+        <button class="btn btn-primary my-4" type="submit">Filter</button>
+      </form>
+      <br>
+
+  <!-- Flashcard cards -->
+  <!-- m-2 adds a margin element to each flashcard in all 4 sides -->
+  <div class="row m-2" id="flashcard-cards">
+    {% for card in cards %}
+    <!--On small screen, there will be 6 cards and on medium screen there will be 4, where the numbers represent the portion of the total width out of 12-->
+    <div class="col-sm-6 col-md-4" style="margin-bottom: 15px;">
+      <div class="card" id="revision-card">
+        <div class="card-footer d-flex justify-content-between bg-secondary text-dark">
+          <a class="btn btn-primary" id="edit" href="/decks/edit/{{card.id}}">Edit</a>
+          <form method="post">
+            <!-- Javascript pop up confirmation when users delete a deck-->
+            <button class="btn btn-outline-danger text-light" type="submit" name="delete_card" value="{{card.id}}"
+              onclick="confirm('Are you sure you want to delete the card? press ok to confirm this.')" ;>Delete</button>
+          </form>
+        </div>
+        <div class="card-body">
+
+        <!-- Display the correct deck name -->
+        <!-- deck title-->
+        {% if deck_dict.get(card.deck_id) %}
+        <!--Can also use {{card.deck.name}}-->
+          <h5 class="card-title">Deck: {{deck_dict.get(card.deck_id)}}</h5>
+        {% else %}
+          <h5 class="card-title">Deck id: {{card.deck_id}} was not found</h5>
+        {% endif %}
+        
+          <p class="card-text">Question:{{card.question}}</p>
+          <p class="card-text">Answer: {{card.answer}}</p>
+
+          <!--If the image hash attribute in the card table is not null, then it will acceess the image, which is stored in static as required in flask to load any images/-->
+          {% if card.image_hash %}
+            <img src="/static/user_images/{{card.image_hash}}" class="card-img-bottom">
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor%}
+  </div>
+
+  {% endblock %}
