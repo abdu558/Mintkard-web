@@ -5,6 +5,7 @@ MINTKARD is a active learning spaced-repition platform, which mean it tests your
 A big feature in Mintkard, is the gamification aspect, to make its users love spending time revising and achieve their goals and potential.
 
 Another big feature is the advanced algorithim that schedules cards to make sure that each card is shown at the best possible time considering the foregetting curve.
+
 ![Picture1](https://github.com/abdu558/Mintkard-web/assets/61558312/6cc748a6-d088-4798-82b2-2d60f101467f)
 
 ## Demo
