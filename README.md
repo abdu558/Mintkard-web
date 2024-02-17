@@ -12,12 +12,6 @@ Another big feature is the advanced algorithim that schedules cards to make sure
 
 https://github.com/abdu558/Mintkard-web/assets/61558312/2b5da0a7-d1a0-4042-b292-b6ccd00b78b8
 
-## About the Project
-
-* **Problem Statement:**  [What issue are you solving?]
-* **Solution:** [How does your project address this issue?]
-* **Target Audience:** [Who would benefit from using this project?]
-
 ## Technologies Used
 
 * Python,Flask,SQL
